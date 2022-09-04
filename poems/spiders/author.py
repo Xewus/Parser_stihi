@@ -78,9 +78,23 @@ class AllPoemsSpider(AllPoemsTittleSpider):
             'title': page.xpath(xpaths.title_page).get(),
             'author': page.xpath(xpaths.author_on_poem_page).get(),
             'text': utils.clean_poem_text(page.xpath(xpaths.poem_text).getall()),
-            'end': '\n' * 3
+            'end': '\n##########' * 3
         }
     
 
-class ChoseSpider(BasePoemsSpider):
+class ChoseSpider(AllPoemsSpider):
+    """Собирает избранные стихи.
+    """
     name = const.NAME_CHOOSE_POEMS_SPIDER
+
+    def __init__(self, urls: list | str, *args, **kwargs):
+        super(Spider, self).__init__(*args, **kwargs)
+        if isinstance(urls, str):
+            urls = urls.split()
+        self.start_urls = urls
+
+    def parse(self, response: HtmlResponse):
+        """Переходит по переданному списку ссылок со избранными стихами.
+        """
+        for poem in self.start_urls:
+            yield response.follow(poem, callback=self.parse_poem)
