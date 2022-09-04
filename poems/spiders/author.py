@@ -1,9 +1,8 @@
-from turtle import title
 from scrapy import Spider
 from scrapy.http.response.html import HtmlResponse
 
-from app_core import xpaths
 from app_core import constants as const
+from app_core import utils, xpaths
 
 
 class BasePoemsSpider(Spider):
@@ -39,10 +38,11 @@ class AllPoemsTittleSpider(BasePoemsSpider):
     def parse(self, response: HtmlResponse):
         """Парсит страницу автора и переходит по страницам со списками его произведений.
         """
-        about_author = response.xpath(xpaths.about_page)
-        name_author = about_author.xpath(xpaths.title_page).get()
+        page = response.xpath(xpaths.body_page)
+        name_author = page.xpath(xpaths.title_page).get()
         amount_poems = int(response.xpath(xpaths.amount_poems).get())
         print(name_author, amount_poems)
+
         all_pages = [f'{self.start_urls[0]}&s={i}' for i in range(0, amount_poems, 50)]
         for page in all_pages:
             yield response.follow(page, callback=self.parse_page)
@@ -52,22 +52,33 @@ class AllPoemsTittleSpider(BasePoemsSpider):
         """
         for poem_link in response.xpath(xpaths.poem_link):
             yield {
-                'title': poem_link.xpath(xpaths.title).get(),
-                'link': self.site_url + poem_link.xpath(xpaths.link).get()
+                'title': poem_link.xpath('text()').get(),
+                'link': self.site_url + poem_link.xpath('.//@href').get()
             }
 
 
 class AllPoemsSpider(AllPoemsTittleSpider):
+    """Собирает все стихи указанного автора.
+    """
     name = const.NAME_ALL_POEMS_SPIDER
 
     def parse_page(self, response: HtmlResponse):
+        """Собирает ссылки на произведения и переходит по ним.
+        """
         for poem_link in response.xpath(xpaths.poem_link):
-            poem_link = self.site_url + poem_link.xpath(xpaths.link).get()
+            poem_link = self.site_url + poem_link.xpath('.//@href').get()
             yield response.follow(poem_link, callback=self.parse_poem)
     
     def parse_poem(self, response: HtmlResponse):
+        """Собирает название, автора и текст.
+        """
+        page = response.xpath(xpaths.body_page)
+        print(page.xpath(xpaths.author_on_poem_page).get())
         yield {
-            'title': ...
+            'title': page.xpath(xpaths.title_page).get(),
+            'author': page.xpath(xpaths.author_on_poem_page).get(),
+            'text': utils.clean_poem_text(page.xpath(xpaths.poem_text).getall()),
+            'end': '\n' * 3
         }
     
 

@@ -33,3 +33,21 @@ def add_hyperlink(paragraph, url, text):
     paragraph._p.append(hyperlink)
 
     return hyperlink
+
+
+def clean_poem_text(text: list) -> list:
+    """Отрезает текст стиха от нижележащих примечаний.
+
+    #### Args:
+        text (list): Текст стиха.
+
+    #### Returns:
+        text (list): Обрезанный текст стиха.
+    """
+    n = 0
+    for index, line in enumerate(text):
+        n = n + 1 if line == '\n' else 0
+        if n == 2:
+            text = text[:index]
+    return text 
+        

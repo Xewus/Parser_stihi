@@ -1,6 +1,7 @@
-from itemadapter import ItemAdapter
 from pathlib import Path
+
 import docx
+from itemadapter import ItemAdapter
 
 
 class PoemsPipeline:
