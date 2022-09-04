@@ -1,0 +1,10 @@
+about_page = '//*[@class="maintext"]'
+title_page = '*/h1/text()'
+amount_poems = '//p[contains(., "Произведений")]/b/text()'
+poem_link = '//*[@class="poemlink"]'
+
+title = 'text()'
+link = './/@href'
+text = ''
+all_author_pages = 'p a[href^="/avtor/"]::attr(href)'
+poems_amount = '#container > div.maintext > index > p:nth-child(6) > b:nth-child(1)::text'
