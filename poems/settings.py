@@ -7,17 +7,10 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'poems'
-
-SPIDER_MODULES = ['poems.spiders']
-NEWSPIDER_MODULE = 'poems.spiders'
-
+from app_core.settings import *
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'poems (+http://www.yourdomain.com)'
-
-# Obey robots.txt rules
-ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
