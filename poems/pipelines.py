@@ -1,17 +1,17 @@
 from pathlib import Path
 
 import docx
+from app_core.settings import BASE_DIR
 from itemadapter import ItemAdapter
 
 
-class PoemsPipeline:
+class AllPoemsTitlePipeline:
     def open_spider(self, spider):
         print('open', spider)
-        spider.document = docx.Document()
+        spider.file = open(BASE_DIR / 'list.csv', 'a')
 
     def close_spider(self, spider):
-        document_name = Path.cwd() / f'{self.name}.docx'
-        spider.document.save(document_name)
+        spider.file.close()
 
     def process_item(self, item, spider):
-        return item
+        spider.file.write(item)

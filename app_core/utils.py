@@ -1,23 +1,25 @@
+"""Вспомогательные функции.
+"""
+from app_core import settings
 import docx
 
 
 def extract_author(dirty_string: str) -> str:
-    """Вытаскивает имя автора их строки.
+    """Вытаскивает имя автора из URL-строки.
 
-    Args:
-        dirty_string (str): _description_
+    #### Args:
+        dirty_string (str): URL-строка, содержащая автора.
 
-    Raises:
-        Exception: _description_
+    #### Raises:
+        Exception: Автор не найлен.
 
-    Returns:
-        str: _description_
+    #### Returns:
+        str: Автор.
     """
     dirty_list = dirty_string.split('/')
     if len(dirty_list) == 1:
         return dirty_list[0]
     for i, v in enumerate(dirty_list):
-        print(v)
         if v == 'avtor' and i < len(dirty_list) - 1:
             return (dirty_list[i + 1])
     raise Exception(f'no author in {dirty_list}')
@@ -39,6 +41,15 @@ def clean_poem_text(text: list) -> list:
             text = text[:index]
     return text
 
+
+def create_choice_list() -> list[tuple[str, str]]:
+    try:
+        with open(settings.BASE_DIR / 'list.csv') as f:
+            _, *poems = [tuple(line.split(',', 1)) for line in f.readlines()]
+    except Exception:
+        poems = []
+    return poems
+    
 
 def add_hyperlink(paragraph, url, text):
     """

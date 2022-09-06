@@ -1,3 +1,5 @@
+"""Общие настройки приложения.
+"""
 import os
 from pathlib import Path
 
@@ -11,6 +13,10 @@ SECRET_KEY = os.environ.get('SECRET KEY')
 
 USERS_STORE = f'{BASE_DIR}/users.txt'
 LIVE_TOKEN = 60 * 60 * 20  # 20 hours
+
+SEPARATOR = '#'
+
+# Настройки для `Scrapy`
 
 BOT_NAME = 'poems'
 

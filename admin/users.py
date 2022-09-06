@@ -1,3 +1,5 @@
+"""Работа с пользователями.
+"""
 import os
 import uuid
 from datetime import datetime, timedelta
@@ -22,31 +24,35 @@ class BaseUser:
     @staticmethod
     def check_user(username: str, password: str) -> bool:
         try:
-            with open(BaseUser.store, 'r') as file:
-                for line in file.readlines():
-                    f_username, f_password = line.split()
-                    if username == f_username and password == f_password:
-                        return True
+            file = open(BaseUser.store, 'r')
+            for line in file.readlines():
+                f_username, f_password = line.split()
+                if username == f_username and password == f_password:
+                    return True
         except FileNotFoundError:
             return False
+        else:
+            file.close()
         return False
 
     @staticmethod
     def check_username(username: str) -> bool:
         try:
-            with open(BaseUser.store, 'r') as file:
-                for line in file.readlines():
-                    f_username, _ = line.split()
-                    if username == f_username:
-                        return True
+            file = open(BaseUser.store, 'r')
+            for line in file.readlines():
+                f_username, _ = line.split()
+                if username == f_username:
+                    return True
         except FileNotFoundError:
             return False
+        else:
+            file.close()
         return False
 
     def check_time_token(self) -> bool:
-        if not BaseUser.check_username(self.username):
+        if not self.check_username(self.username):
             return False
-        return self.time_token > datetime.now()
+        return self.time_token and self.time_token > datetime.now()
 
 
 class User(BaseUser):

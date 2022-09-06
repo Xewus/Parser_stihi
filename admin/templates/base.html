@@ -14,7 +14,7 @@
       <h5 class="my-0 mr-md-auto font-weight-normal">Simple Flask App</h5>
       <nav class="my-2 my-md-0 mr-md-3">
         <a class="p-2 text-dark" href="/" title="Home">Главная страница</a>
-        {% if not g.user %}
+        {% if not user or not user.token %}
           <a class="p-2 text-dark" href="/login">Войти</a>
         {% else %}
           <a class="p-2 text-dark" href="/parsing">Парсинг</a>

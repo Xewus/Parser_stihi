@@ -1,11 +1,18 @@
 """Формы для view-функций.
 """
 from flask_wtf import FlaskForm
-from wtforms import (PasswordField, SelectField, StringField, SubmitField,
-                     URLField)
+from wtforms import (widgets, PasswordField, SelectField, StringField, SubmitField,
+                     URLField, SelectMultipleField)
 from wtforms.validators import DataRequired, Length
 
 from admin import commands
+from app_core import utils
+from pprint import pprint
+
+
+class MultiCheckboxField(SelectMultipleField):
+  widget = widgets.ListWidget(prefix_label=False)
+  option_widget = widgets.CheckboxInput()
 
 
 class LoginForm(FlaskForm):
@@ -58,11 +65,16 @@ class ChoiceParseForm(FlaskForm):
     submit = SubmitField('Выбрать')
 
 
-class ChoicePoemForm(FlaskForm):
+class ChoicePoemsForm(FlaskForm):
     """Форма для отметки необходимых для скачивания стихов.
     #### Atrrs:
     - poems: Отмечаемыt стихи.
     - submit: Кнопка отпраки данных.
     """
-    poems = ...
-    submit = SubmitField('Выбрать')
+    choice = MultiCheckboxField(
+        label='Выбрано',
+        choices=[],
+        validate_choice=False
+    )
+    submit = SubmitField('Подтвердить')
+    

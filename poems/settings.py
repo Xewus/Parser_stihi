@@ -1,5 +1,6 @@
-# Scrapy settings for poems project
-#
+"""Scrapy settings for poems project.
+"""
+
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
 #
@@ -7,18 +8,18 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+from email.feedparser import FeedParser
 from app_core.settings import *
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'poems (+http://www.yourdomain.com)'
 
-# Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+# DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -55,10 +56,20 @@ from app_core.settings import *
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'poems.pipelines.PoemsPipeline': 300,
-#}
+# ITEM_PIPELINES = {
+#    'poems.pipelines.AllPoemsTitlePipeline': 300,
+# }
 
+FEEDS = {
+    BASE_DIR / 'list.csv': {
+        'format': 'csv',
+        'encoding': 'utf8',
+        'store_empty': False,
+        'item_classes': ['poems.items.ListPoemsItem'],
+        'fields': ['link', 'title'],
+        'overwrite': True
+    }
+}
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
