@@ -46,8 +46,8 @@ class AllPoemsTittleSpider(BasePoemsSpider):
         """
         for poem_link in response.xpath(xpaths.poem_link):
             yield ListPoemsItem(
-                link=self.site_url + poem_link.xpath('.//@href').get(),
-                title= poem_link.xpath('text()').get()
+                title=poem_link.xpath('text()').get(),
+                link=self.site_url + poem_link.xpath('.//@href').get()
             )
 
 
@@ -72,8 +72,7 @@ class AllPoemsSpider(AllPoemsTittleSpider):
             author=page.xpath(xpaths.author_on_poem_page).get(),
             text=utils.clean_poem_text(
                 page.xpath(xpaths.poem_text).getall()
-            ),
-            end='\n##########' * 3
+            )
         )
 
 
@@ -84,8 +83,7 @@ class ChooseSpider(AllPoemsSpider):
 
     def __init__(self, urls: str, *args, **kwargs):
         super(Spider, self).__init__(*args, **kwargs)
-        urls = urls.split(settings.SEPARATOR)
-        print('urls', urls)
+        urls = urls.split(settings.ARGS_SEPARATOR)
         self.start_urls = urls
 
     def parse(self, response: HtmlResponse):

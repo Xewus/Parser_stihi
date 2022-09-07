@@ -17,6 +17,9 @@ class BaseUser:
     superuser = False
     store = USERS_STORE
 
+    def __str__(self) -> str:
+        return self.username
+
     def _set_token(self) -> None:
         self.token = str(uuid.uuid1())
         self.time_token = datetime.now() + timedelta(seconds=LIVE_TOKEN)
@@ -54,11 +57,23 @@ class BaseUser:
             return False
         return self.time_token and self.time_token > datetime.now()
 
+    @staticmethod
+    def get_request_user_by_session(store: dict, session: str):
+        """Проверяет наличие пользователя по сессии.
+
+        Args:
+            store (dict): _description_
+            session (str): _description_
+
+        Returns:
+            bool: _description_
+        """
+        return store.get(session)
+
 
 class User(BaseUser):
-    def __init__(self, username: str, password: str) -> None:
+    def __init__(self, username: str) -> None:
         self.username = username
-        self.password = password
         self._set_token()
 
 

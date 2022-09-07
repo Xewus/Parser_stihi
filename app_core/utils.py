@@ -2,6 +2,7 @@
 """
 from app_core import settings
 import docx
+import json
 
 
 def extract_author(dirty_string: str) -> str:
@@ -19,9 +20,11 @@ def extract_author(dirty_string: str) -> str:
     dirty_list = dirty_string.split('/')
     if len(dirty_list) == 1:
         return dirty_list[0]
+
     for i, v in enumerate(dirty_list):
         if v == 'avtor' and i < len(dirty_list) - 1:
             return (dirty_list[i + 1])
+
     raise Exception(f'no author in {dirty_list}')
 
 
@@ -43,9 +46,15 @@ def clean_poem_text(text: list) -> list:
 
 
 def create_choice_list() -> list[tuple[str, str]]:
+    """Создаёт список для показа чек-боксов выбора в темплейте.
+    """
     try:
-        with open(settings.BASE_DIR / 'list.csv') as f:
-            _, *poems = [tuple(line.split(',', 1)) for line in f.readlines()]
+        with open(settings.POEMS_STORE) as file_json:
+            data = json.load(file_json)
+            poems = sorted(
+                ((d['link'], d['title']) for d in data),
+                key=settings.SORT_KEY_CHOOSE_BY_TITLE
+            )
     except Exception:
         poems = []
     return poems

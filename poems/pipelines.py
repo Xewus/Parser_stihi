@@ -1,17 +1,20 @@
-from pathlib import Path
+from app_core import settings
 
-import docx
-from app_core.settings import BASE_DIR
+import json
 from itemadapter import ItemAdapter
+from .spiders.author import AllPoemsSpider
 
 
-class AllPoemsTitlePipeline:
-    def open_spider(self, spider):
+# Example. Not using now.
+class JsonAllPoemsTitlePipeline:
+    def open_spider(self, spider: AllPoemsSpider):
         print('open', spider)
-        spider.file = open(BASE_DIR / 'list.csv', 'a')
+        self.file = open(settings.POEMS_STORE, 'w')
 
-    def close_spider(self, spider):
-        spider.file.close()
+    def close_spider(self, spider: AllPoemsSpider):
+        self.file.close()
 
-    def process_item(self, item, spider):
-        spider.file.write(item)
+    def process_item(self, item, spider: AllPoemsSpider):
+        line = json.dumps(ItemAdapter(item).asdict()) + "\n"
+        self.file.write(line)
+        return item

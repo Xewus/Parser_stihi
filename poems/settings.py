@@ -8,13 +8,10 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-from email.feedparser import FeedParser
 from app_core.settings import *
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'poems (+http://www.yourdomain.com)'
-
-CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -60,16 +57,6 @@ CONCURRENT_REQUESTS = 32
 #    'poems.pipelines.AllPoemsTitlePipeline': 300,
 # }
 
-FEEDS = {
-    BASE_DIR / 'list.csv': {
-        'format': 'csv',
-        'encoding': 'utf8',
-        'store_empty': False,
-        'item_classes': ['poems.items.ListPoemsItem'],
-        'fields': ['link', 'title'],
-        'overwrite': True
-    }
-}
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
