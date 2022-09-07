@@ -1,5 +1,6 @@
+from itertools import tee
 from pprint import pprint
-from flask import Flask, flash, redirect, render_template, url_for, request
+from flask import Flask, flash, redirect, render_template, url_for, request, send_file
 
 from admin import commands, forms, users
 from app_core import utils, settings
@@ -47,6 +48,12 @@ def login_view():
 @app.route('/choose_parsing/', methods=('GET', 'POST'))
 def choose_parsing_view():
     form = forms.ChoiceParseForm()
+    context = {
+        'template_name_or_list': 'choose_parsing.html',
+        'form': form,
+        'user' : request.user,
+        'file': False
+    }
     if form.validate_on_submit():
         author = utils.extract_author(form.author.data)
         choice = form.choice.data
@@ -56,22 +63,30 @@ def choose_parsing_view():
             return redirect(url_for('choose_poems_view'))
         else:
             commands.parse(commands.COMMANDS.get(choice) % author)
-    return render_template(
-        'choose_parsing.html', form=form, user = request.user
-    )
+            context['file'] = True
+    return render_template(**context)
 
 
 @app.route('/choose_poems/', methods=('GET', 'POST'))
 def choose_poems_view():
     form = forms.ChoicePoemsForm()
+    context = {
+        'template_name_or_list': 'choose_poems.html',
+        'form': form,
+        'user' : request.user,
+        'file': False
+    }
     form.choice.choices = utils.create_choice_list()
     if request.method == 'POST' and form.validate_on_submit:
         choised = settings.ARGS_SEPARATOR.join(form.choice.data)
-        print(choised)
         commands.parse(commands.COMMANDS[commands.CHOOSE_POEMS] % choised)
-    return render_template(
-        'choose_poems.html', form=form, user = request.user
-    )
+        context['file'] = True
+    return render_template(**context)
+
+
+@app.route('/download_docx')
+def download_docx_view():
+    return send_file(settings.POEMS_STORE, as_attachment=True)
 
 
 if __name__ == '__main__':
