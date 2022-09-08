@@ -29,6 +29,12 @@
       </p>
 
       {{ form.submit(class="button px-5 py-3 btn") }}
+
+      {% if has_file %}
+        <br><a class="p-2 text-dark" href="/download/json">Скачать файл.json</a>
+        <br><a class="p-2 text-dark" href="/download/md">Скачать файл.md</a>
+        <br><a class="p-2 text-dark" href="/download/docx">Скачать файл.docx</a>
+      {% endif %}
     </form>
   </div>
 {% endblock %}

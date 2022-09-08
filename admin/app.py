@@ -1,9 +1,10 @@
-from itertools import tee
+from pathlib import Path
 from pprint import pprint
 from flask import Flask, flash, redirect, render_template, url_for, request, send_file
 
 from admin import commands, forms, users
 from app_core import utils, settings
+from app_core.converter import JsonConvereter
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'settings.SECRET_KEY'
@@ -16,8 +17,8 @@ def before_request():
     request.user = users.User.get_request_user_by_session(
         USERS, request.cookies.get('session')
     )
-    if request.user is None and request.path not in settings.PATHS_FOR_ANONIM:
-        return redirect(url_for('login_view'))
+    # if request.user is None and request.path not in settings.PATHS_FOR_ANONIM:
+    #     return redirect(url_for('login_view'))
 
 
 
@@ -40,7 +41,7 @@ def login_view():
         password = form.password.data
         if users.User.check_user(username=username, password=password):
             USERS[request.cookies['session']] = users.User(username)
-            return redirect(url_for('choose_parsing_view', username=username))
+            return redirect(url_for('choose_parsing_view'))
         flash('Введены неверные данные')
     return render_template('login.html', form=form)
 
@@ -52,7 +53,7 @@ def choose_parsing_view():
         'template_name_or_list': 'choose_parsing.html',
         'form': form,
         'user' : request.user,
-        'file': False
+        'has_file': Path(settings.POEMS_STORE).exists()
     }
     if form.validate_on_submit():
         author = utils.extract_author(form.author.data)
@@ -63,7 +64,7 @@ def choose_parsing_view():
             return redirect(url_for('choose_poems_view'))
         else:
             commands.parse(commands.COMMANDS.get(choice) % author)
-            context['file'] = True
+            context['has_file'] = True
     return render_template(**context)
 
 
@@ -74,19 +75,26 @@ def choose_poems_view():
         'template_name_or_list': 'choose_poems.html',
         'form': form,
         'user' : request.user,
-        'file': False
+        'has_file': Path(settings.POEMS_STORE).exists()
     }
     form.choice.choices = utils.create_choice_list()
     if request.method == 'POST' and form.validate_on_submit:
         choised = settings.ARGS_SEPARATOR.join(form.choice.data)
         commands.parse(commands.COMMANDS[commands.CHOOSE_POEMS] % choised)
-        context['file'] = True
+        context['has_file'] = True
     return render_template(**context)
 
 
-@app.route('/download_docx')
-def download_docx_view():
-    return send_file(settings.POEMS_STORE, as_attachment=True)
+@app.route('/download/<doc_type>')
+def download_view(doc_type: str):
+    source = Path(settings.POEMS_STORE)
+    if not source.exists() or doc_type not in ('json', 'md', 'docx'):
+        return redirect(url_for('choose_parsing_view'))
+    
+    convert = JsonConvereter(doc_type, source)
+    out_file = convert.converter(settings.OUT_POEMS)
+    source.unlink(missing_ok=True)
+    return send_file(out_file, as_attachment=True)
 
 
 if __name__ == '__main__':

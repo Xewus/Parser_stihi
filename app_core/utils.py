@@ -3,7 +3,12 @@
 from app_core import settings
 import docx
 import json
+from docxtpl import DocxTemplate
 
+TEXT = settings.TEXT
+AUTHOR = settings.AUTHOR
+TITLE = settings.TITLE
+LINK = settings.LINK
 
 def extract_author(dirty_string: str) -> str:
     """Вытаскивает имя автора из URL-строки.
@@ -52,13 +57,13 @@ def create_choice_list() -> list[tuple[str, str]]:
         with open(settings.POEMS_STORE) as file_json:
             data = json.load(file_json)
             poems = sorted(
-                ((d['link'], d['title']) for d in data),
+                ((d[LINK], d[TITLE]) for d in data),
                 key=settings.SORT_KEY_CHOOSE_BY_TITLE
             )
     except Exception:
         poems = []
     return poems
-    
+
 
 def add_hyperlink(paragraph, url, text):
     """
