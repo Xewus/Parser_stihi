@@ -1,7 +1,9 @@
+import json
+
+from itemadapter import ItemAdapter
+
 from app_core import settings
 
-import json
-from itemadapter import ItemAdapter
 from .spiders.author import AllPoemsSpider
 
 

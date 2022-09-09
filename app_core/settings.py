@@ -1,6 +1,5 @@
 """Общие настройки приложения.
 """
-from optparse import TitledHelpFormatter
 import os
 from pathlib import Path
 
@@ -27,7 +26,7 @@ ARGS_SEPARATOR = '#'
 SORT_KEY_CHOOSE_BY_TITLE = lambda x: x[1]
 
 # URL-адреса доступные для анонимных пользователей
-PATHS_FOR_ANONIM = ('/login', '/static/style.css')
+URL_PATHS_FOR_ANONIM = ('/login', '/static/style.css')
 
 # Названия сохраняемых полей
 TITLE = 'title'

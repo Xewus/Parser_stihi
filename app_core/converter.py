@@ -1,8 +1,11 @@
-from pathlib import Path
-from app_core import settings
+"""Конвертеры текстовых файлов.
+"""
 import json
-import pypandoc
+from pathlib import Path
+
 from docxtpl import DocxTemplate, RichText
+
+from app_core import settings
 
 TEXT = settings.TEXT
 AUTHOR = settings.AUTHOR
@@ -12,14 +15,19 @@ POEMS_STORE = settings.POEMS_STORE
 
 
 class JsonConvereter:
-    def __init__(self, doc_type: str, json_file: str | Path | None = None) -> None:
+    """Конвертирует `.json` в форматы `.md`, `.docx`.
+    """
+    def __init__(
+        self, doc_type: str, json_file: str | Path | None = None
+    ) -> None:
         if doc_type == 'json':
             self.converter = self._to_json
         elif doc_type == 'md':
             self.converter = self._to_md
         elif doc_type == 'docx':
             self.converter = self._to_docx
-        else: raise
+        else:
+            raise
 
         if json_file is None:
             json_file = POEMS_STORE
@@ -30,16 +38,27 @@ class JsonConvereter:
         self.end_text = '\n' + '-' * 30 + '\n\n'
 
     def _to_json(self, out_file: str) -> str:
+        """Переименовывает входной файл в выходной.
+
+        #### Args:
+            out_file (str): Название выходного файла.
+
+        #### Returns:
+            str: Название выходного файла.
+        """
         if not out_file.endswith('json'):
             out_file = f'{out_file}.json'
         Path(self.json_file).rename(out_file)
         return out_file
 
     def _to_md(self, out_file: str) -> str:
-        """Записывает из .json в .md
+        """Конвертирует из `.json` в `.md` .
 
-        Args:
-            out_file (_type_): _description_
+        #### Args:
+            out_file (str): Название выходного файла.
+
+        #### Returns:
+            str: Название выходного файла.
         """
         if not out_file.endswith('md'):
             out_file = f'{out_file}.md'
@@ -62,39 +81,69 @@ class JsonConvereter:
             writer.write(''.join(res))
         return out_file
 
-    def _title_link_to_docx(self, out_file: str) -> str:
+    def __title_link_to_docx(self, out_file: str) -> str:
+        """Конвертирует из `.json` в `.docx` .
+        В исходном файле должны быть поля `title` и `link`.
+
+        #### Args:
+            out_file (str): Название выходного файла.
+
+        #### Returns:
+            str: Название выходного файла.
+        """
         doc = DocxTemplate(settings.DOCX_TEMPLATES / 'title_link.docx')
         title_links = RichText()
         for title_link in self.data:
-            title_links.add(title_link)
-        
-        context = {'title_links': title_links}
-        doc.render(context)
+            title_links.add(
+                text=title_link[TITLE] + '\n',
+                underline=True,
+                url_id=doc.build_url_id(title_link[LINK])
+            )
+
+        doc.render(context={'title_links': title_links})
         doc.save(out_file)
         return out_file
 
-    def _poems_to_docx(self, out_file: str) -> str:
+    def __poems_to_docx(self, out_file: str) -> str:
+        """Конвертирует из `.json` в `.docx` .
+        В исходном файле должны быть поля `title`, `author` и `text`.
+
+        #### Args:
+            out_file (str): Название выходного файла.
+
+        #### Returns:
+            str: Название выходного файла.
+        """
         doc = DocxTemplate(settings.DOCX_TEMPLATES / 'poems.docx')
         poems = RichText()
         for poem in self.data:
-            poems.add(f'{poem[TITLE]}\n\n', size=16)
-            poems.add(f'{poem[AUTHOR]}\n', size=12, color='#F0F')
+            poems.add(f'{poem[TITLE]}\n\n')
+            poems.add(f'{poem[AUTHOR]}\n', color='#FF00FF')
             if isinstance(poem[TEXT], str):
                 poems.add(poem[TEXT] + self.end_text, italic=True)
             else:
                 poems.add(''.join(poem[TEXT]) + self.end_text, italic=True)
-        
-        context = {'poems': poems}
-        doc.render(context)
+
+        doc.render(context={'poems': poems})
         doc.save(out_file)
         return out_file
 
     def _to_docx(self, out_file: str) -> str:
+        """Вызывает нужную функцию для конвертации из `.json` в `.docx` .
+
+        #### Args:
+            out_file (str): Название выходного файла.
+
+        #### Returns:
+            str: Название выходного файла.
+        """
         if not out_file.endswith('docx'):
             out_file = f'{out_file}.docx'
+        if len(self.data) == 0:
+            return self.__title_link_to_docx(out_file)
         keys_set = set(self.data[0].keys())
-        if len(self.data) == 0 or {TITLE, LINK} == keys_set:
-            return self._title_link_to_docx(out_file)
+        if {TITLE, LINK} == keys_set:
+            return self.__title_link_to_docx(out_file)
         if {TITLE, AUTHOR, TEXT} == keys_set:
-            return self._poems_to_docx(out_file)
+            return self.__poems_to_docx(out_file)
         raise
