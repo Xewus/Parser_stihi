@@ -24,8 +24,8 @@ def before_request():
     request.user = users.User.get_request_user_by_session(
         USERS, request.cookies.get('session')
     )
-    # if request.user is None and request.path not in URL_PATHS_FOR_ANONIM:
-    #     return redirect(url_for('login_view'))
+    if request.user is None and request.path not in URL_PATHS_FOR_ANONIM:
+        return redirect(url_for('login_view'))
 
 
 @app.route('/')
@@ -58,8 +58,7 @@ def choose_parsing_view():
     context = {
         'template_name_or_list': 'choose_parsing.html',
         'form': form,
-        'user': request.user,
-        'has_file': Path(POEMS_STORE).exists()
+        'user': request.user
     }
     if form.validate_on_submit():
         author = utils.extract_author(form.author.data)
@@ -70,7 +69,7 @@ def choose_parsing_view():
             return redirect(url_for('choose_poems_view'))
         else:
             commands.parse(commands.COMMANDS.get(choice) % author)
-            context['has_file'] = True
+            return redirect(url_for('choose_download_view'))
     return render_template(**context)
 
 
@@ -80,27 +79,51 @@ def choose_poems_view():
     context = {
         'template_name_or_list': 'choose_poems.html',
         'form': form,
-        'user': request.user,
-        'has_file': Path(POEMS_STORE).exists()
+        'user': request.user
     }
     form.choice.choices = utils.create_choice_list()
     if request.method == 'POST' and form.validate_on_submit:
         choised = ARGS_SEPARATOR.join(form.choice.data)
         commands.parse(commands.COMMANDS[commands.CHOOSE_POEMS] % choised)
-        context['has_file'] = True
+        return redirect(url_for('choose_download_view'))
+    return render_template(**context)
+
+
+@app.route('/choose_download/')
+def choose_download_view():
+    context = {
+        'template_name_or_list': 'choose_download.html',
+        'user': request.user,
+        'poems_store': Path(POEMS_STORE).exists()
+    }
     return render_template(**context)
 
 
 @app.route('/download/<doc_type>')
 def download_view(doc_type: str):
     source = Path(POEMS_STORE)
-    if not source.exists() or doc_type not in ('json', 'md', 'docx'):
+    if not source.exists() or doc_type not in {'json', 'md', 'docx'}:
         return redirect(url_for('choose_parsing_view'))
 
     convert = JsonConvereter(doc_type, source)
     out_file = convert.converter(out_file=OUT_POEMS)
-    source.unlink(missing_ok=True)
     return send_file(out_file, as_attachment=True)
+
+
+@app.route('/create_user/')
+def create_user_view():
+    form = forms.CreateUserForm()
+    if form.validate_on_submit():
+        su_password = form.password.data
+        username = form.username.data
+        user_password = form.user_password
+        if users.SuperUser.create_user(
+            su_password=su_password,
+            username=username,
+            user_password=user_password
+        ):
+            return redirect(url_for('index_view'))
+    return redirect(url_for('index_view'))
 
 
 if __name__ == '__main__':

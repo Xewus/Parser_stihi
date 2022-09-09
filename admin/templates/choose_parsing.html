@@ -4,13 +4,14 @@
 {% block title %}Парсинг{% endblock %}
 
 {% block body %}
-  <h1 class="text-center">Dashboard</h1>
+  <h1 class="text-center">Что скачиваем</h1>
   <div class="row">
     <div class="col-sm-8 offset-sm-2">
     <form method="POST" novalidate>
       {{ form.csrf_token }}
 
       {{ form.author(class="form-control form-control-lg py-3 mb-3", placeholder=form.author.label.text) }}
+
       <p>
         {% if form.author.errors %}
           {% for error in form.author.errors %}
@@ -20,6 +21,7 @@
       </p>
 
       {{ form.choice(class="form-control form-control-lg py-6 mb-3", placeholder=form.choice.label.text, rows="3", cols="40")}}
+
       <p class="text-danger">
         {% if form.choice.errors %}
           {% for error in form.choice.errors %}
@@ -28,13 +30,8 @@
         {% endif %}
       </p>
 
-      {{ form.submit(class="button px-5 py-3 btn") }}
+      {{ form.submit(class="btn btn-primary btn-lg btn-block") }}
 
-      {% if has_file %}
-        <br><a class="p-2 text-dark" href="/download/json">Скачать файл.json</a>
-        <br><a class="p-2 text-dark" href="/download/md">Скачать файл.md</a>
-        <br><a class="p-2 text-dark" href="/download/docx">Скачать файл.docx</a>
-      {% endif %}
     </form>
   </div>
 {% endblock %}

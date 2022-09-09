@@ -1,0 +1,20 @@
+<!--choose_download.html-->
+{% extends "base.html" %}
+
+{% block title %}Выбрать тип файла{% endblock %}
+
+{% block body %}
+  <h1 class="text-center">Сохраните файл</h1>
+  <div class="row">
+    <div class="col-sm-6 offset-sm-3">
+      <div class="jumbotron">
+      
+        {% if poems_store %}
+          <a href="/download/json" class="btn btn-primary btn-lg btn-block" role="button" aria-disabled="true">Сохранить файл.json</a>
+          <a href="/download/md" class="btn btn-primary btn-lg btn-block" role="button" aria-disabled="true">Сохранить файл.md</a>
+          <a href="/download/docx" class="btn btn-primary btn-lg btn-block" role="button" aria-disabled="true">Сохранить файл.docx</a>
+        {% endif %}
+
+      </div>
+  </div>
+{% endblock %}

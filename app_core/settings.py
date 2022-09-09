@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 RESULT_DIR = BASE_DIR / 'results'
-DOCX_TEMPLATES = BASE_DIR / 'docx'
+DOCX_TEMPLATES = BASE_DIR / 'docx_templates'
 
 load_dotenv(dotenv_path=BASE_DIR)
 

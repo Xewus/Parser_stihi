@@ -78,10 +78,17 @@ class User(BaseUser):
 
 
 class SuperUser(BaseUser):
-    username = os.environ.get('USERNAME')
     password = os.environ.get('PASSWORD')
     superuser = True
 
-    def __create_user(self, username: str, password: str) -> User:
+    def create_user(
+        self, su_password: str, username: str, user_password: str
+    ) -> bool:
+        if su_password != self.password:
+            return False
         with open(self.store, 'a+', 'utf-8') as file:
-            file.write(f'{str(username)} {str(password)}')
+            for user in file.readlines:
+                if user[0] == username:
+                    return False
+            file.write(f'{str(username)} {str(user_password)}')
+        return True

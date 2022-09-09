@@ -13,6 +13,7 @@
         {{ form.submit(class="button px-5 py-3 btn") }}
 
         {{ form.choice(class="form-control form-control-lg py-6 mb-3", placeholder=form.choice.label.text, rows="3", cols="40")}}
+
         <p class="text-danger">
           {% if form.choice.errors %}
             {% for error in form.choice.errors %}
@@ -23,11 +24,6 @@
 
         {{ form.submit(class="button px-5 py-3 btn") }}
 
-        {% if has_file %}
-          <br><a class="p-2 text-dark" href="/download/json">Скачать файл.json</a>
-          <br><a class="p-2 text-dark" href="/download/md">Скачать файл.md</a>
-          <br><a class="p-2 text-dark" href="/download/docx">Скачать файл.docx</a>
-        {% endif %}
       </form>
     </div>
   </div>

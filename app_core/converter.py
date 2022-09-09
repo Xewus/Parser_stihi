@@ -2,6 +2,7 @@
 """
 import json
 from pathlib import Path
+import shutil
 
 from docxtpl import DocxTemplate, RichText
 
@@ -38,7 +39,7 @@ class JsonConvereter:
         self.end_text = '\n' + '-' * 30 + '\n\n'
 
     def _to_json(self, out_file: str) -> str:
-        """Переименовывает входной файл в выходной.
+        """Копирует входной файл в выходной.
 
         #### Args:
             out_file (str): Название выходного файла.
@@ -48,7 +49,7 @@ class JsonConvereter:
         """
         if not out_file.endswith('json'):
             out_file = f'{out_file}.json'
-        Path(self.json_file).rename(out_file)
+        shutil.copy(self.json_file, out_file)
         return out_file
 
     def _to_md(self, out_file: str) -> str:

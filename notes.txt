@@ -1,4 +1,0 @@
-export FLASK_APP=admin.app
-export FLASK_DEBUG=True
-flask run
-sudo apt-get install pandoc

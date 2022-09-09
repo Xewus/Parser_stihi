@@ -1,8 +1,9 @@
 """Формы для view-функций.
 """
+from secrets import choice
 from flask_wtf import FlaskForm
 from wtforms import (PasswordField, SelectField, SelectMultipleField,
-                     StringField, SubmitField, URLField, widgets)
+                     StringField, SubmitField, URLField, widgets, RadioField)
 from wtforms.validators import DataRequired, Length
 
 from admin import commands
@@ -44,7 +45,7 @@ class ChoiceParseForm(FlaskForm):
     #### Attrs:
     - author: URL-ссылка на выбранного автора.
     - choice: Выбор из доступных вариантов.
-    - submit: Кнопка отпраки данных.
+    - submit: Кнопка отправки данных.
     """
     author = URLField(
         label='URL-адрес автора',
@@ -60,7 +61,7 @@ class ChoiceParseForm(FlaskForm):
             (commands.CHOOSE_POEMS, 'Выбрать стихи')
         ]
     )
-    submit = SubmitField('Выбрать')
+    submit = SubmitField('Спарсить')
 
 
 class ChoicePoemsForm(FlaskForm):
@@ -75,3 +76,13 @@ class ChoicePoemsForm(FlaskForm):
         validate_choice=False
     )
     submit = SubmitField('Подтвердить')
+
+
+class CreateUserForm(LoginForm):
+    user_password = StringField(
+        label='Пароль нового пользователя',
+        validators=(
+            DataRequired(message='Обязательное поле'),
+            Length(8, 16)
+        )
+    )
