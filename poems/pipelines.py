@@ -5,18 +5,18 @@ from itemadapter import ItemAdapter
 from app_core import settings
 
 from .spiders.author import AllPoemsSpider
+from scrapy import Item
 
 
-# Example. Not using now.
 class JsonAllPoemsTitlePipeline:
     def open_spider(self, spider: AllPoemsSpider):
-        print('open', spider)
-        self.file = open(settings.POEMS_STORE, 'w')
+        self.results = []
 
     def close_spider(self, spider: AllPoemsSpider):
-        self.file.close()
+        self.results.sort(key=lambda item: item[settings.TITLE])
+        with open(settings.POEMS_STORE, 'w', encoding='utf-8') as store:
+            store.write(json.dumps(self.results, ensure_ascii=False))
 
-    def process_item(self, item, spider: AllPoemsSpider):
-        line = json.dumps(ItemAdapter(item).asdict()) + "\n"
-        self.file.write(line)
+    def process_item(self, item: Item, spider: AllPoemsSpider):
+        self.results.append(dict(item))
         return item

@@ -20,7 +20,6 @@ POEMS_STORE = f'{RESULT_DIR}/poems.json'
 OUT_POEMS = f'{RESULT_DIR}/out'
 
 ARGS_SEPARATOR = '#'
-SORT_KEY_CHOOSE_BY_TITLE = lambda x: x[1]
 
 # URL-адреса доступные для анонимных пользователей
 URL_PATHS_FOR_ANONIM = ('/login', '/create_user/', '/static/style.css')
@@ -49,6 +48,10 @@ NAME_CHOOSE_POEMS_SPIDER = 'choose-poems'
 
 CONCURRENT_REQUESTS = 32
 ROBOTSTXT_OBEY = True
+
+ITEM_PIPELINES = {
+    'poems.pipelines.JsonAllPoemsTitlePipeline': 300,
+}
 
 FEEDS = {
     POEMS_STORE: {

@@ -55,10 +55,7 @@ def create_choice_list() -> list[tuple[str, str]]:
     try:
         with open(settings.POEMS_STORE) as file_json:
             data = json.load(file_json)
-            poems = sorted(
-                ((d[LINK], d[TITLE]) for d in data),
-                key=settings.SORT_KEY_CHOOSE_BY_TITLE
-            )
+            poems = [(d[LINK], d[TITLE]) for d in data]
     except FileNotFoundError:
         poems = []
     return poems
