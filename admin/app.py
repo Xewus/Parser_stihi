@@ -24,8 +24,8 @@ def before_request():
     request.user = users.User.get_request_user_by_session(
         USERS, request.cookies.get('session')
     )
-    if request.user is None and request.path not in URL_PATHS_FOR_ANONIM:
-        return redirect(url_for('login_view'))
+    # if request.user is None and request.path not in URL_PATHS_FOR_ANONIM:
+    #     return redirect(url_for('login_view'))
 
 
 @app.route('/')
