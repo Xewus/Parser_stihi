@@ -13,6 +13,7 @@ AUTHOR = settings.AUTHOR
 TITLE = settings.TITLE
 LINK = settings.LINK
 POEMS_STORE = settings.POEMS_STORE
+SPACE_CHARS = {160, 32}
 
 
 class JsonConvereter:
@@ -79,7 +80,7 @@ class JsonConvereter:
                 for index, line in enumerate(md_text):
                     space = 0
                     for char in line:
-                        if ord(char) not in {160, 32}:
+                        if ord(char) not in SPACE_CHARS:
                             break
                         space += 1
                     if space:
@@ -87,8 +88,7 @@ class JsonConvereter:
                     elif not space and indent:
                         md_text[index] = '\n' + line
                     indent = space
-                md_text = '  \n'.join(md_text)
-                text += md_text
+                text += '  \n'.join(md_text) + self.end_text
 
             res.append(text)
         with open(out_file, 'w') as writer:
