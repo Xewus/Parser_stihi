@@ -72,11 +72,24 @@ class JsonConvereter:
                     text = f'### {poem[TITLE]}\n\n'
             if AUTHOR in poem:
                 text += f'*{poem[AUTHOR]}*\n\n'
+
             if TEXT in poem:
-                if isinstance(poem[TEXT], str):
-                    text += poem[TEXT] + self.end_text
-                else:
-                    text += ''.join(poem[TEXT]) + self.end_text
+                md_text = poem[TEXT].split('\n')
+                indent = True
+                for index, line in enumerate(md_text):
+                    space = 0
+                    for char in line:
+                        if ord(char) not in {160, 32}:
+                            break
+                        space += 1
+                    if space:
+                        md_text[index] = '> ' * (space // 2) + line[space:]
+                    elif not space and indent:
+                        md_text[index] = '\n' + line
+                    indent = space
+                md_text = '  \n'.join(md_text)
+                text += md_text
+
             res.append(text)
         with open(out_file, 'w') as writer:
             writer.write(''.join(res))

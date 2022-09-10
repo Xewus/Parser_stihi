@@ -52,13 +52,3 @@ ROBOTSTXT_OBEY = True
 ITEM_PIPELINES = {
     'poems.pipelines.JsonAllPoemsTitlePipeline': 300,
 }
-
-FEEDS = {
-    POEMS_STORE: {
-        'format': 'json',
-        'encoding': 'utf8',
-        'store_empty': False,
-        'item_classes': ['poems.items.ListPoemsItem', 'poems.items.PoemItem'],
-        'overwrite': True
-    }
-}

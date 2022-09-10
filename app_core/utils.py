@@ -29,21 +29,21 @@ def extract_author(dirty_string: str) -> str | None:
     return None
 
 
-def clean_poem_text(text: list) -> list:
+def clean_poem_text(text: list) -> str:
     """Отрезает текст стиха от нижележащих примечаний.
 
     #### Args:
         text (list): Текст стиха.
 
     #### Returns:
-        text (list): Обрезанный текст стиха.
+        text (str): Обрезанный текст стиха.
     """
     n = 0
     for index, line in enumerate(text):
         n = n + 1 if line == '\n' else 0
         if n == 2:
             text = text[:index]
-    return text
+    return ''.join(text)
 
 
 def create_choice_list() -> list[tuple[str, str]]:
