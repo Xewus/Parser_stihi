@@ -19,14 +19,11 @@ USERS_STORE = f'{BASE_DIR}/users.txt'
 POEMS_STORE = f'{RESULT_DIR}/poems.json'
 OUT_POEMS = f'{RESULT_DIR}/out'
 
-# Время действия токена авторизации
-LIVE_TOKEN = 60 * 60 * 20  # 20 hours
-
 ARGS_SEPARATOR = '#'
 SORT_KEY_CHOOSE_BY_TITLE = lambda x: x[1]
 
 # URL-адреса доступные для анонимных пользователей
-URL_PATHS_FOR_ANONIM = ('/login', '/static/style.css')
+URL_PATHS_FOR_ANONIM = ('/login', '/create_user/', '/static/style.css')
 
 # Названия сохраняемых полей
 TITLE = 'title'

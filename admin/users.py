@@ -1,72 +1,70 @@
 """Работа с пользователями.
 """
 import os
-import uuid
-from datetime import datetime, timedelta
+from pathlib import Path
 
 from dotenv import load_dotenv
 
-from app_core.settings import BASE_DIR, LIVE_TOKEN, USERS_STORE
+from app_core.settings import BASE_DIR, USERS_STORE
 
 load_dotenv(dotenv_path=BASE_DIR)
+
+Path(USERS_STORE).touch()
 
 
 class BaseUser:
     username = None
     password = None
     superuser = False
-    store = USERS_STORE
 
     def __str__(self) -> str:
         return self.username
 
-    def _set_token(self) -> None:
-        self.token = str(uuid.uuid1())
-        self.time_token = datetime.now() + timedelta(seconds=LIVE_TOKEN)
-
     @staticmethod
     def check_user(username: str, password: str) -> bool:
-        try:
-            file = open(BaseUser.store, 'r')
-            for line in file.readlines():
-                f_username, f_password = line.split()
-                if username == f_username and password == f_password:
-                    return True
-        except FileNotFoundError:
-            return False
-        else:
-            file.close()
+        """Проверяет наличие пользователя с указанными юхернеймом и паролем.
+
+        #### Args:
+            username (str): Юзернейм.
+            password (str): Пароль.
+
+        #### Returns:
+            bool: Найден ли пользователь.
+        """
+        with open(USERS_STORE, 'r') as user_file:
+            for line in user_file.readlines():
+                f_username, f_password, _ = line.split(':')
+                if username == f_username:
+                    return password == f_password
         return False
 
     @staticmethod
     def check_username(username: str) -> bool:
-        try:
-            file = open(BaseUser.store, 'r')
-            for line in file.readlines():
-                f_username, _ = line.split()
+        """Проверяет, занят ли юзернейм.
+
+        #### Args:
+            username (str): Юзернейм.
+
+        #### Returns:
+            bool: Занят или нет.
+        """
+        with open(USERS_STORE, 'r') as user_file:
+            for line in user_file.readlines():
+                f_username, *_ = line.split(':')
                 if username == f_username:
                     return True
-        except FileNotFoundError:
-            return False
-        else:
-            file.close()
         return False
 
-    def check_time_token(self) -> bool:
-        if not self.check_username(self.username):
-            return False
-        return self.time_token and self.time_token > datetime.now()
-
     @staticmethod
-    def get_request_user_by_session(store: dict, session: str):
-        """Проверяет наличие пользователя по сессии.
+    def get_request_user_by_session(store: dict, session: str) -> str | None:
+        """Получает пользователя по сессии.
 
-        Args:
-            store (dict): _description_
-            session (str): _description_
+        #### Args:
+            store (dict): Словарь, хранящий сессии.
+            session (str): Ключ сессии.
 
-        Returns:
-            bool: _description_
+        #### Returns
+            str | None: Юхернейм, если найден.
         """
         return store.get(session)
 
@@ -74,21 +72,33 @@ class BaseUser:
 class User(BaseUser):
     def __init__(self, username: str) -> None:
         self.username = username
-        self._set_token()
 
 
 class SuperUser(BaseUser):
     password = os.environ.get('PASSWORD')
     superuser = True
 
+    @classmethod
     def create_user(
-        self, su_password: str, username: str, user_password: str
-    ) -> bool:
-        if su_password != self.password:
-            return False
-        with open(self.store, 'a+', 'utf-8') as file:
-            for user in file.readlines:
-                if user[0] == username:
-                    return False
-            file.write(f'{str(username)} {str(user_password)}')
-        return True
+        cls, su_password: str, username: str, user_password: str
+    ) -> tuple[bool, str | None]:
+        """Создаёт нового пользователя.
+
+        Args:
+            su_password (str): Пароль суперпользователя.
+            username (str): Юзернейм нового пользователя.
+            user_password (str): Пароль нового пользователя.
+
+        Returns:
+            tuple[bool, str | None]:
+              Создан ли новый пользователь и текст ошибки.
+        """
+        if su_password != cls.password:
+            return False, 'Неверный пароль суперпользователя'
+
+        with open(USERS_STORE, 'r+', encoding='utf-8') as user_file:
+            for user in user_file.readlines():
+                if user.split(':')[0] == username:
+                    return False, 'Юзернейм уже занят'
+            user_file.write(f'{str(username)}:{str(user_password)}:\n')
+        return True, None

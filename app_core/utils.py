@@ -10,17 +10,14 @@ TITLE = settings.TITLE
 LINK = settings.LINK
 
 
-def extract_author(dirty_string: str) -> str:
+def extract_author(dirty_string: str) -> str | None:
     """Вытаскивает имя автора из URL-строки.
 
     #### Args:
         dirty_string (str): URL-строка, содержащая автора.
 
-    #### Raises:
-        Exception: Автор не найлен.
-
     #### Returns:
-        str: Автор.
+        str | None: Автор.
     """
     dirty_list = dirty_string.split('/')
     if len(dirty_list) == 1:
@@ -29,8 +26,7 @@ def extract_author(dirty_string: str) -> str:
     for i, v in enumerate(dirty_list):
         if v == 'avtor' and i < len(dirty_list) - 1:
             return (dirty_list[i + 1])
-
-    raise Exception(f'no author in {dirty_list}')
+    return None
 
 
 def clean_poem_text(text: list) -> list:
@@ -52,6 +48,9 @@ def clean_poem_text(text: list) -> list:
 
 def create_choice_list() -> list[tuple[str, str]]:
     """Создаёт список для показа чек-боксов выбора в темплейте.
+
+    Returns:
+        list[tuple[str, str]]: Созданный список.
     """
     try:
         with open(settings.POEMS_STORE) as file_json:
@@ -60,6 +59,6 @@ def create_choice_list() -> list[tuple[str, str]]:
                 ((d[LINK], d[TITLE]) for d in data),
                 key=settings.SORT_KEY_CHOOSE_BY_TITLE
             )
-    except Exception:
+    except FileNotFoundError:
         poems = []
     return poems

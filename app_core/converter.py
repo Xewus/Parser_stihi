@@ -1,8 +1,8 @@
 """Конвертеры текстовых файлов.
 """
 import json
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 from docxtpl import DocxTemplate, RichText
 

@@ -1,9 +1,8 @@
 """Формы для view-функций.
 """
-from secrets import choice
 from flask_wtf import FlaskForm
 from wtforms import (PasswordField, SelectField, SelectMultipleField,
-                     StringField, SubmitField, URLField, widgets, RadioField)
+                     StringField, SubmitField, URLField, widgets)
 from wtforms.validators import DataRequired, Length
 
 from admin import commands
@@ -33,7 +32,7 @@ class LoginForm(FlaskForm):
         label='Пароль',
         validators=(
             DataRequired(message='Обязательное поле'),
-            Length(8, 16)
+            Length(8, 64)
         )
     )
     submit = SubmitField('Войти')
@@ -66,6 +65,7 @@ class ChoiceParseForm(FlaskForm):
 
 class ChoicePoemsForm(FlaskForm):
     """Форма для отметки необходимых для скачивания стихов.
+
     #### Atrrs:
     - poems: Отмечаемыt стихи.
     - submit: Кнопка отпраки данных.
@@ -79,10 +79,19 @@ class ChoicePoemsForm(FlaskForm):
 
 
 class CreateUserForm(LoginForm):
+    """Форма для создания пользователя.
+
+    #### Attrs:
+    - username: Юзернейм нового пользователя.
+    - user_password: Пароль нового пользователя.
+    - password: Пароль суперюзера.
+    - submit: Кнопка отпраки данных.
+    """
     user_password = StringField(
         label='Пароль нового пользователя',
         validators=(
             DataRequired(message='Обязательное поле'),
-            Length(8, 16)
+            Length(8, 64)
         )
     )
+    submit = SubmitField('Создать')

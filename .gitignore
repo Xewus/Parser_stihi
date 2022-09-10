@@ -126,7 +126,8 @@ venv.bak/
 dmypy.json
 
 *.csv
-*/results/
+results/
+users.txt
 
 # Pyre type checker
 .pyre/
