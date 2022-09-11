@@ -99,7 +99,7 @@ class JsonConvereter:
                 else:
                     text = f'### {poem[TITLE]}\n\n'
             if AUTHOR in poem:
-                text += f'*{poem[AUTHOR]}*\n\n'
+                text += f'*{poem[AUTHOR]}*\n'
 
             if TEXT in poem:
                 md_text = poem[TEXT].split('\n')
