@@ -3,9 +3,9 @@
 from flask_wtf import FlaskForm
 from wtforms import (PasswordField, SelectField, SelectMultipleField,
                      StringField, SubmitField, URLField, widgets)
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import DataRequired, NoneOf, Regexp
 
-from admin import commands
+from admin import commands, users
 
 
 class MultiCheckboxField(SelectMultipleField):
@@ -25,14 +25,16 @@ class LoginForm(FlaskForm):
         label='Имя пользователя',
         validators=(
             DataRequired(message='Обязательное поле'),
-            Length(3, 16)
+            Regexp(
+                regex='^[a-zA-ZА-Яа-яЁё]{3,16}$',
+                message='Разрешены только буквы. Длина от 3 до 16.'
+            )
         )
     )
     password = PasswordField(
         label='Пароль',
         validators=(
             DataRequired(message='Обязательное поле'),
-            Length(8, 64)
         )
     )
     submit = SubmitField('Войти')
@@ -87,11 +89,28 @@ class CreateUserForm(LoginForm):
     - password: Пароль суперюзера.
     - submit: Кнопка отпраки данных.
     """
+    username = StringField(
+        label='Имя пользователя',
+        validators=(
+            DataRequired(message='Обязательное поле'),
+            Regexp(
+                regex='^[a-zA-ZА-Яа-яЁё]{3,16}$',
+                message='Разрешены только буквы. Длина от 3 до 16.'
+            ),
+            NoneOf(
+                values=users.BaseUser.get_all_usernames(),
+                message='Юзернейм уже занят!'
+            )
+        )
+    )
     user_password = StringField(
         label='Пароль нового пользователя',
         validators=(
             DataRequired(message='Обязательное поле'),
-            Length(8, 64)
+            Regexp(
+                regex='^[\w]{8,32}$',
+                message='Разрешены только буквы и цифры. Длина от 8 до 32.'
+            )
         )
     )
     submit = SubmitField('Создать')

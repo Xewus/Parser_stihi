@@ -11,6 +11,8 @@ load_dotenv(dotenv_path=BASE_DIR)
 
 Path(USERS_STORE).touch()
 
+DATA_SEPARATOR = ':'
+
 
 class BaseUser:
     username = None
@@ -31,12 +33,24 @@ class BaseUser:
         #### Returns:
             bool: Найден ли пользователь.
         """
-        with open(USERS_STORE, 'r') as user_file:
-            for line in user_file.readlines():
-                f_username, f_password, _ = line.split(':')
+        with open(USERS_STORE, 'r') as store:
+            for line in store.readlines():
+                f_username, f_password, *_ = line.split(DATA_SEPARATOR)
                 if username == f_username:
                     return password == f_password
         return False
+
+    @staticmethod
+    def get_all_usernames() -> set:
+        """Получает набор всех юзернеймов.
+
+        Returns:
+            set: Набор всех юзернеймов.
+        """
+        with open(USERS_STORE) as store:
+            return {
+                line.split(DATA_SEPARATOR)[0] for line in store.readlines()
+            }        
 
     @staticmethod
     def check_username(username: str) -> bool:
@@ -48,12 +62,7 @@ class BaseUser:
         #### Returns:
             bool: Занят или нет.
         """
-        with open(USERS_STORE, 'r') as user_file:
-            for line in user_file.readlines():
-                f_username, *_ = line.split(':')
-                if username == f_username:
-                    return True
-        return False
+        return username in BaseUser.get_all_usernames()
 
     @staticmethod
     def get_request_user_by_session(store: dict, session: str) -> str | None:
@@ -96,9 +105,9 @@ class SuperUser(BaseUser):
         if su_password != cls.password:
             return False, 'Неверный пароль суперпользователя'
 
-        with open(USERS_STORE, 'r+', encoding='utf-8') as user_file:
-            for user in user_file.readlines():
+        with open(USERS_STORE, 'r+', encoding='utf-8') as store:
+            for user in store.readlines():
                 if user.split(':')[0] == username:
                     return False, 'Юзернейм уже занят'
-            user_file.write(f'{str(username)}:{str(user_password)}:\n')
+            store.write(f'{str(username)}:{str(user_password)}:\n')
         return True, None
