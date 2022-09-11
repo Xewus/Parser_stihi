@@ -32,19 +32,18 @@ class JsonConvereter:
         end_text: str | None = None
     ) -> None:
         if doc_type == 'json':
-            self.converter = self._to_json
+            self.convert = self._to_json
         elif doc_type == 'md':
-            self.converter = self._to_md
+            self.convert = self._to_md
         elif doc_type == 'docx':
-            self.converter = self._to_docx
+            self.convert = self._to_docx
         else:
             raise ValueError (f'Неправильный формат `{doc_type}`')
 
         self.json_file = json_file or POEMS_STORE
         self.end_text = end_text or POEMS_SEPARATOR
 
-    @property
-    def __get_data_from_file(self) -> list[dict[str, str]]:
+    def get_data_from_file(self) -> list[dict[str, str]]:
         """Получает данные из связанного JSON-файла.
 
         Returns:
@@ -92,7 +91,7 @@ class JsonConvereter:
         """
         out_file = self.checked_filename(out_file, 'md')
         res = []
-        for poem in self.__get_data_from_file:
+        for poem in self.get_data_from_file():
             if TITLE in poem:
                 if LINK in poem:
                     text = f'### [{poem[TITLE]}]({poem[LINK]})\n\n'
@@ -183,7 +182,7 @@ class JsonConvereter:
             ValueError: Для переданного файла нет подходящего шаблона `docx`.
         """
         out_file = self.checked_filename(out_file, 'docx')
-        self.data = self.__get_data_from_file
+        self.data = self.get_data_from_file()
         if len(self.data) == 0:
             return self.__title_link_to_docx(out_file)
 

@@ -1,54 +1,47 @@
 from pathlib import Path
 
-from flask import (Flask, flash, redirect, render_template, request, send_file,
-                   url_for)
+from flask import flash, redirect, render_template, request, send_file, url_for
 
 from admin import commands, forms, users
-from app_core import settings, utils
+from app_core import utils
 from app_core.converter import JsonConvereter
+from app_core.settings import (ARGS_SEPARATOR, OUT_POEMS, POEMS_STORE,
+                               URL_PATHS_FOR_ANONIM)
+
+from . import app
 
 COMMANDS = commands.COMMANDS
-
-URL_PATHS_FOR_ANONIM = settings.URL_PATHS_FOR_ANONIM
-POEMS_STORE = settings.POEMS_STORE
-ARGS_SEPARATOR = settings.ARGS_SEPARATOR
-OUT_POEMS = settings.OUT_POEMS
-
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'settings.SECRET_KEY'
-
-USERS = {'session': 'username'}
 
 
 @app.before_request
 def before_request():
     request.user = users.User.get_request_user_by_session(
-        USERS, request.cookies.get('session')
+        users.USERS_SESSIONS, request.cookies.get('session')
     )
-    # if request.user is None and request.path not in URL_PATHS_FOR_ANONIM:
-    #     return redirect(url_for('login_view'))
+    if request.user is None and request.path not in URL_PATHS_FOR_ANONIM:
+        return redirect(url_for('login_view'))
 
 
 @app.route('/')
 def index_view():
+    print('ind', request.remote_addr)
     return render_template('index.html', user=request.user)
 
 
-@app.route('/logout')
+@app.route('/logout/')
 def logout_view():
-    USERS.pop(request.cookies['session'], None)
+    users.USERS_SESSIONS.pop(request.cookies['session'], None)
     return redirect(url_for('index_view'))
 
 
-@app.route('/login',  methods=('GET', 'POST'))
+@app.route('/login/',  methods=('GET', 'POST'))
 def login_view():
     form = forms.LoginForm()
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
         if users.User.check_user(username=username, password=password):
-            USERS[request.cookies['session']] = users.User(username)
+            users.USERS_SESSIONS[request.cookies['session']] = users.User(username)
             return redirect(url_for('choose_parsing_view'))
         flash('Введены неверные данные')
     return render_template('login.html', form=form)
@@ -113,8 +106,8 @@ def download_view(doc_type: str):
     if not source.exists() or doc_type not in {'json', 'md', 'docx'}:
         return redirect(url_for('choose_parsing_view'))
 
-    convert = JsonConvereter(doc_type, source)
-    out_file = convert.converter(out_file=OUT_POEMS)
+    converter = JsonConvereter(doc_type, source)
+    out_file = converter.convert(out_file=OUT_POEMS)
     return send_file(out_file, as_attachment=True)
 
 

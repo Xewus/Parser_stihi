@@ -13,6 +13,8 @@ Path(USERS_STORE).touch()
 
 DATA_SEPARATOR = ':'
 
+USERS_SESSIONS = {'session': 'username'}
+
 
 class BaseUser:
     username = None
@@ -50,7 +52,7 @@ class BaseUser:
         with open(USERS_STORE) as store:
             return {
                 line.split(DATA_SEPARATOR)[0] for line in store.readlines()
-            }        
+            }
 
     @staticmethod
     def check_username(username: str) -> bool:

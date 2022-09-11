@@ -23,7 +23,7 @@ POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
 ARGS_SEPARATOR = '#'
 
 # URL-адреса доступные для анонимных пользователей
-URL_PATHS_FOR_ANONIM = ('/login', '/create_user/', '/static/style.css')
+URL_PATHS_FOR_ANONIM = {'/login/', '/static/style.css'}
 
 # Названия сохраняемых полей
 TITLE = 'title'

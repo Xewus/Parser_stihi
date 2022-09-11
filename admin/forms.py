@@ -69,7 +69,7 @@ class ChoicePoemsForm(FlaskForm):
     """Форма для отметки необходимых для скачивания стихов.
 
     #### Atrrs:
-    - poems: Отмечаемыt стихи.
+    - poems: Отмечаемые стихи.
     - submit: Кнопка отпраки данных.
     """
     choice = MultiCheckboxField(
@@ -108,7 +108,7 @@ class CreateUserForm(LoginForm):
         validators=(
             DataRequired(message='Обязательное поле'),
             Regexp(
-                regex='^[\w]{8,32}$',
+                regex=r'^[\w]{8,32}$',
                 message='Разрешены только буквы и цифры. Длина от 8 до 32.'
             )
         )
