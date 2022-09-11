@@ -18,6 +18,7 @@ USERS_STORE = f'{BASE_DIR}/users.txt'
 # Сохранение результатов
 POEMS_STORE = f'{RESULT_DIR}/poems.json'
 OUT_POEMS = f'{RESULT_DIR}/out'
+POEMS_SEPARATOR = '\n' + '-' * 30 + '\n\n'
 
 ARGS_SEPARATOR = '#'
 

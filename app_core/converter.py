@@ -13,14 +13,23 @@ AUTHOR = settings.AUTHOR
 TITLE = settings.TITLE
 LINK = settings.LINK
 POEMS_STORE = settings.POEMS_STORE
+POEMS_SEPARATOR = settings.POEMS_SEPARATOR
 SPACE_CHARS = {160, 32}
 
 
 class JsonConvereter:
     """Конвертирует `.json` в форматы `.md`, `.docx`.
+
+    #### Attrs
+    - doc_type (str): Желаемый формат выходного файла.
+    - json_file (str): Файл с исходными данными в формаье `json`.
+    - end_text (str): Разделитель текстов.
     """
     def __init__(
-        self, doc_type: str, json_file: str | Path | None = None
+        self,
+        doc_type: str,
+        json_file: str | Path | None = None,
+        end_text: str | None = None
     ) -> None:
         if doc_type == 'json':
             self.converter = self._to_json
@@ -29,15 +38,35 @@ class JsonConvereter:
         elif doc_type == 'docx':
             self.converter = self._to_docx
         else:
-            raise
+            raise ValueError (f'Неправильный формат `{doc_type}`')
 
-        if json_file is None:
-            json_file = POEMS_STORE
-        self.json_file = json_file
+        self.json_file = json_file or POEMS_STORE
+        self.end_text = end_text or POEMS_SEPARATOR
 
-        with open(self.json_file) as file:
-            self.data = json.loads(file.read())
-        self.end_text = '\n' + '-' * 30 + '\n\n'
+    @property
+    def __get_data_from_file(self) -> list[dict[str, str]]:
+        """Получает данные из связанного JSON-файла.
+
+        Returns:
+            list[dict[str, str]]: Прочитанные данные
+        """
+        with open(self.json_file) as json_file:
+            data = json.loads(json_file.read())
+        return data
+
+    def checked_filename(self, filename: str, doc_type: str) -> str:
+        """Проверяет расширение файла.
+
+        Args:
+            filename (str): Проверяемое название файла.
+            doc_type (str): Необходимое расширение.
+
+        Returns:
+            str: Название файла с расширением.
+        """
+        if not filename.endswith(doc_type):
+            return f'{filename}.{doc_type}'
+        return filename
 
     def _to_json(self, out_file: str) -> str:
         """Копирует входной файл в выходной.
@@ -48,8 +77,7 @@ class JsonConvereter:
         #### Returns:
             str: Название выходного файла.
         """
-        if not out_file.endswith('json'):
-            out_file = f'{out_file}.json'
+        out_file = self.checked_filename(out_file, 'json')
         shutil.copy(self.json_file, out_file)
         return out_file
 
@@ -62,10 +90,9 @@ class JsonConvereter:
         #### Returns:
             str: Название выходного файла.
         """
-        if not out_file.endswith('md'):
-            out_file = f'{out_file}.md'
+        out_file = self.checked_filename(out_file, 'md')
         res = []
-        for poem in self.data:
+        for poem in self.__get_data_from_file:
             if TITLE in poem:
                 if LINK in poem:
                     text = f'### [{poem[TITLE]}]({poem[LINK]})\n\n'
@@ -107,6 +134,7 @@ class JsonConvereter:
         """
         doc = DocxTemplate(settings.DOCX_TEMPLATES / 'title_link.docx')
         title_links = RichText()
+
         for title_link in self.data:
             title_links.add(
                 text=title_link[TITLE] + '\n',
@@ -130,6 +158,7 @@ class JsonConvereter:
         """
         doc = DocxTemplate(settings.DOCX_TEMPLATES / 'poems.docx')
         poems = RichText()
+
         for poem in self.data:
             poems.add(f'{poem[TITLE]}\n\n')
             poems.add(f'{poem[AUTHOR]}\n', color='#FF00FF')
@@ -150,14 +179,19 @@ class JsonConvereter:
 
         #### Returns:
             str: Название выходного файла.
+        #### Raises:
+            ValueError: Для переданного файла нет подходящего шаблона `docx`.
         """
-        if not out_file.endswith('docx'):
-            out_file = f'{out_file}.docx'
+        out_file = self.checked_filename(out_file, 'docx')
+        self.data = self.__get_data_from_file
         if len(self.data) == 0:
             return self.__title_link_to_docx(out_file)
+
         keys_set = set(self.data[0].keys())
         if {TITLE, LINK} == keys_set:
             return self.__title_link_to_docx(out_file)
         if {TITLE, AUTHOR, TEXT} == keys_set:
             return self.__poems_to_docx(out_file)
-        raise
+        raise ValueError(
+            'Для переданного файла нет подходящего шаблона `docx`'
+        )
