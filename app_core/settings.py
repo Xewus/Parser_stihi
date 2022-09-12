@@ -11,7 +11,7 @@ DOCX_TEMPLATES = BASE_DIR / 'docx_templates'
 
 load_dotenv(dotenv_path=BASE_DIR)
 
-SECRET_KEY = os.environ.get('SECRET KEY')
+SECRET_KEY = os.urandom(24)
 
 USERS_STORE = f'{BASE_DIR}/users.txt'
 

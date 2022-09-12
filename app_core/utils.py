@@ -1,6 +1,8 @@
 """Вспомогательные функции.
 """
 import json
+from time import time
+from urllib import request
 
 from app_core import settings
 
@@ -59,3 +61,24 @@ def create_choice_list() -> list[tuple[str, str]]:
     except FileNotFoundError:
         poems = []
     return poems
+
+
+class AllowTries:
+    """Хранит и считает неудачные попытки входа.
+    
+    При привышении допустимого количества - блокирует IP на указанное время.
+
+    #### Attrs
+    - store (dict): Хранилище в виде {IP: (количество попыток, время ограничения)}
+    - active (int): Время (в секундах), допускающее ошибочные попытки входа.
+    """
+    store = {}
+    active = 60 * 15  # 15 minutes
+
+    def __call__(self, key: str, action, *args) -> bool:
+        if key not in self.store or self.store[key][1] < time():
+            self.store[key] = [0, int(time()) + self.active]
+            return True
+        self.store[key][0] += 1
+        if self.store[key][0] > 3:
+            action(*args)

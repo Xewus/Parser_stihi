@@ -1,4 +1,5 @@
 from pathlib import Path
+from pprint import pprint
 
 from flask import flash, redirect, render_template, request, send_file, url_for
 
@@ -12,11 +13,14 @@ from . import app
 
 COMMANDS = commands.COMMANDS
 
+User = users.User
 
 @app.before_request
 def before_request():
-    request.user = users.User.get_request_user_by_session(
-        users.USERS_SESSIONS, request.cookies.get('session')
+
+    print('ind', request.remote_addr)
+    request.user = User.get_user_by_session(
+        request.cookies.get('session')
     )
     if request.user is None and request.path not in URL_PATHS_FOR_ANONIM:
         return redirect(url_for('login_view'))
@@ -24,7 +28,6 @@ def before_request():
 
 @app.route('/')
 def index_view():
-    print('ind', request.remote_addr)
     return render_template('index.html', user=request.user)
 
 
@@ -40,8 +43,8 @@ def login_view():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        if users.User.check_user(username=username, password=password):
-            users.USERS_SESSIONS[request.cookies['session']] = users.User(username)
+        if User.check_user(username=username, password=password):
+            users.USERS_SESSIONS[request.cookies['session']] = User(username)
             return redirect(url_for('choose_parsing_view'))
         flash('Введены неверные данные')
     return render_template('login.html', form=form)
@@ -121,11 +124,14 @@ def create_user_view():
     }
     if form.validate_on_submit():
         su_password = form.password.data
+        checked, error = users.SuperUser.check_su_password(su_password)
+        if not checked:
+            flash(error)
+            return render_template(**context)
         username = form.username.data
         user_password = form.user_password.data
 
         create, error = users.SuperUser.create_user(
-            su_password=su_password,
             username=username,
             user_password=user_password
         )
