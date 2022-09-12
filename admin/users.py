@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from flask import abort, request
 
 from app_core.settings import BASE_DIR, USERS_STORE
-from app_core.utils import AllowTries, allow_or_ban
+from app_core.utils import AllowTries
 
 load_dotenv(dotenv_path=BASE_DIR)
 
