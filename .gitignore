@@ -129,5 +129,6 @@ dmypy.json
 results/
 users.txt
 .vscode/
+*.db
 # Pyre type checker
 .pyre/
