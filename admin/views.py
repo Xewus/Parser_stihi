@@ -1,9 +1,10 @@
 from pathlib import Path
-from pprint import pprint
 
-from flask import flash, redirect, render_template, request, send_file, url_for
+from flask import (abort, flash, redirect, render_template, request, send_file,
+                   session, url_for)
+from pony.orm import db_session
 
-from admin import commands, forms, users
+from admin import commands, forms, model
 from app_core import utils
 from app_core.converter import JsonConvereter
 from app_core.settings import (ARGS_SEPARATOR, OUT_POEMS, POEMS_STORE,
@@ -13,27 +14,36 @@ from . import app
 
 COMMANDS = commands.COMMANDS
 
-User = users.User
+
+too_many_requests = utils.AllowTries(time_limit=60, tries=20)
+
 
 @app.before_request
-def before_request():
-
-    print('ind', request.remote_addr)
-    request.user = User.get_user_by_session(
-        request.cookies.get('session')
-    )
-    if request.user is None and request.path not in URL_PATHS_FOR_ANONIM:
+@db_session
+def check_request_user():
+    if request.path.startswith('/static'):
+        return
+    too_many_requests(request.remote_addr, abort, 429)
+    user = session.get('user')
+    if hasattr(user, 'get') and user.get('user_id') and user.get('username'):
+        request.user = model.User.get(
+            user_id=user.get('user_id'),
+            username=user.get('username')
+        )
+    else:
+        request.user = user or model.AnonimUser()
+    if not request.user.is_logged and request.path not in URL_PATHS_FOR_ANONIM:
         return redirect(url_for('login_view'))
 
 
 @app.route('/')
 def index_view():
-    return render_template('index.html', user=request.user)
+    return render_template('index.html')
 
 
 @app.route('/logout/')
 def logout_view():
-    users.USERS_SESSIONS.pop(request.cookies['session'], None)
+    session.pop('user', None)
     return redirect(url_for('index_view'))
 
 
@@ -43,10 +53,12 @@ def login_view():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        if User.check_user(username=username, password=password):
-            users.USERS_SESSIONS[request.cookies['session']] = User(username)
-            return redirect(url_for('choose_parsing_view'))
-        flash('Введены неверные данные')
+        with db_session:
+            user = model.User.get(username=username, password=password)
+            if user is not None:
+                session['user'] = user.as_dict()
+                return redirect(url_for('choose_parsing_view'))
+            flash('Введены неверные данные')
     return render_template('login.html', form=form)
 
 
@@ -56,7 +68,6 @@ def choose_parsing_view():
     context = {
         'template_name_or_list': 'choose_parsing.html',
         'form': form,
-        'user': request.user
     }
     if form.validate_on_submit():
         choice = COMMANDS.get(form.choice.data)
@@ -82,8 +93,7 @@ def choose_poems_view():
     form = forms.ChoicePoemsForm()
     context = {
         'template_name_or_list': 'choose_poems.html',
-        'form': form,
-        'user': request.user
+        'form': form
     }
     form.choice.choices = utils.create_choice_list()
     if request.method == 'POST' and form.validate_on_submit:
@@ -97,7 +107,6 @@ def choose_poems_view():
 def choose_download_view():
     context = {
         'template_name_or_list': 'choose_download.html',
-        'user': request.user,
         'poems_store': Path(POEMS_STORE).exists()
     }
     return render_template(**context)
@@ -119,25 +128,23 @@ def create_user_view():
     form = forms.CreateUserForm()
     context = {
         'template_name_or_list': 'create_user.html',
-        'form': form,
-        'user': request.user
+        'form': form
     }
     if form.validate_on_submit():
-        su_password = form.password.data
-        checked, error = users.SuperUser.check_su_password(su_password)
+        su_password = form.su_password.data
+        checked, error = model.check_su_password(su_password)
         if not checked:
             flash(error)
             return render_template(**context)
-        username = form.username.data
-        user_password = form.user_password.data
 
-        create, error = users.SuperUser.create_user(
-            username=username,
-            user_password=user_password
-        )
-        if create:
-            return redirect(url_for('index_view'))
-        flash(error)
+        username = form.username.data
+        password = form.password.data
+        with db_session:
+            if model.User.get(username=username) is None:
+                model.User(username=username, password=password, active=True)
+                flash(f'{username} was created')
+            else:
+                flash(f'{username} wasn`t created')
     return render_template(**context)
 
 

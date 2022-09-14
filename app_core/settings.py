@@ -1,19 +1,40 @@
 """Общие настройки приложения.
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
 
+APP_NAME = os.environ.get('APP_NAME')
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 RESULT_DIR = BASE_DIR / 'results'
 DOCX_TEMPLATES = BASE_DIR / 'docx_templates'
+DATABASE = f'{BASE_DIR}/stihoparse.db'
 
 load_dotenv(dotenv_path=BASE_DIR)
 
-SECRET_KEY = os.urandom(24)
 
-USERS_STORE = f'{BASE_DIR}/users.txt'
+class Config:
+    SECRET_KEY = 'qwerty12;;;;;;;;;;;;;;'
+    PERMANENT_SESSION_LIFETIME = timedelta(days=1)
+
+
+PONY = {
+    'provider': 'sqlite',
+    'filename': DATABASE,
+    'create_db': True
+}
+
+
+SU_PASSWORD = os.environ.get('SU_PASSWORD')
+
+MIN_USERNAME_LENGTH = 3
+MAX_USERNAME_LENGTH = 16
+MIN_PASSWORD_LENGTH = 8
+MAX_PASSWORD_LENGTH = 24
+
 
 # Сохранение результатов
 POEMS_STORE = f'{RESULT_DIR}/poems.json'

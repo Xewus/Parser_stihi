@@ -38,7 +38,7 @@ class JsonConvereter:
         elif doc_type == 'docx':
             self.convert = self._to_docx
         else:
-            raise ValueError (f'Неправильный формат `{doc_type}`')
+            raise ValueError(f'Неправильный формат `{doc_type}`')
 
         self.json_file = json_file or POEMS_STORE
         self.end_text = end_text or POEMS_SEPARATOR

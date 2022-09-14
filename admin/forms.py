@@ -5,7 +5,9 @@ from wtforms import (PasswordField, SelectField, SelectMultipleField,
                      StringField, SubmitField, URLField, widgets)
 from wtforms.validators import DataRequired, NoneOf, Regexp
 
-from admin import commands, users
+from admin import commands, model
+from app_core.settings import (MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH,
+                               MIN_PASSWORD_LENGTH, MIN_USERNAME_LENGTH)
 
 
 class MultiCheckboxField(SelectMultipleField):
@@ -26,15 +28,25 @@ class LoginForm(FlaskForm):
         validators=(
             DataRequired(message='Обязательное поле'),
             Regexp(
-                regex='^[a-zA-ZА-Яа-яЁё]{3,16}$',
-                message='Разрешены только буквы. Длина от 3 до 16.'
+                regex=r'^[a-zA-ZА-Яа-яЁё]{%d,%d}$' % (
+                    MIN_USERNAME_LENGTH, MAX_USERNAME_LENGTH
+                ),
+                message='Разрешены только буквы. Длина от '
+                        f'{MIN_USERNAME_LENGTH} до {MAX_USERNAME_LENGTH}.'
             )
         )
     )
     password = PasswordField(
-        label='Пароль',
+        label='Пароль пользователя',
         validators=(
             DataRequired(message='Обязательное поле'),
+            Regexp(
+                regex=r'[\w]{%d,%d}$' % (
+                    MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH
+                ),
+                message='Разрешены только буквы и цифры. Длина от '
+                f'{MIN_PASSWORD_LENGTH} до {MAX_PASSWORD_LENGTH}.'
+            )
         )
     )
     submit = SubmitField('Войти')
@@ -94,23 +106,20 @@ class CreateUserForm(LoginForm):
         validators=(
             DataRequired(message='Обязательное поле'),
             Regexp(
-                regex='^[a-zA-ZА-Яа-яЁё]{3,16}$',
-                message='Разрешены только буквы. Длина от 3 до 16.'
+                regex=r'^[a-zA-ZА-Яа-яЁё]{3,16}$',
+                message='Разрешены только буквы. Длина от '
+                        f'{MIN_USERNAME_LENGTH} до {MAX_USERNAME_LENGTH}.'
             ),
             NoneOf(
-                values=users.BaseUser.get_all_usernames(),
+                values=model.User.get_all_usernames(),
                 message='Юзернейм уже занят!'
             )
         )
     )
-    user_password = StringField(
-        label='Пароль нового пользователя',
+    su_password = StringField(
+        label='Пароль суперпользователя',
         validators=(
             DataRequired(message='Обязательное поле'),
-            Regexp(
-                regex=r'^[\w]{8,32}$',
-                message='Разрешены только буквы и цифры. Длина от 8 до 32.'
-            )
         )
     )
     submit = SubmitField('Создать')

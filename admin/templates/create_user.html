@@ -16,19 +16,19 @@
     {% endif %}
   </p>
   
-  {{ form.user_password(class="form-control form-control-lg py-3 mb-3", placeholder=form.user_password.label.text) }}
+  {{ form.password(class="form-control form-control-lg py-3 mb-3", placeholder=form.password.label.text) }}
   <p>  
-    {% if form.user_password.errors %}
-      {% for error in form.user_password.errors %}
+    {% if form.password.errors %}
+      {% for error in form.password.errors %}
         <span style="color: red">{{ error }}</span>
       {% endfor %}
     {% endif %}
   </p>
 
-  {{ form.password(class="form-control form-control-lg py-3 mb-3", placeholder=form.password.label.text, rows="3", cols="40") }}
+  {{ form.su_password(class="form-control form-control-lg py-3 mb-3", placeholder=form.su_password.label.text, rows="3", cols="40") }}
   <p class="text-danger">
-    {% if form.password.errors %}
-      {% for error in form.password.errors %}
+    {% if form.su_password.errors %}
+      {% for error in form.su_password.errors %}
         {{ error }}
       {% endfor %}
     {% endif %}

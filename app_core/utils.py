@@ -2,7 +2,7 @@
 """
 import json
 from time import time
-from urllib import request
+from typing import Any
 
 from app_core import settings
 
@@ -64,21 +64,38 @@ def create_choice_list() -> list[tuple[str, str]]:
 
 
 class AllowTries:
-    """Хранит и считает неудачные попытки входа.
-    
+    """Хранит и считает попытки входа.
+
     При привышении допустимого количества - блокирует IP на указанное время.
 
     #### Attrs
-    - store (dict): Хранилище в виде {IP: (количество попыток, время ограничения)}
-    - active (int): Время (в секундах), допускающее ошибочные попытки входа.
+    - store (dict): Хранилище {IP: (количество попыток, время ограничения)}
+    - time_limit (int):
+        Время (в секундах), допускающее указанное количество попыток.
+    - tries (int): Допустимое количество попыток входа.
     """
     store = {}
-    active = 60 * 15  # 15 minutes
+    time_limit = 60 * 15  # 15 minutes
+    tries = 3
+
+    def __init__(
+        self,
+        store: Any | None = None,
+        time_limit: int | None = None,
+        tries: int | None = None
+    ) -> None:
+        if store is not None:
+            self.store = store
+        if time_limit is not None:
+            self.time_limit = time_limit
+        if tries is not None:
+            self.tries = tries
 
     def __call__(self, key: str, action, *args) -> bool:
         if key not in self.store or self.store[key][1] < time():
-            self.store[key] = [0, int(time()) + self.active]
+            self.store[key] = [1, int(time()) + self.time_limit]
             return True
+
         self.store[key][0] += 1
-        if self.store[key][0] > 3:
+        if self.store[key][0] >= self.tries:
             action(*args)
