@@ -20,7 +20,7 @@ too_many_requests = utils.AllowTries(time_limit=60, tries=20)
 
 @app.before_request
 @db_session
-def check_request_user():
+def set_request_user():
     if request.path.startswith('/static'):
         return
     too_many_requests(request.remote_addr, abort, 429)

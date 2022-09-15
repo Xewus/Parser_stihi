@@ -5,10 +5,11 @@ from pony.orm import (Database, PrimaryKey, Required, db_session, select,
                       sql_debug)
 
 from app_core.settings import (MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH, PONY,
-                               SU_PASSWORD)
+                               SU_PASSWORD, DEBUG)
 from app_core.utils import AllowTries
 
-sql_debug(True)
+sql_debug(DEBUG)
+
 db = Database(**PONY)
 
 pass_tries = AllowTries(tries=10)
@@ -52,12 +53,15 @@ class User(AnonimUser, db.Entity):
 db.generate_mapping(create_tables=1)
 
 
-with db_session:
-    if not len(User.select()[:1]):
-        User(username='user', password='password', active=True)
-
-
 def check_su_password(password: str) -> tuple[bool, str | None]:
+    """Проверяет пароль суперпользователя.
+
+    Args:
+        password (str): Проверяемый пароль.
+
+    Returns:
+        tuple[bool, str | None]: Правильный ли пароль.
+    """
     pass_tries(request.remote_addr, abort, 429)
     if password != SU_PASSWORD:
         return False, 'Неверный пароль суперпользователя'

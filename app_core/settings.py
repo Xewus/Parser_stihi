@@ -1,12 +1,11 @@
 """Общие настройки приложения.
 """
+from distutils.debug import DEBUG
 import os
 from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
-
-APP_NAME = os.environ.get('APP_NAME')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 RESULT_DIR = BASE_DIR / 'results'
@@ -14,6 +13,9 @@ DOCX_TEMPLATES = BASE_DIR / 'docx_templates'
 DATABASE = f'{BASE_DIR}/stihoparse.db'
 
 load_dotenv(dotenv_path=BASE_DIR)
+
+APP_NAME = os.environ.get('APP_NAME')
+DEBUG = os.environ.get('DEBUG', default=False)
 
 
 class Config:
@@ -29,6 +31,8 @@ PONY = {
 
 
 SU_PASSWORD = os.environ.get('SU_PASSWORD')
+FIRST_USERNAME = 'username'
+FIRST_PASSWORD = 'password'
 
 MIN_USERNAME_LENGTH = 3
 MAX_USERNAME_LENGTH = 16
@@ -44,7 +48,7 @@ POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
 ARGS_SEPARATOR = '#'
 
 # URL-адреса доступные для анонимных пользователей
-URL_PATHS_FOR_ANONIM = {'/login/', '/static/style.css'}
+URL_PATHS_FOR_ANONIM = ('/login/', '/static/style.css')
 
 # Названия сохраняемых полей
 TITLE = 'title'
