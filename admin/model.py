@@ -4,8 +4,8 @@ from flask import abort, request
 from pony.orm import (Database, PrimaryKey, Required, db_session, select,
                       sql_debug)
 
-from app_core.settings import (MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH, PONY,
-                               SU_PASSWORD, DEBUG)
+from app_core.settings import (DEBUG, MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH,
+                               PONY, SU_PASSWORD)
 from app_core.utils import AllowTries
 
 sql_debug(DEBUG)

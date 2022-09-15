@@ -6,7 +6,7 @@ from app_core.settings import FIRST_PASSWORD, FIRST_USERNAME, Config
 app = Flask(__name__)
 app.config.from_object(Config)
 
-from . import model, views
+from . import model, views  # noqa
 
 with db_session:
     """Создаёт первого пользователя, если БД пустая.

@@ -6,14 +6,10 @@ from pathlib import Path
 
 from docxtpl import DocxTemplate, RichText
 
-from app_core import settings
+from app_core.settings import (AUTHOR, DOCX_TEMPLATES, LINK, POEMS_SEPARATOR,
+                               POEMS_STORE, TEXT, TITLE)
 
-TEXT = settings.TEXT
-AUTHOR = settings.AUTHOR
-TITLE = settings.TITLE
-LINK = settings.LINK
-POEMS_STORE = settings.POEMS_STORE
-POEMS_SEPARATOR = settings.POEMS_SEPARATOR
+# Номера пробельных символов
 SPACE_CHARS = {160, 32}
 
 
@@ -131,7 +127,7 @@ class JsonConvereter:
         #### Returns:
             str: Название выходного файла.
         """
-        doc = DocxTemplate(settings.DOCX_TEMPLATES / 'title_link.docx')
+        doc = DocxTemplate(DOCX_TEMPLATES / 'title_link.docx')
         title_links = RichText()
 
         for title_link in self.data:
@@ -155,7 +151,7 @@ class JsonConvereter:
         #### Returns:
             str: Название выходного файла.
         """
-        doc = DocxTemplate(settings.DOCX_TEMPLATES / 'poems.docx')
+        doc = DocxTemplate(DOCX_TEMPLATES / 'poems.docx')
         poems = RichText()
 
         for poem in self.data:

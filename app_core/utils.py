@@ -2,18 +2,13 @@
 """
 import json
 from time import time
-from typing import Any
 
-from app_core import settings
-
-TEXT = settings.TEXT
-AUTHOR = settings.AUTHOR
-TITLE = settings.TITLE
-LINK = settings.LINK
+from app_core.settings import (DEFAULT_AMOUNT_TRIES, LINK, POEMS_STORE,
+                               TIME_BLOCK_IP, TITLE)
 
 
 def extract_author(dirty_string: str) -> str | None:
-    """Вытаскивает имя автора из URL-строки.
+    """Выделяет имя автора из URL-строки.
 
     #### Args:
         dirty_string (str): URL-строка, содержащая автора.
@@ -40,10 +35,10 @@ def clean_poem_text(text: list) -> str:
     #### Returns:
         text (str): Обрезанный текст стиха.
     """
-    n = 0
+    counter = 0
     for index, line in enumerate(text):
-        n = n + 1 if line == '\n' else 0
-        if n == 2:
+        counter = counter + 1 if line == '\n' else 0
+        if counter == 2:
             text = text[:index]
     return ''.join(text)
 
@@ -55,7 +50,7 @@ def create_choice_list() -> list[tuple[str, str]]:
         list[tuple[str, str]]: Созданный список.
     """
     try:
-        with open(settings.POEMS_STORE) as file_json:
+        with open(POEMS_STORE) as file_json:
             data = json.load(file_json)
             poems = [(d[LINK], d[TITLE]) for d in data]
     except FileNotFoundError:
@@ -75,12 +70,12 @@ class AllowTries:
     - tries (int): Допустимое количество попыток входа.
     """
     store = {}
-    time_limit = 60 * 15  # 15 minutes
-    tries = 3
+    time_limit = TIME_BLOCK_IP
+    tries = DEFAULT_AMOUNT_TRIES
 
     def __init__(
         self,
-        store: Any | None = None,
+        store: dict | None = None,
         time_limit: int | None = None,
         tries: int | None = None
     ) -> None:

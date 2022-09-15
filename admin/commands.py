@@ -2,9 +2,7 @@
 """
 import os
 
-ALL_POEMS = 'all-poems'
-LIST_POEMS = 'list-poems'
-CHOOSE_POEMS = 'choose-poems'
+from app_core.settings import ALL_POEMS, CHOOSE_POEMS, LIST_POEMS
 
 COMMANDS = {
     ALL_POEMS: f'scrapy crawl {ALL_POEMS} -a author=%s  --nolog',

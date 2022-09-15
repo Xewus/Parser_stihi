@@ -1,6 +1,5 @@
 """Общие настройки приложения.
 """
-from distutils.debug import DEBUG
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -15,11 +14,14 @@ DATABASE = f'{BASE_DIR}/stihoparse.db'
 load_dotenv(dotenv_path=BASE_DIR)
 
 APP_NAME = os.environ.get('APP_NAME')
-DEBUG = os.environ.get('DEBUG', default=False)
+DEBUG = os.environ.get('FLASK_DEBUG', default=False)
+
+DEFAULT_TIME_BLOCK_IP = 60 * 15  # 15 minutes
+DEFAULT_AMOUNT_TRIES = 3
 
 
 class Config:
-    SECRET_KEY = 'qwerty12;;;;;;;;;;;;;;'
+    SECRET_KEY = os.environ.get('SECRET_KEY')
     PERMANENT_SESSION_LIFETIME = timedelta(days=1)
 
 
@@ -29,23 +31,14 @@ PONY = {
     'create_db': True
 }
 
-
 SU_PASSWORD = os.environ.get('SU_PASSWORD')
-FIRST_USERNAME = 'username'
-FIRST_PASSWORD = 'password'
+FIRST_USERNAME = os.environ.get('FIRST_USERNAME')
+FIRST_PASSWORD = os.environ.get('FIRST_PASSWORD')
 
 MIN_USERNAME_LENGTH = 3
 MAX_USERNAME_LENGTH = 16
 MIN_PASSWORD_LENGTH = 8
 MAX_PASSWORD_LENGTH = 24
-
-
-# Сохранение результатов
-POEMS_STORE = f'{RESULT_DIR}/poems.json'
-OUT_POEMS = f'{RESULT_DIR}/out'
-POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
-
-ARGS_SEPARATOR = '#'
 
 # URL-адреса доступные для анонимных пользователей
 URL_PATHS_FOR_ANONIM = ('/login/', '/static/style.css')
@@ -56,6 +49,19 @@ AUTHOR = 'author'
 TEXT = 'text'
 LINK = 'link'
 
+# аргументы команд парсеров
+ALL_POEMS = 'all-poems'
+LIST_POEMS = 'list-poems'
+CHOOSE_POEMS = 'choose-poems'
+
+# Сохранение результатов
+POEMS_STORE = f'{RESULT_DIR}/poems.json'
+OUT_POEMS = f'{RESULT_DIR}/out'
+
+# Строка разделяющая стихи
+POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
+
+ARGS_SEPARATOR = '#'
 # Настройки для `Scrapy`
 
 BOT_NAME = 'poems'
