@@ -26,12 +26,11 @@ def set_request_user():
     too_many_requests(request.remote_addr, abort, 429)
     user = session.get('user')
     if hasattr(user, 'get') and user.get('user_id') and user.get('username'):
-        request.user = model.User.get(
+        user = model.User.get(
             user_id=user.get('user_id'),
             username=user.get('username')
         )
-    else:
-        request.user = user or model.AnonimUser()
+    request.user = user or model.AnonimUser()
     if not request.user.is_logged and request.path not in URL_PATHS_FOR_ANONIM:
         return redirect(url_for('login_view'))
 

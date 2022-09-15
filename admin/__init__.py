@@ -8,6 +8,7 @@ app.config.from_object(Config)
 
 from . import model, views  # noqa
 
+
 with db_session:
     """Создаёт первого пользователя, если БД пустая.
     """

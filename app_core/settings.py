@@ -14,22 +14,20 @@ DATABASE = f'{BASE_DIR}/stihoparse.db'
 load_dotenv(dotenv_path=BASE_DIR)
 
 APP_NAME = os.environ.get('APP_NAME')
-DEBUG = os.environ.get('FLASK_DEBUG', default=False)
 
 DEFAULT_TIME_BLOCK_IP = 60 * 15  # 15 minutes
 DEFAULT_AMOUNT_TRIES = 3
 
 
 class Config:
+    DEBUG = os.environ.get('FLASK_DEBUG', default=False)
     SECRET_KEY = os.environ.get('SECRET_KEY')
     PERMANENT_SESSION_LIFETIME = timedelta(days=1)
-
-
-PONY = {
-    'provider': 'sqlite',
-    'filename': DATABASE,
-    'create_db': True
-}
+    PONY = {
+        'provider': 'sqlite',
+        'filename': DATABASE,
+        'create_db': True
+    }
 
 SU_PASSWORD = os.environ.get('SU_PASSWORD')
 FIRST_USERNAME = os.environ.get('FIRST_USERNAME')

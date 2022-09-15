@@ -1,9 +1,10 @@
 """Формы для view-функций.
 """
+from wtforms.validators import ValidationError
 from flask_wtf import FlaskForm
 from wtforms import (PasswordField, SelectField, SelectMultipleField,
                      StringField, SubmitField, URLField, widgets)
-from wtforms.validators import DataRequired, NoneOf, Regexp
+from wtforms.validators import DataRequired, Regexp
 
 from admin import commands, model
 from app_core.settings import (MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH,
@@ -110,10 +111,6 @@ class CreateUserForm(LoginForm):
                 message='Разрешены только буквы. Длина от '
                         f'{MIN_USERNAME_LENGTH} до {MAX_USERNAME_LENGTH}.'
             ),
-            NoneOf(
-                values=model.User.get_all_usernames(),
-                message='Юзернейм уже занят!'
-            )
         )
     )
     su_password = StringField(
@@ -123,3 +120,7 @@ class CreateUserForm(LoginForm):
         )
     )
     submit = SubmitField('Создать')
+
+    def validate_username(self, field):
+        if field.data in model.User.get_all_usernames():
+            raise ValidationError('Юзернейм уже занят')

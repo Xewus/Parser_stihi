@@ -1,0 +1,4 @@
+docxtpl==0.16.4
+Flask-WTF==1.0.1
+pony==0.7.16
+python-dotenv==0.21.0

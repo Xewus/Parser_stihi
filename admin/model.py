@@ -1,16 +1,19 @@
 """Работа с пользователями.
 """
+from pprint import pprint
 from flask import abort, request
 from pony.orm import (Database, PrimaryKey, Required, db_session, select,
-                      sql_debug)
+                      sql_debug, get_user_groups)
 
-from app_core.settings import (DEBUG, MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH,
-                               PONY, SU_PASSWORD)
+from app_core.settings import (MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH,
+                               SU_PASSWORD, Config)
 from app_core.utils import AllowTries
 
-sql_debug(DEBUG)
+# sql_debug(Config.DEBUG)
 
-db = Database(**PONY)
+
+db = Database(**Config.PONY)
+
 
 pass_tries = AllowTries(tries=10)
 
@@ -44,10 +47,10 @@ class User(AnonimUser, db.Entity):
     def __str__(self) -> str:
         return f'{self.user_id}: {self.username}'
 
-    @classmethod
+    @staticmethod
     @db_session
-    def get_all_usernames(cls):
-        return select(u.username for u in cls)[:]
+    def get_all_usernames():
+        return select(u.username for u in User)[:]
 
 
 db.generate_mapping(create_tables=1)

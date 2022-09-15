@@ -4,7 +4,7 @@ import json
 from time import time
 
 from app_core.settings import (DEFAULT_AMOUNT_TRIES, LINK, POEMS_STORE,
-                               TIME_BLOCK_IP, TITLE)
+                               DEFAULT_TIME_BLOCK_IP, TITLE)
 
 
 def extract_author(dirty_string: str) -> str | None:
@@ -70,7 +70,7 @@ class AllowTries:
     - tries (int): Допустимое количество попыток входа.
     """
     store = {}
-    time_limit = TIME_BLOCK_IP
+    time_limit = DEFAULT_TIME_BLOCK_IP
     tries = DEFAULT_AMOUNT_TRIES
 
     def __init__(
