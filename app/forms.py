@@ -6,7 +6,7 @@ from wtforms import (PasswordField, SelectField, SelectMultipleField,
                      StringField, SubmitField, URLField, widgets)
 from wtforms.validators import DataRequired, Regexp
 
-from admin import commands, model
+from app import commands, model
 from app_core.settings import (MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH,
                                MIN_PASSWORD_LENGTH, MIN_USERNAME_LENGTH)
 

@@ -2,9 +2,8 @@ from pathlib import Path
 
 from flask import (abort, flash, redirect, render_template, request, send_file,
                    session, url_for)
-from pony.orm import db_session
 
-from admin import commands, forms, model
+from app import commands, forms, model
 from app_core import utils
 from app_core.converter import JsonConvereter
 from app_core.settings import (ARGS_SEPARATOR, OUT_POEMS, POEMS_STORE,
@@ -19,19 +18,15 @@ too_many_requests = utils.AllowTries(time_limit=60, tries=20)
 
 
 @app.before_request
-@db_session
 def set_request_user():
     if request.path.startswith('/static'):
         return
     too_many_requests(request.remote_addr, abort, 429)
     user = session.get('user')
-    if hasattr(user, 'get') and user.get('user_id') and user.get('username'):
-        user = model.User.get(
-            user_id=user.get('user_id'),
-            username=user.get('username')
-        )
+    if hasattr(user, 'get') and user.get('user_id'):
+        user = model.User.get_by_id(user_id=user.get('user_id')        )
     request.user = user or model.AnonimUser()
-    if not request.user.is_logged and request.path not in URL_PATHS_FOR_ANONIM:
+    if not request.user.is_authenticated and request.path not in URL_PATHS_FOR_ANONIM:
         return redirect(url_for('login_view'))
 
 
@@ -40,25 +35,27 @@ def index_view():
     return render_template('index.html')
 
 
-@app.route('/logout/')
-def logout_view():
-    session.pop('user', None)
-    return redirect(url_for('index_view'))
-
-
 @app.route('/login/',  methods=('GET', 'POST'))
 def login_view():
     form = forms.LoginForm()
     if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        with db_session:
-            user = model.User.get(username=username, password=password)
-            if user is not None:
-                session['user'] = user.as_dict()
-                return redirect(url_for('choose_parsing_view'))
-            flash('Введены неверные данные')
+        user = model.User.login(
+            username=form.username.data,
+            password=form.password.data
+        )
+        if user is not None:
+            session['user'] = user.as_dict()
+            return redirect(url_for('choose_parsing_view'))
+        flash('Введены неверные данные')
     return render_template('login.html', form=form)
+
+
+@app.route('/logout/')
+def logout_view():
+    if hasattr(request, 'user'):
+        request.user.logout()
+    session.pop('user', None)
+    return redirect(url_for('index_view'))
 
 
 @app.route('/choose_parsing/', methods=('GET', 'POST'))
@@ -129,21 +126,20 @@ def create_user_view():
         'template_name_or_list': 'create_user.html',
         'form': form
     }
+
+    if not hasattr(request, 'user') or not request.user.is_admin:
+        return redirect(url_for('index_view'))
+
     if form.validate_on_submit():
-        su_password = form.su_password.data
-        checked, error = model.check_su_password(su_password)
+        checked, error = model.check_su_password(form.su_password.data)
         if not checked:
             flash(error)
             return render_template(**context)
 
-        username = form.username.data
-        password = form.password.data
-        with db_session:
-            if model.User.get(username=username) is None:
-                model.User(username=username, password=password, active=True)
-                flash(f'{username} was created')
-            else:
-                flash(f'{username} wasn`t created')
+        flash(request.user.create_user(
+            username=form.username.data,
+            password=form.password.data
+        ))
     return render_template(**context)
 
 

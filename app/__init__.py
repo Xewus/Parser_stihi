@@ -14,5 +14,8 @@ with db_session:
     """
     if not len(model.User.select()[:1]):
         model.User(
-            username=FIRST_USERNAME, password=FIRST_PASSWORD, active=True
+            username=FIRST_USERNAME,
+            password=FIRST_PASSWORD, is_active=True,
+            is_authenticated = True,
+            is_admin = True
         )
