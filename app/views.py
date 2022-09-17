@@ -1,5 +1,4 @@
 from pathlib import Path
-from pprint import pprint
 
 from flask import (abort, flash, redirect, render_template, request, send_file,
                    session, url_for)

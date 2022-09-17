@@ -1,6 +1,7 @@
 """Общие настройки приложения.
 """
 import os
+import secrets
 from datetime import timedelta
 from pathlib import Path
 
@@ -22,7 +23,7 @@ DEFAULT_AMOUNT_TRIES = 3
 class Config:
     DEBUG = os.environ.get('DEBUG', default=False)
     ENV = os.environ.get('ENV', default='production')
-    SECRET_KEY = os.environ.get('SECRET_KEY')
+    SECRET_KEY = secrets.token_hex()
     PERMANENT_SESSION_LIFETIME = timedelta(days=1)
     PONY = {
         'provider': 'sqlite',
