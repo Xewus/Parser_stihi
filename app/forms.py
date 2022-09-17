@@ -1,10 +1,9 @@
 """Формы для view-функций.
 """
-from wtforms.validators import ValidationError
 from flask_wtf import FlaskForm
 from wtforms import (PasswordField, SelectField, SelectMultipleField,
                      StringField, SubmitField, URLField, widgets)
-from wtforms.validators import DataRequired, Regexp
+from wtforms.validators import DataRequired, Regexp, ValidationError
 
 from app import commands, model
 from app_core.settings import (MAX_PASSWORD_LENGTH, MAX_USERNAME_LENGTH,

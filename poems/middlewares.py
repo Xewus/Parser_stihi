@@ -1,15 +1,9 @@
-# Define here the models for your spider middleware
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import random
 
-# useful for handling different item types with a single interface
 from scrapy import signals
 from scrapy.exceptions import NotConfigured
 
 from app_core.settings import USER_AGENTS
-
-import random
 
 
 class RotateUserAgentMiddleware:

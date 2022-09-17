@@ -1,9 +1,10 @@
 import json
 
+from scrapy import Item
+
 from app_core import settings
 
 from .spiders.author import AllPoemsSpider
-from scrapy import Item
 
 
 class JsonAllPoemsTitlePipeline:

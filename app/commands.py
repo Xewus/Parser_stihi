@@ -2,12 +2,13 @@
 """
 import os
 
-from app_core.settings import ALL_POEMS, CHOOSE_POEMS, LIST_POEMS
+from app_core.settings import (NAME_ALL_POEMS_SPIDER, NAME_CHOOSE_POEMS_SPIDER,
+                               NAME_LIST_POEMS_SPIDER)
 
 COMMANDS = {
-    ALL_POEMS: f'scrapy crawl {ALL_POEMS} -a author=%s  --nolog',
-    LIST_POEMS: f'scrapy crawl {LIST_POEMS} -a author=%s --nolog',
-    CHOOSE_POEMS: f'scrapy crawl {CHOOSE_POEMS} -a urls=%s --nolog',
+    NAME_ALL_POEMS_SPIDER: f'scrapy crawl {NAME_ALL_POEMS_SPIDER} -a author=%s  --nolog',
+    NAME_LIST_POEMS_SPIDER: f'scrapy crawl {NAME_LIST_POEMS_SPIDER} -a author=%s --nolog',
+    NAME_CHOOSE_POEMS_SPIDER: f'scrapy crawl {NAME_CHOOSE_POEMS_SPIDER} -a urls=%s --nolog',
 }
 
 

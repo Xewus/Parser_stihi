@@ -31,6 +31,7 @@ class Config:
         'create_db': True
     }
 
+
 SU_PASSWORD = os.environ.get('SU_PASSWORD')
 FIRST_USERNAME = os.environ.get('FIRST_USERNAME')
 FIRST_PASSWORD = os.environ.get('FIRST_PASSWORD')
@@ -48,11 +49,6 @@ TITLE = 'title'
 AUTHOR = 'author'
 TEXT = 'text'
 LINK = 'link'
-
-# аргументы команд парсеров
-ALL_POEMS = 'all-poems'
-LIST_POEMS = 'list-poems'
-CHOOSE_POEMS = 'choose-poems'
 
 # Сохранение результатов
 POEMS_STORE = f'{RESULT_DIR}/poems.json'
@@ -85,8 +81,10 @@ ITEM_PIPELINES = {
 CONCURRENT_REQUESTS = 1
 # DOWNLOAD_DELAY = 2
 ROBOTSTXT_OBEY = False
+
 # Retry many times since proxies often fail
 RETRY_TIMES = 2
+
 # Retry on most error codes since proxies fail for different reasons
 RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
 
@@ -94,27 +92,24 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
     'scrapy_proxies.RandomProxy': 100,
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
-    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware' : None,
-    'poems.middlewares.RotateUserAgentMiddleware' :400, 
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'poems.middlewares.RotateUserAgentMiddleware': 400,
 }
+
 # Proxy list containing entries like
 # http://host1:port
 # http://username:password@host2:port
 # http://host3:port
-# ...
 PROXY_LIST = BASE_DIR / 'proxy_list.txt'
+
 # Proxy mode
 # 0 = Every requests have different proxy
 # 1 = Take only one proxy from the list and assign it to every requests
 # 2 = Put a custom proxy to use in the settings
 PROXY_MODE = 0
 
-# If proxy mode is 2 uncomment this sentence :
-#CUSTOM_PROXY = "http://host1:port"
-
 # the default user_agent_list composes chrome,I E,firefox,Mozilla,opera,netscape
 # for more user agent strings,you can find it in http://www.useragentstring.com/pages/useragentstring.php
-
 USER_AGENTS = (
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3',
     'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3',

@@ -3,8 +3,8 @@
 import json
 from time import time
 
-from app_core.settings import (DEFAULT_AMOUNT_TRIES, LINK, POEMS_STORE,
-                               DEFAULT_TIME_BLOCK_IP, TITLE)
+from app_core.settings import (DEFAULT_AMOUNT_TRIES, DEFAULT_TIME_BLOCK_IP,
+                               LINK, POEMS_STORE, TITLE)
 
 
 def extract_author(dirty_string: str) -> str | None:

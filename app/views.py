@@ -26,8 +26,9 @@ def set_request_user():
     if hasattr(user, 'get') and user.get('user_id'):
         user = model.User.get_by_id(user_id=user.get('user_id'))
     request.user = user or model.AnonimUser()
-    if not request.user.is_authenticated and request.path not in URL_PATHS_FOR_ANONIM:
-        return redirect(url_for('login_view'))
+    if request.user.is_authenticated or request.path in URL_PATHS_FOR_ANONIM:
+        return
+    return redirect(url_for('login_view'))
 
 
 @app.route('/')
@@ -136,10 +137,11 @@ def create_user_view():
             flash(error)
             return render_template(**context)
 
-        flash(request.user.create_user(
+        _, msg = request.user.create_user(
             username=form.username.data,
             password=form.password.data
-        ))
+        )
+        flash(msg)
     return render_template(**context)
 
 
