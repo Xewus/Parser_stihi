@@ -9,6 +9,7 @@ from poems.items import ListPoemsItem, PoemItem
 
 class BasePoemsSpider(Spider):
     name = settings.NAME_BASE_SPIDER
+    rotate_user_agent = True
     allowed_domains = settings.ALLOWED_DOMAINS
     site_url = settings.SITE_URL
     author_url = settings.START_URL_FOR_PARSE

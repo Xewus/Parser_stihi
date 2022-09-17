@@ -4,8 +4,40 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter, is_item
 from scrapy import signals
+from scrapy.exceptions import NotConfigured
+
+from app_core.settings import USER_AGENTS
+
+import random
+
+
+class RotateUserAgentMiddleware:
+    """Rotate user-agent for each request.
+    """
+    def __init__(self, user_agents):
+        self.enabled = False
+        self.user_agents = user_agents
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        user_agents = USER_AGENTS
+        if not user_agents:
+            raise NotConfigured("USER_AGENTS not set or empty")
+
+        o = cls(user_agents)
+        crawler.signals.connect(o.spider_opened, signal=signals.spider_opened)
+        return o
+
+    def spider_opened(self, spider):
+        self.enabled = getattr(spider, 'rotate_user_agent', self.enabled)
+
+    def process_request(self, request, spider):
+        if not self.enabled or not self.user_agents:
+            return
+
+        request.headers['user-agent'] = random.choice(self.user_agents)
+        request.headers['Proxy-Authorization'] = 'Basic ' + 'encoded_user_pass'
 
 
 class PoemsSpiderMiddleware:
