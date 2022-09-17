@@ -1,4 +1,5 @@
 from pathlib import Path
+from pprint import pprint
 
 from flask import (abort, flash, redirect, render_template, request, send_file,
                    session, url_for)
@@ -24,7 +25,7 @@ def set_request_user():
     too_many_requests(request.remote_addr, abort, 429)
     user = session.get('user')
     if hasattr(user, 'get') and user.get('user_id'):
-        user = model.User.get_by_id(user_id=user.get('user_id')        )
+        user = model.User.get_by_id(user_id=user.get('user_id'))
     request.user = user or model.AnonimUser()
     if not request.user.is_authenticated and request.path not in URL_PATHS_FOR_ANONIM:
         return redirect(url_for('login_view'))
@@ -94,7 +95,7 @@ def choose_poems_view():
     form.choice.choices = utils.create_choice_list()
     if request.method == 'POST' and form.validate_on_submit:
         choised = ARGS_SEPARATOR.join(form.choice.data)
-        commands.parse(commands.COMMANDS[commands.CHOOSE_POEMS] % choised)
+        commands.parse(COMMANDS[commands.CHOOSE_POEMS] % choised)
         return redirect(url_for('choose_download_view'))
     return render_template(**context)
 

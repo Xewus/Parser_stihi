@@ -20,7 +20,8 @@ DEFAULT_AMOUNT_TRIES = 3
 
 
 class Config:
-    DEBUG = os.environ.get('FLASK_DEBUG', default=False)
+    DEBUG = os.environ.get('DEBUG', default=False)
+    ENV = os.environ.get('ENV', default='production')
     SECRET_KEY = os.environ.get('SECRET_KEY')
     PERMANENT_SESSION_LIFETIME = timedelta(days=1)
     PONY = {
@@ -60,6 +61,7 @@ OUT_POEMS = f'{RESULT_DIR}/out'
 POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
 
 ARGS_SEPARATOR = '#'
+
 # Настройки для `Scrapy`
 
 BOT_NAME = 'poems'

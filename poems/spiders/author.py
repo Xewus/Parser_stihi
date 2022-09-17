@@ -31,9 +31,8 @@ class AllPoemsTittleSpider(BasePoemsSpider):
         """Парсит страницу автора, переходит по страницам со списками его произведений.
         """
         page = response.xpath(xpaths.body_page)
-        name_author = page.xpath(xpaths.title_page).get()
+        # name_author = page.xpath(xpaths.title_page).get()
         amount_poems = int(response.xpath(xpaths.amount_poems).get())
-        print(name_author, amount_poems)
 
         all_pages = [
             f'{self.start_urls[0]}&s={i}' for i in range(0, amount_poems, 50)

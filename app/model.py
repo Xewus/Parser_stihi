@@ -10,7 +10,7 @@ from app_core.settings import (MAX_USERNAME_LENGTH,
                                SU_PASSWORD, Config)
 from app_core.utils import AllowTries
 
-sql_debug(Config.DEBUG)
+# sql_debug(Config.DEBUG)
 
 db = Database(**Config.PONY)
 
