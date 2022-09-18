@@ -1,7 +1,6 @@
 """Общие настройки приложения.
 """
 import os
-import secrets
 from datetime import timedelta
 from pathlib import Path
 
@@ -23,7 +22,7 @@ DEFAULT_AMOUNT_TRIES = 3
 class Config:
     DEBUG = os.environ.get('DEBUG', default=False)
     ENV = os.environ.get('ENV', default='production')
-    SECRET_KEY = secrets.token_hex()
+    SECRET_KEY = "os.environ.get('SECRET_KEY')"
     PERMANENT_SESSION_LIFETIME = timedelta(days=1)
     PONY = {
         'provider': 'sqlite',
@@ -59,7 +58,9 @@ POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
 
 ARGS_SEPARATOR = '#'
 
-# Настройки для `Scrapy`
+##########################
+# Настройки для `Scrapy` #
+##########################
 BOT_NAME = 'poems'
 
 SPIDER_MODULES = ['poems.spiders']
@@ -78,12 +79,14 @@ ITEM_PIPELINES = {
     'poems.pipelines.JsonAllPoemsTitlePipeline': 300,
 }
 
-CONCURRENT_REQUESTS = 1
-# DOWNLOAD_DELAY = 2
+CONCURRENT_REQUESTS = 2000
+CONCURRENT_REQUESTS_PER_DOMAIN = 2000
+DNS_TIMEOUT = 5
+DOWNLOAD_DELAY = .04
 ROBOTSTXT_OBEY = False
 
 # Retry many times since proxies often fail
-RETRY_TIMES = 2
+RETRY_TIMES = 5
 
 # Retry on most error codes since proxies fail for different reasons
 RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
@@ -93,7 +96,7 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy_proxies.RandomProxy': 100,
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
-    'poems.middlewares.RotateUserAgentMiddleware': 400,
+    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
 }
 
 # Proxy list containing entries like

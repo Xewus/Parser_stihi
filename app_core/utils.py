@@ -38,7 +38,7 @@ def clean_poem_text(text: list) -> str:
     counter = 0
     for index, line in enumerate(text):
         counter = counter + 1 if line == '\n' else 0
-        if counter == 2:
+        if counter == 3:
             text = text[:index]
     return ''.join(text)
 
