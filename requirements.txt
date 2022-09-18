@@ -4,3 +4,4 @@ pony==0.7.16
 python-dotenv==0.21.0
 
 scrapy-user-agents
+scrapeops-scrapy

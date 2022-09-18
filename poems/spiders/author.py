@@ -33,7 +33,8 @@ class AllPoemsTittleSpider(BasePoemsSpider):
         """
         page = response.xpath(xpaths.body_page)
         # name_author = page.xpath(xpaths.title_page).get()
-        amount_poems = int(response.xpath(xpaths.amount_poems).get())
+        amount_poems = response.xpath(xpaths.amount_poems).get()
+        amount_poems = 0 if amount_poems is None else int(amount_poems)
 
         all_pages = [
             f'{self.start_urls[0]}&s={i}' for i in range(0, amount_poems, 50)

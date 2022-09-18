@@ -3,7 +3,7 @@
 import os
 
 from app_core.settings import (NAME_ALL_POEMS_SPIDER, NAME_CHOOSE_POEMS_SPIDER,
-                               NAME_LIST_POEMS_SPIDER)
+                               NAME_LIST_POEMS_SPIDER, SCRAPEOPS_API_KEY)
 
 ALL_POEMS = NAME_ALL_POEMS_SPIDER
 CHOOSE_POEMS = NAME_CHOOSE_POEMS_SPIDER
