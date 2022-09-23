@@ -50,8 +50,8 @@ TEXT = 'text'
 LINK = 'link'
 
 # Сохранение результатов
-POEMS_STORE = f'{RESULT_DIR}/poems.json'
-OUT_POEMS = f'{RESULT_DIR}/out'
+POEMS_STORE = f'{RESULT_DIR}/poems_for_%s.json'
+OUT_POEMS = f'{RESULT_DIR}/out_for_%s'
 
 # Строка разделяющая стихи
 POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
@@ -82,7 +82,7 @@ ITEM_PIPELINES = {
 CONCURRENT_REQUESTS = 2000
 CONCURRENT_REQUESTS_PER_DOMAIN = 2000
 DNS_TIMEOUT = 5
-DOWNLOAD_DELAY = .04
+DOWNLOAD_DELAY = .05
 ROBOTSTXT_OBEY = False
 
 # Retry many times since proxies often fail

@@ -14,9 +14,10 @@ class BasePoemsSpider(Spider):
     site_url = settings.SITE_URL
     author_url = settings.START_URL_FOR_PARSE
 
-    def __init__(self, author: str, *args, **kwargs):
+    def __init__(self, author: str, user: str, *args, **kwargs):
         super(BasePoemsSpider, self).__init__(*args, **kwargs)
         self.author = author
+        self.user = user
         self.start_urls = [f'{self.author_url}/{author}']
 
     def parse(self, response: HtmlResponse):

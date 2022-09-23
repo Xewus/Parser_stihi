@@ -3,16 +3,14 @@ from pathlib import Path
 from flask import (abort, flash, redirect, render_template, request, send_file,
                    session, url_for)
 
-from app import commands, forms, model
+from app import forms, model
 from app_core import utils
 from app_core.converter import JsonConvereter
 from app_core.settings import (ARGS_SEPARATOR, OUT_POEMS, POEMS_STORE,
                                URL_PATHS_FOR_ANONIM)
+from app.commands import LIST_POEMS, COMMANDS, CHOOSE_POEMS, ALL_POEMS, parse
 
 from . import app
-
-COMMANDS = commands.COMMANDS
-
 
 too_many_requests = utils.AllowTries(time_limit=60, tries=20)
 
@@ -76,11 +74,11 @@ def choose_parsing_view():
             flash('Ошибка в переданной строке')
             return render_template(**context)
 
-        if choice == COMMANDS[commands.CHOOSE_POEMS]:
-            commands.parse(COMMANDS[commands.LIST_POEMS] % author)
+        if choice == COMMANDS[CHOOSE_POEMS]:
+            parse(COMMANDS[LIST_POEMS] % (author, request.user))
             return redirect(url_for('choose_poems_view'))
         else:
-            commands.parse(choice % author)
+            parse(choice % (author, request.user.username))
             return redirect(url_for('choose_download_view'))
     return render_template(**context)
 
@@ -95,7 +93,7 @@ def choose_poems_view():
     form.choice.choices = utils.create_choice_list()
     if request.method == 'POST' and form.validate_on_submit:
         choised = ARGS_SEPARATOR.join(form.choice.data)
-        commands.parse(COMMANDS[commands.CHOOSE_POEMS] % choised)
+        parse(COMMANDS[CHOOSE_POEMS] % (choised, request.user))
         return redirect(url_for('choose_download_view'))
     return render_template(**context)
 
@@ -104,19 +102,19 @@ def choose_poems_view():
 def choose_download_view():
     context = {
         'template_name_or_list': 'choose_download.html',
-        'poems_store': Path(POEMS_STORE).exists()
+        'poems_store': Path(POEMS_STORE % request.user.username).exists()
     }
     return render_template(**context)
 
 
 @app.route('/download/<doc_type>')
 def download_view(doc_type: str):
-    source = Path(POEMS_STORE)
+    source = Path(POEMS_STORE % request.user.username)
     if not source.exists() or doc_type not in {'json', 'md', 'docx'}:
         return redirect(url_for('choose_parsing_view'))
 
     converter = JsonConvereter(doc_type, source)
-    out_file = converter.convert(out_file=OUT_POEMS)
+    out_file = converter.convert(out_file=OUT_POEMS % request.user.username)
     return send_file(out_file, as_attachment=True)
 
 

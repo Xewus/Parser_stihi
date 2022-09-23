@@ -10,9 +10,9 @@ CHOOSE_POEMS = NAME_CHOOSE_POEMS_SPIDER
 LIST_POEMS = NAME_LIST_POEMS_SPIDER
 
 COMMANDS = {
-    ALL_POEMS: f'scrapy crawl {ALL_POEMS} -a author=%s',#  --nolog',
-    LIST_POEMS: f'scrapy crawl {LIST_POEMS} -a author=%s',# --nolog',
-    CHOOSE_POEMS: f'scrapy crawl {CHOOSE_POEMS} -a urls=%s',# --nolog',
+    ALL_POEMS: f'scrapy crawl -a author=%s -a user=%s {ALL_POEMS}',#  --nolog',
+    LIST_POEMS: f'scrapy crawl -a author=%s -a user=%s {LIST_POEMS} --nolog',
+    CHOOSE_POEMS: f'scrapy crawl -a author=%s -a user=%s {CHOOSE_POEMS}',# --nolog',
 }
 
 
