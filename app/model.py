@@ -17,7 +17,6 @@ sql_debug(Config.DEBUG)
 
 db = Database(**Config.PONY)
 
-
 pass_tries = AllowTries(tries=10)
 
 
@@ -27,6 +26,7 @@ class AnonimUser:
     active = True
     superuser = False
     is_authenticated = False
+    parsing_on = True
 
     def __repr__(self) -> str:
         return self.username
@@ -35,7 +35,7 @@ class AnonimUser:
         return {
             'user_id': self.user_id,
             'username': self.username,
-            'is_authenticated': self.is_authenticated
+            'is_authenticated': self.is_authenticated,
         }
 
 
@@ -46,6 +46,7 @@ class User(AnonimUser, db.Entity):
     is_active = Required(bool, default=False)
     is_authenticated = Required(bool, default=False)
     is_admin = Required(bool, default=False)
+    parsing_on = Required(bool, default=False)
 
     def __init__(self, *args, **kwargs) -> None:
         kwargs['password'] = generate_password_hash(kwargs['password'])
@@ -94,6 +95,13 @@ class User(AnonimUser, db.Entity):
     def get_all_usernames() -> QueryResult:
         return select(u.username for u in User)[:]
 
+    @db_session
+    def change_parsing_on(self, parsing_on: bool | None):
+        user = User.get(user_id=self.user_id)
+        if parsing_on is None:
+            user.parsing_on = not user.parsing_on
+        else:
+            user.parsing_on = parsing_on
 
 db.generate_mapping(create_tables=1)
 

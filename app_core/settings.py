@@ -50,8 +50,9 @@ TEXT = 'text'
 LINK = 'link'
 
 # Сохранение результатов
-POEMS_STORE = f'{RESULT_DIR}/poems_for_%s.json'
+POEMS_STORE = f'{RESULT_DIR}/%s_poems.json'
 OUT_POEMS = f'{RESULT_DIR}/out_for_%s'
+OUT_FORMATS = ('.md', '.json', '.docx')
 
 # Строка разделяющая стихи
 POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'

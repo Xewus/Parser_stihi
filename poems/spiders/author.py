@@ -14,10 +14,9 @@ class BasePoemsSpider(Spider):
     site_url = settings.SITE_URL
     author_url = settings.START_URL_FOR_PARSE
 
-    def __init__(self, author: str, user: str, *args, **kwargs):
+    def __init__(self, author: str, *args, **kwargs):
         super(BasePoemsSpider, self).__init__(*args, **kwargs)
         self.author = author
-        self.user = user
         self.start_urls = [f'{self.author_url}/{author}']
 
     def parse(self, response: HtmlResponse):
@@ -39,13 +38,16 @@ class AllPoemsTittleSpider(BasePoemsSpider):
         all_pages = [
             f'{self.start_urls[0]}&s={i}' for i in range(0, amount_poems, 50)
         ]
+        print(all_pages)
         for page in all_pages:
+            print('yeild')
             yield response.follow(page, callback=self.parse_page)
 
     def parse_page(self, response: HtmlResponse):
         """Собирает заголовки и ссылки на произведения.
         """
         for poem_link in response.xpath(xpaths.poem_link):
+            print('yeld2')
             yield ListPoemsItem(
                 title=poem_link.xpath('text()').get(),
                 link=self.site_url + poem_link.xpath('.//@href').get()
@@ -83,7 +85,7 @@ class ChooseSpider(AllPoemsSpider):
     name = settings.NAME_CHOOSE_POEMS_SPIDER
 
     def __init__(self, urls: str, *args, **kwargs):
-        super(Spider, self).__init__(*args, **kwargs)
+        super(BasePoemsSpider, self).__init__(*args, **kwargs)
         urls = urls.split(settings.ARGS_SEPARATOR)
         self.start_urls = urls
 

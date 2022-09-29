@@ -7,24 +7,25 @@ from app import forms, model
 from app_core import utils
 from app_core.converter import JsonConvereter
 from app_core.settings import (ARGS_SEPARATOR, OUT_POEMS, POEMS_STORE,
-                               URL_PATHS_FOR_ANONIM)
+                               URL_PATHS_FOR_ANONIM, NAME_CHOOSE_POEMS_SPIDER)
 from app.commands import LIST_POEMS, COMMANDS, CHOOSE_POEMS, ALL_POEMS, parse
+from poems.spiders import get_spider_by_name
 
-from . import app
+from . import app, scrape_with_crochet
 
 too_many_requests = utils.AllowTries(time_limit=60, tries=20)
 
 
 @app.before_request
 def set_request_user():
-    if request.path.startswith('/static'):
+    if request.path in URL_PATHS_FOR_ANONIM:
         return
     too_many_requests(request.remote_addr, abort, 429)
     user = session.get('user')
     if hasattr(user, 'get') and user.get('user_id'):
         user = model.User.get_by_id(user_id=user.get('user_id'))
     request.user = user or model.AnonimUser()
-    if request.user.is_authenticated or request.path in URL_PATHS_FOR_ANONIM:
+    if request.user.is_authenticated:
         return
     return redirect(url_for('login_view'))
 
@@ -44,7 +45,7 @@ def login_view():
         )
         if user is not None:
             session['user'] = user.as_dict()
-            return redirect(url_for('choose_parsing_view'))
+            return redirect(url_for('index_view'))
         flash('Введены неверные данные')
     return render_template('login.html', form=form)
 
@@ -57,29 +58,38 @@ def logout_view():
     return redirect(url_for('index_view'))
 
 
+@app.route('/wait/')
+def wait_view():
+    if request.user.parsing_on == False:
+        return redirect(url_for('choose_download_view'))
+    return render_template('wait.html')
+
+
 @app.route('/choose_parsing/', methods=('GET', 'POST'))
 def choose_parsing_view():
+    if request.user.parsing_on == True:
+        return redirect(url_for('wait_view'))
     form = forms.ChoiceParseForm()
     context = {
         'template_name_or_list': 'choose_parsing.html',
         'form': form,
     }
     if form.validate_on_submit():
-        choice = COMMANDS.get(form.choice.data)
-        if choice is None:
-            return render_template(**context)
-
         author = utils.extract_author(form.author.data)
         if author is None:
             flash('Ошибка в переданной строке')
             return render_template(**context)
 
-        if choice == COMMANDS[CHOOSE_POEMS]:
+        spider =  get_spider_by_name(form.choice.data)
+        if spider is None:
+            return render_template(**context)
+
+        if spider.name == NAME_CHOOSE_POEMS_SPIDER:
             parse(COMMANDS[LIST_POEMS] % (author, request.user))
             return redirect(url_for('choose_poems_view'))
         else:
-            parse(choice % (author, request.user.username))
-            return redirect(url_for('choose_download_view'))
+            scrape_with_crochet(spider, author)
+            return redirect(url_for('wait_view'))
     return render_template(**context)
 
 

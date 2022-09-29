@@ -13,8 +13,7 @@ class JsonAllPoemsTitlePipeline:
 
     def close_spider(self, spider: AllPoemsSpider):
         self.results.sort(key=lambda item: str(item[settings.TITLE]))
-        result_file = settings.POEMS_STORE % spider.user
-        print(result_file)
+        result_file = settings.POEMS_STORE % spider.author
         with open(result_file, 'w', encoding='utf-8') as store:
             store.write(json.dumps(self.results, indent=2, ensure_ascii=False))
 
