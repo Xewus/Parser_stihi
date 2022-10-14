@@ -3,34 +3,36 @@
 from scrapy import Spider
 from scrapy.http.response.html import HtmlResponse
 
-from app_core import settings, utils, xpaths
 from poems.items import ListPoemsItem, PoemItem
+from poems import settings, xpaths, utils
 
 
 class BasePoemsSpider(Spider):
-    name = settings.NAME_BASE_SPIDER
+    name = 'BasePoems'
     rotate_user_agent = True
     allowed_domains = settings.ALLOWED_DOMAINS
     site_url = settings.SITE_URL
     author_url = settings.START_URL_FOR_PARSE
 
-    def __init__(self, author: str, *args, **kwargs):
-        super(BasePoemsSpider, self).__init__(*args, **kwargs)
+    def __init__(self, author: str):
+        super(BasePoemsSpider, self).__init__()
         self.author = author
+        print('init with author', author)
         self.start_urls = [f'{self.author_url}/{author}']
 
     def parse(self, response: HtmlResponse):
         raise Exception('Implement parse')
 
 
-class AllPoemsTittleSpider(BasePoemsSpider):
+class ListPoemsSpider(BasePoemsSpider):
     """Собирает названия и ссылки на все стихи указанного автора.
     """
-    name = settings.NAME_LIST_POEMS_SPIDER
+    name = settings.SpiderNames.LIST_POEMS
 
     def parse(self, response: HtmlResponse):
         """Парсит страницу автора, переходит по страницам со списками его произведений.
         """
+        print('start parse')
         page = response.xpath(xpaths.body_page)
         # name_author = page.xpath(xpaths.title_page).get()
         amount_poems = int(response.xpath(xpaths.amount_poems).get())
@@ -38,26 +40,26 @@ class AllPoemsTittleSpider(BasePoemsSpider):
         all_pages = [
             f'{self.start_urls[0]}&s={i}' for i in range(0, amount_poems, 50)
         ]
-        print(all_pages)
         for page in all_pages:
-            print('yeild')
             yield response.follow(page, callback=self.parse_page)
 
     def parse_page(self, response: HtmlResponse):
         """Собирает заголовки и ссылки на произведения.
         """
+        i = 0
         for poem_link in response.xpath(xpaths.poem_link):
-            print('yeld2')
+            i +=1
+            print('yeld2', i)
             yield ListPoemsItem(
                 title=poem_link.xpath('text()').get(),
                 link=self.site_url + poem_link.xpath('.//@href').get()
             )
 
 
-class AllPoemsSpider(AllPoemsTittleSpider):
+class AllPoemsSpider(ListPoemsSpider):
     """Собирает все стихи указанного автора.
     """
-    name = settings.NAME_ALL_POEMS_SPIDER
+    name = settings.SpiderNames.ALL_POEMS
 
     def parse_page(self, response: HtmlResponse):
         """Собирает ссылки на произведения и переходит по ним.
@@ -82,11 +84,10 @@ class AllPoemsSpider(AllPoemsTittleSpider):
 class ChooseSpider(AllPoemsSpider):
     """Собирает избранные стихи.
     """
-    name = settings.NAME_CHOOSE_POEMS_SPIDER
+    name = settings.SpiderNames.CHOOSE_POEMS
 
-    def __init__(self, urls: str, *args, **kwargs):
-        super(BasePoemsSpider, self).__init__(*args, **kwargs)
-        urls = urls.split(settings.ARGS_SEPARATOR)
+    def __init__(self, author: str, urls: str):
+        super(BasePoemsSpider, self).__init__(author=author)
         self.start_urls = urls
 
     def parse(self, response: HtmlResponse):

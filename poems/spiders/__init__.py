@@ -1,7 +1,7 @@
-from .author import AllPoemsSpider, ChooseSpider, AllPoemsTittleSpider, BasePoemsSpider
+from .author import AllPoemsSpider, ChooseSpider, BasePoemsSpider, ListPoemsSpider
 
 SPIDERS = (
-    AllPoemsSpider, AllPoemsTittleSpider, ChooseSpider
+    AllPoemsSpider, ListPoemsSpider, ChooseSpider
 )
 
 def get_spider_by_name(name: str) -> BasePoemsSpider | None:
