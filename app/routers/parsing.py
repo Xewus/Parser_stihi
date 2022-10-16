@@ -2,7 +2,7 @@
 """
 from pprint import pprint
 from time import sleep
-from fastapi import APIRouter, BackgroundTasks, Query
+from fastapi import APIRouter, Query
 from fastapi.responses import RedirectResponse
 import requests
 from pathlib import Path
@@ -22,7 +22,7 @@ class HTTPExceptionBadRequest(HTTPException):
 
 from app.enums import SpiderNames
 from app.settings import SCRAPY_URL, AUTH_KEY
-from parser.settings import POEMS_STORE
+from parser.poems.settings import POEMS_STORE
 
 
 
