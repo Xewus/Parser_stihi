@@ -4,7 +4,7 @@ import scrapy
 
 
 class ListPoemsItem(scrapy.Item):
-    """_summary_
+    """Список названий стихов с ссылками.
 
     #### Attrs:
     - title
@@ -15,7 +15,7 @@ class ListPoemsItem(scrapy.Item):
 
 
 class PoemItem(scrapy.Item):
-    """_summary_
+    """Формат сохранения отдельного стиха.
 
     #### Attrs:
     - title

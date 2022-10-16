@@ -1,8 +1,10 @@
-from .author import AllPoemsSpider, ChooseSpider, BasePoemsSpider, ListPoemsSpider
+from .author import (AllPoemsSpider, BasePoemsSpider, ChooseSpider,
+                     ListPoemsSpider)
 
 SPIDERS = (
     AllPoemsSpider, ListPoemsSpider, ChooseSpider
 )
+
 
 def get_spider_by_name(name: str) -> BasePoemsSpider | None:
     """Получает паука по имени.

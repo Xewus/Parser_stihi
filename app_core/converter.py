@@ -6,7 +6,7 @@ from pathlib import Path
 
 from docxtpl import DocxTemplate, RichText
 
-from app_core.settings import (AUTHOR, DOCX_TEMPLATES, LINK, POEMS_SEPARATOR,
+from app.settings import (AUTHOR, DOCX_TEMPLATES, LINK, POEMS_SEPARATOR,
                                POEMS_STORE, TEXT, TITLE)
 
 # Номера пробельных символов

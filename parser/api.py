@@ -1,20 +1,29 @@
-from flask import Flask, request
+from flask import Flask, request, Response
 import json
 import requests
 from random import choice
 
 
-from poems.settings import USER_AGENTS, Config, SpiderNames, START_URL_FOR_PARSE, AUTH_KEY
-from poems.commands import COMMANDS, start_spider
-from poems.utils import clean_urls
+from parser.settings import USER_AGENTS, Config, SpiderNames, START_URL_FOR_PARSE, AUTH_KEY
+from parser.poems.commands import COMMANDS, start_spider
+from parser.poems.helpers.utils import clean_urls
 
 
-app = Flask(__name__)
+app = Flask(__name__,  instance_relative_config=True)
+print(app)
 app.config.from_object(Config)
 
 
 @app.route('/scrapy/', methods=['GET'])
-def parse():
+def parse() -> str:
+    """Принимает команды для запуска парсеров.
+
+    Example:
+        http://127.0.0.1:5000/scrapy/?spider=all-poems&author=ivanov
+
+    Returns:
+        str: _description_
+    """
     if request.headers.get('AUTH_KEY') != AUTH_KEY:
         return json.dumps({'error': 'Wrong AUTH_KEY'})
 

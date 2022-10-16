@@ -1,14 +1,12 @@
 """Работа с пользователями.
 """
+import hashlib
 from typing import Any, TypeVar
-
-from flask import abort, request
 from pony.orm import (Database, PrimaryKey, Required, db_session, select,
                       sql_debug)
 from pony.orm.core import QueryResult
-from werkzeug.security import check_password_hash, generate_password_hash
 
-from app_core.settings import MAX_USERNAME_LENGTH, SU_PASSWORD, Config
+from app.settings import MAX_USERNAME_LENGTH, SU_PASSWORD, Config
 from app_core.utils import AllowTries
 
 U = TypeVar('U', bound='User')
@@ -49,7 +47,9 @@ class User(AnonimUser, db.Entity):
     parsing_on = Required(bool, default=False)
 
     def __init__(self, *args, **kwargs) -> None:
-        kwargs['password'] = generate_password_hash(kwargs['password'])
+        kwargs['password'] = hashlib.sha224(
+            bytes(kwargs['password'], 'utf-8')
+        ).hexdigest()
         super().__init__(*args, **kwargs)
 
     def __str__(self) -> str:
