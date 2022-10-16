@@ -4,7 +4,7 @@ import os
 from collections import namedtuple
 from pathlib import Path
 
-AUTH_KEY = 'qwerty'
+AUTH_KEY = os.environ.get('AUTH_KEY')
 
 BASE_DIR = Path(__file__).resolve().parent
 RESULT_DIR = BASE_DIR.parent / 'results'
@@ -31,7 +31,6 @@ class Config:
     ENV = os.environ.get('ENV', default='production')
     SECRET_KEY = "os.environ.get('SECRET_KEY')"
 
-print(Config.FLASK_APP)
 
 BOT_NAME = 'poems'
 

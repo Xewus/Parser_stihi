@@ -1,3 +1,4 @@
+from crypt import methods
 import json
 from .commands import COMMANDS, start_spider
 from .helpers.utils import clean_urls
@@ -9,8 +10,12 @@ import requests
 from flask import Flask, request
 
 app = Flask(__name__)
-print(app)
 app.config.from_object(Config)
+
+
+@app.route('/test/', methods=['GET'])
+def test() -> str:
+    return json.dumps({'status': 200})
 
 
 @app.route('/scrapy/', methods=['GET'])
