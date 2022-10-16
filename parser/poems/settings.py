@@ -31,6 +31,7 @@ class Config:
     ENV = os.environ.get('ENV', default='production')
     SECRET_KEY = "os.environ.get('SECRET_KEY')"
 
+print(Config.FLASK_APP)
 
 BOT_NAME = 'poems'
 

@@ -1,14 +1,14 @@
 import json
-from .poems.commands import COMMANDS, start_spider
-from .poems.helpers.utils import clean_urls
-from .poems.settings import (AUTH_KEY, START_URL_FOR_PARSE, USER_AGENTS,
+from .commands import COMMANDS, start_spider
+from .helpers.utils import clean_urls
+from .settings import (AUTH_KEY, START_URL_FOR_PARSE, USER_AGENTS,
                              Config, SpiderNames)
 from random import choice
 
 import requests
 from flask import Flask, request
 
-app = Flask(__name__,  instance_relative_config=True)
+app = Flask(__name__)
 print(app)
 app.config.from_object(Config)
 
