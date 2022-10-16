@@ -1,13 +1,12 @@
-from flask import Flask, request, Response
 import json
-import requests
-from random import choice
-
-
-from parser.settings import USER_AGENTS, Config, SpiderNames, START_URL_FOR_PARSE, AUTH_KEY
 from parser.poems.commands import COMMANDS, start_spider
 from parser.poems.helpers.utils import clean_urls
+from parser.settings import (AUTH_KEY, START_URL_FOR_PARSE, USER_AGENTS,
+                             Config, SpiderNames)
+from random import choice
 
+import requests
+from flask import Flask, request
 
 app = Flask(__name__,  instance_relative_config=True)
 print(app)
@@ -33,7 +32,7 @@ def parse() -> str:
     if not spider or not author:
         return json.dumps({'error': 'Wrong query'})
 
-    if not spider in SpiderNames:
+    if spider not in SpiderNames:
         return json.loads({'error': 'Wrong spider'})
 
     target_url = f'{START_URL_FOR_PARSE}/{author}'
@@ -51,7 +50,7 @@ def parse() -> str:
         response = requests.get(target_url, headers=headers, timeout=1)
     except requests.exceptions.ConnectionError:
         return json.dumps({'error': 'Remote server failure'})
-    
+
     if not response.ok or 'Автор не найден' in response.text:
         return json.dumps({'error': 'Wrong author'})
 
@@ -62,7 +61,7 @@ def parse() -> str:
         command = COMMANDS[spider] % (author, urls)
     else:
         command = COMMANDS[spider] % author
-    
+
     start_spider(command)
 
     return json.dumps({'auyhor': author, 'spider': spider})
