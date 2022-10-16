@@ -1,7 +1,7 @@
 import json
-from parser.poems.commands import COMMANDS, start_spider
-from parser.poems.helpers.utils import clean_urls
-from parser.settings import (AUTH_KEY, START_URL_FOR_PARSE, USER_AGENTS,
+from .poems.commands import COMMANDS, start_spider
+from .poems.helpers.utils import clean_urls
+from .poems.settings import (AUTH_KEY, START_URL_FOR_PARSE, USER_AGENTS,
                              Config, SpiderNames)
 from random import choice
 

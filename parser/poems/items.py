@@ -1,20 +1,20 @@
 """Классы, упорядочивающие сохранение объектов.
 """
-import scrapy
+from scrapy import Item, Field
 
 
-class ListPoemsItem(scrapy.Item):
+class ListPoemsItem(Item):
     """Список названий стихов с ссылками.
 
     #### Attrs:
     - title
     - link
     """
-    title = scrapy.Field()
-    link = scrapy.Field()
+    title = Field()
+    link = Field()
 
 
-class PoemItem(scrapy.Item):
+class PoemItem(Item):
     """Формат сохранения отдельного стиха.
 
     #### Attrs:
@@ -22,6 +22,6 @@ class PoemItem(scrapy.Item):
     - author
     - text
     """
-    title = scrapy.Field()
-    author = scrapy.Field()
-    text = scrapy.Field()
+    title = Field()
+    author = Field()
+    text = Field()

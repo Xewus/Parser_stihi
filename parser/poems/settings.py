@@ -7,7 +7,7 @@ from pathlib import Path
 AUTH_KEY = 'qwerty'
 
 BASE_DIR = Path(__file__).resolve().parent
-RESULT_DIR = BASE_DIR / 'results'
+RESULT_DIR = BASE_DIR.parent / 'results'
 
 RESULT_DIR.mkdir(exist_ok=True)
 
@@ -20,9 +20,9 @@ OUT_FORMATS = ('.md', '.json', '.docx')
 # http://host1:port
 # http://username:password@host2:port
 # http://host3:port
-PROXY_LIST = BASE_DIR / 'poems/helpers/proxy_list.txt'
+PROXY_LIST = BASE_DIR / 'helpers/proxy_list.txt'
 
-USER_AGENTS_LIST = BASE_DIR / 'poems/helpers/user_agents_list.txt'
+USER_AGENTS_LIST = BASE_DIR / 'helpers/user_agents_list.txt'
 
 
 class Config:
@@ -34,8 +34,8 @@ class Config:
 
 BOT_NAME = 'poems'
 
-SPIDER_MODULES = ['parser.poems.spiders']
-NEWSPIDER_MODULE = 'parser.poems.spiders'
+SPIDER_MODULES = ['poems.spiders']
+# NEWSPIDER_MODULE = 'poems.spiders'
 
 ALLOWED_DOMAINS = ['stihi.ru']
 SITE_URL = 'https://stihi.ru'
@@ -64,7 +64,7 @@ StoreFields = StoreFields(
 )
 
 ITEM_PIPELINES = {
-    'parser.poems.pipelines.JsonAllPoemsTitlePipeline': 300,
+    'poems.pipelines.JsonAllPoemsTitlePipeline': 300,
 }
 
 CONCURRENT_REQUESTS = 2000
@@ -100,4 +100,4 @@ PROXY_MODE = 0
 USER_AGENTS = None
 
 with open(USER_AGENTS_LIST) as f:
-    USER_AGENTS = f.readlines()
+    USER_AGENTS = [line.rstrip() for line in f.readlines()]

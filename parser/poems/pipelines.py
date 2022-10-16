@@ -1,8 +1,8 @@
 """Организация обработки и сохранения результатов парсинга.
 """
 import json
-from parser.poems.spiders.author import BasePoemsSpider
-from parser.settings import POEMS_STORE, StoreFields
+from poems.spiders.author import BasePoemsSpider
+from poems.settings import POEMS_STORE, StoreFields
 from time import time
 
 from scrapy import Item

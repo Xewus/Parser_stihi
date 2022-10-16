@@ -1,7 +1,7 @@
 """Команды для запуска парсеров.
 """
 import os
-from parser.settings import SpiderNames
+from poems.settings import SpiderNames
 
 ALL = SpiderNames.ALL_POEMS
 LIST = SpiderNames.LIST_POEMS

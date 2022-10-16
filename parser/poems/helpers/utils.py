@@ -1,6 +1,6 @@
 """Вспомогательные функции для парсинга.
 """
-from parser.settings import ARGS_SEPARATOR, SITE_URL
+from poems.settings import ARGS_SEPARATOR, SITE_URL
 
 
 def clean_poem_text(text: list[str]) -> str:
