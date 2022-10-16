@@ -1,15 +1,15 @@
-## Start into **parser/**
+## Start into `parser/`
 
-### Must be placed inside **parser/** :
+### Must be placed inside `parser/` :
 
 - `parser/scrapy.cfg`
 - `parser/.env`  with **Flask** settings
  ***
 
 
- ## Start outside **parser/**
+ ## Start outside `parser/`
 
- ### Must be placed outside **parser/**
+ ### Must be placed outside `parser/`
 
 - `parser/scrapy.cfg`
 - `parser/.env`  with **Flask** settings
@@ -40,4 +40,4 @@ scrpy crawl <spider's name> -a author=<author> urls=<url1#url2...>
 /scrapy/?spider=<spider's name>&author=<ivanov>
 ```
 ***
-### Results of parsing will be saving into **parser/results/**.
+### Results of parsing will be saving into `parser/results/`.
