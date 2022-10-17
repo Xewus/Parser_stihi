@@ -32,8 +32,8 @@ async def parse(
         title='Автор произведений',
         description='URL-ссылка на страницу автора.',
         examples={
-            '1': {'value': 'mazurrussia'},
-            '2': {'value': 'https://stihi.ru/avtor/mazurrussia'}
+            '1': {'value': 'oleg'},
+            '2': {'value': 'https://stihi.ru/avtor/oleg'}
         }
     ),
     urls: str | None = Query(
@@ -45,7 +45,7 @@ async def parse(
     """Принимает команды для запуска парсеров.
 
     Example:
-        http://127.0.0.1:5000/scrapy/all-poems&author=ivan
+        http://127.0.0.1:5000/scrapy/all-poems&author=oleg
 
     Returns:
         str: _description_

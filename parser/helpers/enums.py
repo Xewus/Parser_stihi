@@ -7,6 +7,13 @@ class SpiderNames(str, Enum):
     CHOOSE_POEMS = 'choose-poems'
 
 
+class StoreFields(str, Enum):
+    TITLE = 'title',
+    AUTHOR = 'author',
+    TEXT = 'text',
+    LINK = 'link'
+
+
 class Tag(str, Enum):
     """Тэги для эндпоинтов.
 

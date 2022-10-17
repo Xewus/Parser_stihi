@@ -1,6 +1,5 @@
 """Настройки для `Scrapy`
 """
-from collections import namedtuple
 from pathlib import Path
 
 from decouple import config
@@ -34,20 +33,9 @@ SPIDER_MODULES = ['poems.spiders']
 
 ALLOWED_DOMAINS = ['stihi.ru']
 SITE_URL = 'https://stihi.ru'
-START_URL_FOR_PARSE = 'https://stihi.ru/avtor'
+START_URL_FOR_PARSE = SITE_URL + '/avtor'
 
 ARGS_SEPARATOR = '#'
-
-# Названия сохраняемых полей
-StoreFields = namedtuple(
-    'StoreFields', ['TITLE', 'AUTHOR', 'TEXT', 'LINK']
-)
-StoreFields = StoreFields(
-    TITLE='title',
-    AUTHOR='author',
-    TEXT='text',
-    LINK='link'
-)
 
 ITEM_PIPELINES = {
     'poems.pipelines.JsonAllPoemsTitlePipeline': 300,

@@ -4,8 +4,9 @@ import json
 
 from scrapy import Item
 
+from helpers.enums import StoreFields
 from poems.spiders.author import BasePoemsSpider
-from settings import POEMS_STORE, StoreFields
+from settings import POEMS_STORE
 
 
 class JsonAllPoemsTitlePipeline:

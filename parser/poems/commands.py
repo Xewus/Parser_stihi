@@ -6,9 +6,9 @@ import shutil
 from helpers import enums
 from settings import RESULT_DIR
 
-ALL = enums.SpiderNames.ALL_POEMS.casefold()
-LIST = enums.SpiderNames.LIST_POEMS.casefold()
-CHOOSES = enums.SpiderNames.CHOOSE_POEMS.casefold()
+ALL = enums.SpiderNames.ALL_POEMS
+LIST = enums.SpiderNames.LIST_POEMS
+CHOOSES = enums.SpiderNames.CHOOSE_POEMS
 
 COMMANDS = {
     ALL: f'scrapy crawl {ALL} -a author=%s --nolog',
