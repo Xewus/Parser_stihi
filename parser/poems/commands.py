@@ -1,7 +1,8 @@
 """Команды для запуска парсеров.
 """
 import os
-from parser.poems.settings import SpiderNames
+import shutil
+from parser.poems.settings import RESULT_DIR, SpiderNames
 
 ALL = SpiderNames.ALL_POEMS
 LIST = SpiderNames.LIST_POEMS
@@ -14,5 +15,14 @@ COMMANDS = {
 }
 
 
-def start_spider(command: str) -> None:
-    os.system(command=command)
+async def start_spider(spider: str, args: tuple) -> None:
+    """Очищает директорию с результатами и запускает паука.
+
+    #### Args:
+    - spider (str): Имя паука.
+    - args (tuple): Аргументы для запуска паука.
+    """
+    command = COMMANDS.get(spider)
+    shutil.rmtree(RESULT_DIR)
+    RESULT_DIR.mkdir()
+    os.system(command=command % args)

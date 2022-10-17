@@ -1,6 +1,6 @@
 """Классы, упорядочивающие сохранение объектов.
 """
-from scrapy import Item, Field
+from scrapy import Field, Item
 
 
 class ListPoemsItem(Item):

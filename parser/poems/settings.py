@@ -4,7 +4,9 @@ import os
 from collections import namedtuple
 from pathlib import Path
 
-AUTH_KEY = os.environ.get('AUTH_KEY')
+HEADERS = {
+    'APP_KEY': os.environ.get('APP_KEY', default='qwerty')
+}
 
 BASE_DIR = Path(__file__).resolve().parent
 RESULT_DIR = BASE_DIR.parent / 'results'
@@ -34,7 +36,7 @@ class Config:
 
 BOT_NAME = 'poems'
 
-SPIDER_MODULES = ['poems.spiders']
+SPIDER_MODULES = ['parser.poems.spiders']
 # NEWSPIDER_MODULE = 'poems.spiders'
 
 ALLOWED_DOMAINS = ['stihi.ru']
@@ -64,7 +66,7 @@ StoreFields = StoreFields(
 )
 
 ITEM_PIPELINES = {
-    'poems.pipelines.JsonAllPoemsTitlePipeline': 300,
+    'parser.poems.pipelines.JsonAllPoemsTitlePipeline': 300,
 }
 
 CONCURRENT_REQUESTS = 2000
