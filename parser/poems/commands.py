@@ -2,9 +2,9 @@
 """
 import os
 import shutil
-from parser.poems.settings import RESULT_DIR
-from parser.poems.helpers import enums
-from collections import namedtuple
+
+from helpers import enums
+from settings import RESULT_DIR
 
 ALL = enums.SpiderNames.ALL_POEMS.casefold()
 LIST = enums.SpiderNames.LIST_POEMS.casefold()

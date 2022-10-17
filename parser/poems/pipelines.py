@@ -1,10 +1,11 @@
 """Организация обработки и сохранения результатов парсинга.
 """
 import json
-from parser.poems.settings import POEMS_STORE, StoreFields
-from parser.poems.spiders.author import BasePoemsSpider
 
 from scrapy import Item
+
+from poems.spiders.author import BasePoemsSpider
+from settings import POEMS_STORE, StoreFields
 
 
 class JsonAllPoemsTitlePipeline:

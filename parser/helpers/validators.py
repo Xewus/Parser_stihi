@@ -1,10 +1,12 @@
-
-from parser.poems.settings import (ARGS_SEPARATOR, SITE_URL, HEADERS,
-                                   START_URL_FOR_PARSE, USER_AGENTS)
+"""Валидаторы.
+"""
 from random import choice
 
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientError
+
+from settings import (ARGS_SEPARATOR, HEADERS, SITE_URL, START_URL_FOR_PARSE,
+                      USER_AGENTS)
 
 
 def validate_headers(key: str, value: str) -> tuple[bool, str | None]:
@@ -32,7 +34,7 @@ async def validate_author(author: str) -> tuple[str, str | None]:
     - tuple[bool, str | None]: Результат проверки
     """
     author = author.split('/')[-1]
-    target_url = f'{START_URL_FOR_PARSE}/{author}'
+    url = f'{START_URL_FOR_PARSE}/{author}'
     headers = {
         'Connection': 'keep-alive',
         'Host': 'stihi.ru',
@@ -45,7 +47,7 @@ async def validate_author(author: str) -> tuple[str, str | None]:
     }
     try:
         async with ClientSession(headers=headers, conn_timeout=1.3) as session:
-            async with session.get(target_url, allow_redirects=False) as response:
+            async with session.get(url=url, allow_redirects=False) as response:
                 if not response.ok:
                     return '', 'Remote server failure'
                 text = await response.text()

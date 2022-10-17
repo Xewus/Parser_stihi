@@ -1,8 +1,9 @@
 """Настройки для `Scrapy`
 """
-from decouple import config
 from collections import namedtuple
 from pathlib import Path
+
+from decouple import config
 
 HEADERS = {
     'APP_KEY': config('APP_KEY')
@@ -10,7 +11,7 @@ HEADERS = {
 BASE_DIR = Path(__file__).resolve().parent
 
 # Сохранение результатов
-RESULT_DIR = BASE_DIR.parent / 'results'
+RESULT_DIR = BASE_DIR / 'results'
 
 RESULT_DIR.mkdir(exist_ok=True)
 
@@ -29,8 +30,7 @@ USER_AGENTS_LIST = BASE_DIR / 'helpers/user_agents_list.txt'
 
 BOT_NAME = 'poems'
 
-SPIDER_MODULES = ['parser.poems.spiders']
-# NEWSPIDER_MODULE = 'poems.spiders'
+SPIDER_MODULES = ['poems.spiders']
 
 ALLOWED_DOMAINS = ['stihi.ru']
 SITE_URL = 'https://stihi.ru'
@@ -50,7 +50,7 @@ StoreFields = StoreFields(
 )
 
 ITEM_PIPELINES = {
-    'parser.poems.pipelines.JsonAllPoemsTitlePipeline': 300,
+    'poems.pipelines.JsonAllPoemsTitlePipeline': 300,
 }
 
 CONCURRENT_REQUESTS = 2000

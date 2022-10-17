@@ -14,6 +14,6 @@ class Tag(str, Enum):
     USERS: Пользователи
     PARSING: Парсинг
     """
-    INDEX ='Index'
+    INDEX = 'Index'
     USERS = 'Users'
     PARSING = 'Parsing'
