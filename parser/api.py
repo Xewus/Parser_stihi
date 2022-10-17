@@ -2,23 +2,19 @@ from parser.poems.commands import start_spider
 from parser.poems.helpers.enums import SpiderNames
 from parser.poems.helpers.validators import validate_headers, validate_author, validate_urls
 
-import requests
-from fastapi import FastAPI, Header, Query, Depends
+from fastapi import FastAPI, Header, Query
+
+from parser.poems.settings import POEMS_STORE
 
 app = FastAPI()
-
-async def common_parameters(q: str | None = None, skip: int = 0, limit: int = 100):
-    return {"q": q, "skip": skip, "limit": limit}
-
 
 
 @app.get(
     path='/test',
     summary='Test server availability')
 def test(
-    commons: dict = Depends(common_parameters)
 ) -> dict:
-    return commons# {'Server': 'OK'}
+    return {'Server': 'OK'}
 
 
 @app.get('/scrapy/{spider}')
@@ -52,7 +48,7 @@ async def parse(*,
     Returns:
         str: _description_
     """
-    ok, message = await validate_headers('APP_KEY', APP_KEY)
+    ok, message = validate_headers('APP_KEY', APP_KEY)
     if not ok:
         return {'error': message, 'status': 403}
 
@@ -69,4 +65,4 @@ async def parse(*,
         values = (author,)
 
     await start_spider(spider, values)
-    return {'auyhor': author, 'spider': spider}
+    return {'file': POEMS_STORE % author}

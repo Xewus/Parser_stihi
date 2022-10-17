@@ -1,20 +1,21 @@
 """Настройки для `Scrapy`
 """
-import os
+from decouple import config
 from collections import namedtuple
 from pathlib import Path
 
 HEADERS = {
-    'APP_KEY': os.environ.get('APP_KEY', default='qwerty')
+    'APP_KEY': config('APP_KEY')
 }
-
 BASE_DIR = Path(__file__).resolve().parent
+
+# Сохранение результатов
 RESULT_DIR = BASE_DIR.parent / 'results'
 
 RESULT_DIR.mkdir(exist_ok=True)
 
-# Сохранение результатов
 POEMS_STORE = f'{RESULT_DIR}/%s_poems.json'
+
 OUT_POEMS = f'{RESULT_DIR}/out_for_%s'
 OUT_FORMATS = ('.md', '.json', '.docx')
 
@@ -26,14 +27,6 @@ PROXY_LIST = BASE_DIR / 'helpers/proxy_list.txt'
 
 USER_AGENTS_LIST = BASE_DIR / 'helpers/user_agents_list.txt'
 
-
-class Config:
-    FLASK_APP = os.environ.get('FLASK_APP')
-    DEBUG = os.environ.get('DEBUG', default=False)
-    ENV = os.environ.get('ENV', default='production')
-    SECRET_KEY = "os.environ.get('SECRET_KEY')"
-
-
 BOT_NAME = 'poems'
 
 SPIDER_MODULES = ['parser.poems.spiders']
@@ -44,15 +37,6 @@ SITE_URL = 'https://stihi.ru'
 START_URL_FOR_PARSE = 'https://stihi.ru/avtor'
 
 ARGS_SEPARATOR = '#'
-# Названия пауков
-SpiderNames = namedtuple(
-    'SpiderNames', ['ALL_POEMS', 'LIST_POEMS', 'CHOOSE_POEMS']
-)
-SpiderNames = SpiderNames(
-    ALL_POEMS='all-poems',
-    LIST_POEMS='list-poems',
-    CHOOSE_POEMS='choose-poems'
-)
 
 # Названия сохраняемых полей
 StoreFields = namedtuple(

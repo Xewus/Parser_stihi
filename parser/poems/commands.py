@@ -2,11 +2,13 @@
 """
 import os
 import shutil
-from parser.poems.settings import RESULT_DIR, SpiderNames
+from parser.poems.settings import RESULT_DIR
+from parser.poems.helpers import enums
+from collections import namedtuple
 
-ALL = SpiderNames.ALL_POEMS
-LIST = SpiderNames.LIST_POEMS
-CHOOSES = SpiderNames.CHOOSE_POEMS
+ALL = enums.SpiderNames.ALL_POEMS.casefold()
+LIST = enums.SpiderNames.LIST_POEMS.casefold()
+CHOOSES = enums.SpiderNames.CHOOSE_POEMS.casefold()
 
 COMMANDS = {
     ALL: f'scrapy crawl {ALL} -a author=%s --nolog',

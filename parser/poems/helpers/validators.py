@@ -7,7 +7,7 @@ from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientError
 
 
-async def validate_headers(key: str, value: str) -> tuple[bool, str | None]:
+def validate_headers(key: str, value: str) -> tuple[bool, str | None]:
     """Проверяет заголовки.
 
     #### Args:
