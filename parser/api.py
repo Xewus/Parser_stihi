@@ -62,9 +62,6 @@ async def parse(
         urls = validate_urls(urls)
         if not urls:
             return {'error': 'Wrong urls', 'status': 400}
-        values = (author, urls)
-    else:
-        values = (author,)
 
-    await start_spider(spider, values)
+    await start_spider(spider, author, urls)
     return {'file': POEMS_STORE % author}
