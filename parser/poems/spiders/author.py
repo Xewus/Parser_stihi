@@ -1,11 +1,12 @@
 """Парсеры с различными настройками для домена `stihi.ru`.
 """
+from parser.poems.items import ListPoemsItem, PoemItem
+
 from scrapy import Spider
 from scrapy.http.response.html import HtmlResponse
 
-from helpers import enums, utils, xpaths
-from poems.items import ListPoemsItem, PoemItem
-from settings import ALLOWED_DOMAINS, SITE_URL, START_URL_FOR_PARSE
+from core import enums, utils, xpaths
+from core.settings import ALLOWED_DOMAINS, SITE_URL, START_URL_FOR_PARSE
 
 
 class BasePoemsSpider(Spider):

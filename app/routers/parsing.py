@@ -1,13 +1,14 @@
 """Эндпоинты для управления парсингом.
 """
-from pprint import pprint
-from time import sleep
-from fastapi import APIRouter, Query
-from fastapi.responses import RedirectResponse
-import requests
-from pathlib import Path
 from asyncio import sleep
 from http import HTTPStatus
+from pathlib import Path
+from pprint import pprint
+from time import sleep
+
+import requests
+from fastapi import APIRouter, Query
+from fastapi.responses import RedirectResponse
 from starlette.exceptions import HTTPException
 
 
@@ -20,11 +21,10 @@ class HTTPExceptionBadRequest(HTTPException):
             detail=detail
         )
 
-from app.enums import SpiderNames
-from app.settings import SCRAPY_URL, AUTH_KEY
 from parser.poems.settings import POEMS_STORE
 
-
+from core..enums import SpiderNames
+from core.settings import AUTH_KEY, SCRAPY_URL
 
 router = APIRouter()
 

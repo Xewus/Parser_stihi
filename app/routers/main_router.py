@@ -3,9 +3,8 @@
 from fastapi import APIRouter
 
 from app.enums import Tag
-from . import users, parsing 
 
-
+from . import parsing, users
 
 main_router = APIRouter()
 

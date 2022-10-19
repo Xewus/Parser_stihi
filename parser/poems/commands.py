@@ -3,7 +3,9 @@
 import os
 
 
-async def start_spider(spider: str, author: str, urls: str | None = None) -> None:
+async def start_spider(
+    spider: str, author: str, urls: str | None = None
+) -> None:
     """Запускает паука.
 
     #### Args:
@@ -14,5 +16,6 @@ async def start_spider(spider: str, author: str, urls: str | None = None) -> Non
     if not urls:
         command = f'scrapy crawl {spider} -a author={author} --nolog'
     else:
-        command = f'scrapy crawl {spider} -a author={author} -a urls={urls} --nolog'
+        command = 'scrapy crawl '
+        f'{spider} -a author={author} -a urls={urls} --nolog'
     os.system(command=command)

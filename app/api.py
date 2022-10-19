@@ -1,19 +1,17 @@
+from parser.poems.commands import start_spider
+
 from fastapi import FastAPI, Header, Query
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-from helpers.enums import SpiderNames
-from helpers.validators import validate_author, validate_headers, validate_urls
-from poems.commands import start_spider
-from settings import POEMS_STORE
+from core.enums import SpiderNames
+from core.validators import validate_author, validate_headers, validate_urls
 
 app = FastAPI()
 
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1'])
 
 
-@app.get(
-    path='/test',
-    summary='Test server availability')
+@app.get('/test', summary='Test server availability')
 def test() -> dict:
     return {'Server': 'OK'}
 
@@ -64,4 +62,4 @@ async def parse(
             return {'error': 'Wrong urls', 'status': 400}
 
     await start_spider(spider, author, urls)
-    return {'file': POEMS_STORE % author}
+    return {'file': "ok"}

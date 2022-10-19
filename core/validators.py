@@ -5,8 +5,8 @@ from random import choice
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientError
 
-from settings import (ARGS_SEPARATOR, HEADERS, SITE_URL, START_URL_FOR_PARSE,
-                      USER_AGENTS)
+from core.settings import (ARGS_SEPARATOR, HEADERS, SITE_URL,
+                           START_URL_FOR_PARSE, USER_AGENTS)
 
 
 def validate_headers(key: str, value: str) -> tuple[bool, str | None]:

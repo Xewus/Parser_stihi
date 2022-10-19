@@ -1,44 +1,13 @@
 """Настройки для `Scrapy`
 """
-from pathlib import Path
-
-from decouple import config
-
-HEADERS = {
-    'APP_KEY': config('APP_KEY')
-}
-BASE_DIR = Path(__file__).resolve().parent
-
-# Сохранение результатов
-RESULT_DIR = BASE_DIR / 'results'
-
-RESULT_DIR.mkdir(exist_ok=True)
-
-POEMS_STORE = f'{RESULT_DIR}/%s_poems.json'
-
-OUT_POEMS = f'{RESULT_DIR}/out_for_%s'
-OUT_FORMATS = ('.md', '.json', '.docx')
-
-# Proxy list containing entries like
-# http://host1:port
-# http://username:password@host2:port
-# http://host3:port
-PROXY_LIST = BASE_DIR / 'helpers/proxy_list.txt'
-
-USER_AGENTS_LIST = BASE_DIR / 'helpers/user_agents_list.txt'
+from core.settings import PROXY_LIST, USER_AGENTS  # noqa
 
 BOT_NAME = 'poems'
 
-SPIDER_MODULES = ['poems.spiders']
-
-ALLOWED_DOMAINS = ['stihi.ru']
-SITE_URL = 'https://stihi.ru'
-START_URL_FOR_PARSE = SITE_URL + '/avtor'
-
-ARGS_SEPARATOR = '#'
+SPIDER_MODULES = ['parser.poems.spiders']
 
 ITEM_PIPELINES = {
-    'poems.pipelines.JsonAllPoemsTitlePipeline': 300,
+    'parser.poems.pipelines.JsonAllPoemsTitlePipeline': 300,
 }
 
 CONCURRENT_REQUESTS = 2000
@@ -66,12 +35,3 @@ DOWNLOADER_MIDDLEWARES = {
 # 1 = Take only one proxy from the list and assign it to every requests
 # 2 = Put a custom proxy to use in the settings
 PROXY_MODE = 0
-
-# the default user_agent_list composes
-# chrome,I E,firefox,Mozilla,opera,netscape
-# for more user agent strings,
-# you can find it in http://www.useragentstring.com/pages/useragentstring.php
-USER_AGENTS = None
-
-with open(USER_AGENTS_LIST) as f:
-    USER_AGENTS = [line.rstrip() for line in f.readlines()]
