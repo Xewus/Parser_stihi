@@ -1,6 +1,6 @@
 """Настройки для `Scrapy`
 """
-from core.settings import PROXY_LIST, USER_AGENTS  # noqa
+from core.settings import BASE_DIR, PROXY_LIST, USER_AGENTS  # noqa
 
 BOT_NAME = 'poems'
 
@@ -35,3 +35,10 @@ DOWNLOADER_MIDDLEWARES = {
 # 1 = Take only one proxy from the list and assign it to every requests
 # 2 = Put a custom proxy to use in the settings
 PROXY_MODE = 0
+
+
+# JSONRPC_ENABLED = True
+# JSONRPC_LOGFILE = BASE_DIR / 'web_log.txt'
+# JSONRPC_PORT= [6666]
+# JSONRPC_HOST = '127.0.0.1'
+
