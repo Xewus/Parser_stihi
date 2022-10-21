@@ -1,12 +1,9 @@
 """Валидаторы.
 """
 from random import choice
-
-from aiohttp import ClientSession
-from aiohttp.client_exceptions import ClientError
-
 from core.settings import (ARGS_SEPARATOR, HEADERS, SITE_URL,
                            START_URL_FOR_PARSE, USER_AGENTS)
+from core.utils import SendRequest
 
 
 def validate_headers(key: str, value: str) -> tuple[bool, str | None]:
@@ -45,16 +42,14 @@ async def validate_author(author: str) -> tuple[str, str | None]:
         'Upgrade-Insecure-Requests': '1',
         'User-Agent': choice(USER_AGENTS)
     }
-    try:
-        async with ClientSession(headers=headers, conn_timeout=1.3) as session:
-            async with session.get(url=url, allow_redirects=False) as response:
-                if not response.ok:
-                    return '', 'Remote server failure'
-                text = await response.text()
-                if 'Автор не найден' in text:
-                    return '', 'Wrong author'
-    except ClientError:
+    request = SendRequest(url=url, headers=headers)
+    response = await request.GET
+    
+    if response is None or not response.ok:
         return '', 'Remote server failure'
+    text = await response.text()
+    if 'Автор не найден' in text:
+        return '', 'Wrong author'
     return author, None
 
 

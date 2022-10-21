@@ -1,14 +1,18 @@
 """Общие настройки приложения.
 """
-import os
+from core import constants as cnst
 from pathlib import Path
 
 from decouple import config
 
-APP_NAME = os.environ.get('APP_NAME')
+APP_NAME = config('APP_NAME')
+
+WEB_SCRAPY_HOST = config('WEB_SCRAPY_HOST', default='127.0.0.1')
+WEB_SCRAPY_PORT = config('WEB_SCRAPY_PORT', default=8765)
+WEB_SCRAPY_URL = f'http://{WEB_SCRAPY_HOST}:{WEB_SCRAPY_PORT}/'
 
 HEADERS = {
-    'APP_KEY': config('APP_KEY')
+    cnst.APP_KEY: config('APP_KEY')
 }
 
 BASE_DIR = Path(__file__).resolve().parent.parent
