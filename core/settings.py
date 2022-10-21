@@ -1,9 +1,10 @@
 """Общие настройки приложения.
 """
-from core import constants as cnst
 from pathlib import Path
 
 from decouple import config
+
+from core import constants as cnst
 
 APP_NAME = config('APP_NAME')
 

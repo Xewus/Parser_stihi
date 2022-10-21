@@ -5,7 +5,7 @@ import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from aiohttp import ClientSession, ClientResponse
+from aiohttp import ClientResponse, ClientSession
 from aiohttp.client_exceptions import ClientError
 
 from core.settings import DATE_FORMAT, RESULT_DIR
@@ -47,6 +47,8 @@ def dir_manager() -> Path:
 
 
 class SendRequest:
+    """Посылает запросы к сторонним серверам.
+    """
     def __init__(
         self,
         url: str,
@@ -57,15 +59,6 @@ class SendRequest:
         self.data = data
         self.headers = headers
 
-    async def __request_get(self, session: ClientSession) -> ClientResponse:
-        async with session.get(url=self.url, allow_redirects=False) as response:
-            await response.text()
-            return response
-
-    async def __request_post(self, session: ClientSession) -> ClientResponse:
-        async with session.post(url=self.url, data=self.data) as response:
-            return response
-
     async def _send_request(self, request_method) -> ClientResponse | None:
         try:
             async with ClientSession(headers=self.headers, conn_timeout=1.3) as session:
@@ -74,6 +67,12 @@ class SendRequest:
         except ClientError:
             return
 
+    async def __request_get(self, session: ClientSession) -> ClientResponse:
+        return await session.get(url=self.url, allow_redirects=False)
+
+    async def __request_post(self, session: ClientSession) -> ClientResponse:
+        return await session.post(url=self.url, data=self.data)
+    
     @property
     async def GET(self) -> ClientResponse | None:
         return await self._send_request(self.__request_get)

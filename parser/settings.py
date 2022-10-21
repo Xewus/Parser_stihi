@@ -37,13 +37,13 @@ DOWNLOADER_MIDDLEWARES = {
 PROXY_MODE = 0
 
 
-WEBSERVICE_ENABLED = True
-WEBSERVICE_LOGFILE = BASE_DIR / 'web_log.txt'
-WEBSERVICE_PORT = [6666]
-WEBSERVICE_PORT = '127.0.0.1'
+# WEBSERVICE_ENABLED = True
+# WEBSERVICE_LOGFILE = BASE_DIR / 'web_log.txt'
+# WEBSERVICE_PORT = [6666]
+# WEBSERVICE_PORT = '127.0.0.1'
 
-WEBSERVICE_RESOURCES_BASE = {
-    'scrapy.contrib.webservice.crawler.CrawlerResource': 1,
-    'scrapy.contrib.webservice.enginestatus.EngineStatusResource': 1,
-    'scrapy.contrib.webservice.stats.StatsResource': 1,
-}
+# WEBSERVICE_RESOURCES_BASE = {
+#     'scrapy.contrib.webservice.crawler.CrawlerResource': 1,
+#     'scrapy.contrib.webservice.enginestatus.EngineStatusResource': 1,
+#     'scrapy.contrib.webservice.stats.StatsResource': 1,
+# }

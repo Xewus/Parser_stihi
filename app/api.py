@@ -1,14 +1,12 @@
 import json
-from urllib import response
-from parser.poems.commands import start_spider
 
 from fastapi import FastAPI, Header, Query
 
-from core.enums import SpiderNames
-from core.validators import validate_author, validate_headers, validate_urls
-from core.utils import SendRequest
-from core.settings import WEB_SCRAPY_HOST, WEB_SCRAPY_URL, HEADERS
 from core import constants as cnst
+from core.enums import SpiderNames
+from core.settings import HEADERS, WEB_SCRAPY_URL
+from core.utils import SendRequest
+from core.validators import validate_author, validate_urls
 
 app = FastAPI()
 
@@ -29,13 +27,6 @@ async def test() -> dict:
 
 @app.get('/scrapy/{spider}')
 async def parse(
-    *,
-    App_Key: str | None = Header(
-        default=None,
-        title='Ключ приложения',
-        description='Ключ приложения имеющего допуск',
-        example='qwerty'
-    ),
     spider: SpiderNames,
     author: str = Query(
         title='Автор произведений',
@@ -59,10 +50,6 @@ async def parse(
     Returns:
         str: _description_
     """
-    ok, message = validate_headers('App_Key', App_Key)
-    if not ok:
-        return {'error': message, 'status': 403}
-
     author, message = await validate_author(author)
     if not author:
         return {'error': message, 'status': 400}
@@ -72,10 +59,15 @@ async def parse(
         if not urls:
             return {'error': 'Wrong urls', 'status': 400}
 
-    scrapy_url = WEB_SCRAPY_HOST + 'test'
-    request = SendRequest(url=scrapy_url)
-    response = await request.GET
-    return {'file': "ok"}
+    scrapy_url = WEB_SCRAPY_URL + 'scrapy'
+    payload = {
+        'spider': spider,
+        'author': author,
+        'urls': urls
+    }
+    request = SendRequest(url=scrapy_url, data=payload)
+    response = await request.POST
+    return json.loads(await response.text())
 
 
 # @app.get('/scrapy/{spider}', tags=['Inside'])
