@@ -1,20 +1,19 @@
 """Парсеры с различными настройками для домена `stihi.ru`.
 """
+from parser.helpers import enums, utils, xpaths
 from parser.poems.items import ListPoemsItem, PoemItem
+from parser.settings import ALLOWED_DOMAINS, SITE_URL, START_URL_FOR_PARSE, ARGS_SEPARATOR
 
 from scrapy import Spider
 from scrapy.http.response.html import HtmlResponse
 
-from core import enums, utils, xpaths
-from core.settings import ALLOWED_DOMAINS, SITE_URL, START_URL_FOR_PARSE
-
 
 class BasePoemsSpider(Spider):
-    name = 'BasePoems'
-    rotate_user_agent = True
-    allowed_domains = ALLOWED_DOMAINS
-    site_url = SITE_URL
-    author_url = START_URL_FOR_PARSE
+    name: str = 'BasePoems'
+    rotate_user_agent: bool = True
+    allowed_domains: list[str] = ALLOWED_DOMAINS
+    site_url: str = SITE_URL
+    author_url: str = START_URL_FOR_PARSE
 
     def __init__(self, author: str, result_file: str):
         super(BasePoemsSpider, self).__init__()
@@ -70,6 +69,8 @@ class AllPoemsSpider(ListPoemsSpider):
         """Собирает название, автора и текст.
         """
         page = response.xpath(xpaths.body_page)
+        print(response.url)
+        print(page.xpath(xpaths.title_page).get())
         yield PoemItem(
             title=page.xpath(xpaths.title_page).get(),
             author=page.xpath(xpaths.author_on_poem_page).get(),
@@ -84,9 +85,9 @@ class ChooseSpider(AllPoemsSpider):
     """
     name = enums.SpiderNames.CHOOSE_POEMS
 
-    def __init__(self, author: str, urls: str):
-        super(BasePoemsSpider, self).__init__(author=author)
-        self.start_urls = urls
+    def __init__(self, author: str, urls: str, result_file: str):
+        super(BasePoemsSpider, self).__init__(author=author, result_file=result_file)
+        self.start_urls: list[str] = urls.split(ARGS_SEPARATOR)
 
     def parse(self, response: HtmlResponse):
         """Переходит по переданному списку ссылок с избранными стихами.

@@ -1,6 +1,33 @@
 """Настройки для `Scrapy`
 """
-from core.settings import BASE_DIR, PROXY_LIST, USER_AGENTS  # noqa
+from pathlib import Path
+
+from decouple import config
+
+WEB_SCRAPY_HOST =  config('WEB_SCRAPY_HOST')
+WEB_SCRAPY_PORT = config('WEB_SCRAPY_PORT')
+APP_KEY = config('APP_KEY')
+
+DEBUG = config('DEBUG')
+
+BASE_DIR = Path(__file__).resolve().parent
+PROXY_LIST = BASE_DIR / 'helpers/proxy_list.txt'
+USER_AGENTS_LIST = BASE_DIR / 'helpers/user_agents_list.txt'
+
+# '27_05_21_results/author_poems.json'
+RESULT_DIR = str(BASE_DIR) + '/%s_results'
+POEMS_STORE = '%s_%s.json'
+DATE_FORMAT = config('DATE_FORMAT')
+OUT_FORMATS = ('.md', '.json', '.docx')
+
+ARGS_SEPARATOR = '#'
+
+ALLOWED_DOMAINS = ['stihi.ru']
+SITE_URL = 'https://stihi.ru'
+START_URL_FOR_PARSE = SITE_URL + '/avtor'
+
+with open(USER_AGENTS_LIST) as f:
+    USER_AGENTS = [line.rstrip() for line in f.readlines()]
 
 BOT_NAME = 'poems'
 
@@ -35,15 +62,5 @@ DOWNLOADER_MIDDLEWARES = {
 # 1 = Take only one proxy from the list and assign it to every requests
 # 2 = Put a custom proxy to use in the settings
 PROXY_MODE = 0
-
-
-# WEBSERVICE_ENABLED = True
-# WEBSERVICE_LOGFILE = BASE_DIR / 'web_log.txt'
-# WEBSERVICE_PORT = [6666]
-# WEBSERVICE_PORT = '127.0.0.1'
-
-# WEBSERVICE_RESOURCES_BASE = {
-#     'scrapy.contrib.webservice.crawler.CrawlerResource': 1,
-#     'scrapy.contrib.webservice.enginestatus.EngineStatusResource': 1,
-#     'scrapy.contrib.webservice.stats.StatsResource': 1,
-# }
+REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
+LOG_LEVEL = 'ERROR'

@@ -1,6 +1,6 @@
 import json
 
-from fastapi import FastAPI, Header, Query
+from fastapi import FastAPI, Query
 
 from core import constants as cnst
 from core.enums import SpiderNames
@@ -25,7 +25,7 @@ async def test() -> dict:
     return data
 
 
-@app.get('/scrapy/{spider}')
+@app.get('/parsing/{spider}')
 async def parse(
     spider: SpiderNames,
     author: str = Query(
@@ -67,7 +67,9 @@ async def parse(
     }
     request = SendRequest(url=scrapy_url, data=payload)
     response = await request.POST
-    return json.loads(await response.text())
+    print(response)
+    text = await response.text()
+    return text
 
 
 # @app.get('/scrapy/{spider}', tags=['Inside'])

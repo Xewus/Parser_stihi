@@ -1,11 +1,10 @@
 """Организация обработки и сохранения результатов парсинга.
 """
 import json
+from parser.helpers.enums import StoreFields
 from parser.poems.spiders.author import BasePoemsSpider
 
 from scrapy import Item
-
-from core.enums import StoreFields
 
 
 class JsonAllPoemsTitlePipeline:
@@ -13,7 +12,7 @@ class JsonAllPoemsTitlePipeline:
         self.results = []
 
     def close_spider(self, spider: BasePoemsSpider):
-        self.results.sort(key=lambda item: item[StoreFields.TITLE])
+        # self.results.sort(key=lambda item: item[StoreFields.TITLE])
 
         with open(spider.result_file, 'w', encoding='utf-8') as store:
             store.write(json.dumps(self.results, indent=2, ensure_ascii=False))
