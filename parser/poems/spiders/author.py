@@ -4,7 +4,7 @@ from parser.helpers import enums, utils, xpaths
 from parser.poems.items import ListPoemsItem, PoemItem
 from parser.settings import ALLOWED_DOMAINS, SITE_URL, START_URL_FOR_PARSE, ARGS_SEPARATOR
 
-from scrapy import Spider
+from scrapy import Spider, Request
 from scrapy.http.response.html import HtmlResponse
 
 
@@ -69,8 +69,6 @@ class AllPoemsSpider(ListPoemsSpider):
         """Собирает название, автора и текст.
         """
         page = response.xpath(xpaths.body_page)
-        print(response.url)
-        print(page.xpath(xpaths.title_page).get())
         yield PoemItem(
             title=page.xpath(xpaths.title_page).get(),
             author=page.xpath(xpaths.author_on_poem_page).get(),
@@ -88,9 +86,12 @@ class ChooseSpider(AllPoemsSpider):
     def __init__(self, author: str, urls: str, result_file: str):
         super(BasePoemsSpider, self).__init__(author=author, result_file=result_file)
         self.start_urls: list[str] = urls.split(ARGS_SEPARATOR)
+    
+    def start_requests(self):
+        """Переопределено для исключения лишних промежуточных функций.
 
-    def parse(self, response: HtmlResponse):
-        """Переходит по переданному списку ссылок с избранными стихами.
+        Yields:
+            Rewquest: Запросы к переданным страницам.
         """
-        for poem in self.start_urls:
-            yield response.follow(poem, callback=self.parse_poem)
+        for url in self.start_urls:
+            yield Request(url=url, callback=self.parse_poem)
