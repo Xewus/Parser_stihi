@@ -1,16 +1,22 @@
 """Сервер, принимающий запросы к `Scrapy`.
 """
 from parser.helpers.enums import Tag
+from parser.helpers.exceptions import NotFileException, ScrapyException
 from parser.poems.commands import start_spider
-from parser.settings import DEBUG
-from parser.web.exceptions import ScrapyException
+from parser.settings import DEBUG, APP_NAME, APP_DESCRIPTION, APP_VERSION, AUTHOR
 from parser.web.schemas import (ParsingArgsSchema, RespParsingArgsSchema,
                                 RespTestSchema)
 from parser.web.validators import app_key_validator
 
 from fastapi import Body, FastAPI, Header
 
-app = FastAPI(debug=DEBUG)
+app = FastAPI(
+    debug=DEBUG,
+    title=APP_NAME,
+    description=APP_DESCRIPTION,
+    version=APP_VERSION,
+    contact=AUTHOR
+)
 
 
 @app.get(
@@ -58,6 +64,7 @@ async def parse(
     try:
         uri = await start_spider(**args.dict())
         return RespParsingArgsSchema(uri=uri)
+    except FileNotFoundError as err:
+        raise NotFileException(err.args)
     except Exception as exc:
-        print(exc)
-        raise ScrapyException
+        raise ScrapyException(exc.args)

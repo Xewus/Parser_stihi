@@ -29,9 +29,6 @@ POEMS_STORE = '%s_poems.json'
 DATE_FORMAT = '%y_%m_%d'
 OUT_FORMATS = ('.md', '.json', '.docx')
 
-ARGS_SEPARATOR = '#'
 
 DEFAULT_TIME_BLOCK_IP = 60 * 15  # 15 minutes
 DEFAULT_AMOUNT_TRIES = 3
-
-ALLOWED_DOMAINS = ['stihi.ru']

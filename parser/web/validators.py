@@ -1,17 +1,17 @@
 """Валидаторы данных.
 """
+from parser.helpers.exceptions import AppKeyException
 from parser.settings import APP_KEY
-from parser.web.exceptions import AppKeyException
 
 
-def app_key_validator(app_key: str) -> bool:
+def app_key_validator(app_key: str) -> None:
     """Проверяет разрешение по заголовку.
 
     #### Args:
-    - app_key (str): Объект запроса.
+    - app_key (str): Проверяемый ключ.
 
-    #### Returns:
-    - bool: Пройдена ли проверка.
+    #### Raises:
+        AppKeyException: Недопустимый ключ.
     """
     if not app_key == APP_KEY:
         raise AppKeyException(app_key)

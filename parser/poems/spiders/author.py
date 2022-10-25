@@ -2,9 +2,10 @@
 """
 from parser.helpers import enums, utils, xpaths
 from parser.poems.items import ListPoemsItem, PoemItem
-from parser.settings import ALLOWED_DOMAINS, SITE_URL, START_URL_FOR_PARSE, ARGS_SEPARATOR
+from parser.settings import (ALLOWED_DOMAINS, ARGS_SEPARATOR, SITE_URL,
+                             START_URL_FOR_PARSE)
 
-from scrapy import Spider, Request
+from scrapy import Request, Spider
 from scrapy.http.response.html import HtmlResponse
 
 

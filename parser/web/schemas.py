@@ -1,19 +1,20 @@
 """Схемы валидации данных.
 """
 from datetime import datetime as dt
-from tkinter import NO
 from parser.helpers.enums import SpiderNames
-from parser.settings import DATE_FORMAT, POEMS_STORE, RESULT_DIR, ARGS_SEPARATOR
-from parser.settings import ARGS_SEPARATOR as SEP
+from parser.settings import (ARGS_SEPARATOR, DATE_FORMAT, POEMS_STORE,
+                             RESULT_DIR)
 from pathlib import Path
-
-from pydantic import BaseModel, Field, HttpUrl, validator, root_validator
 from typing import Optional
+
+from pydantic import BaseModel, Field, HttpUrl, root_validator, validator
 
 example_date = dt.date(dt.now()).strftime(DATE_FORMAT)
 
 
 class RespTestSchema(BaseModel):
+    """Схема ответа на тестовый запрос.
+    """
     server: str = Field(
         default='Ok',
         title='Проверка сервера',
@@ -25,6 +26,8 @@ class RespTestSchema(BaseModel):
 
 
 class ParsingArgsSchema(BaseModel):
+    """Схема запроса для старта парсинга.
+    """
     spider: SpiderNames = Field(title='Имя паука')
     author: HttpUrl | str = Field(
         title='Имя автора',
@@ -37,7 +40,7 @@ class ParsingArgsSchema(BaseModel):
     )
 
     class Config:
-        title = 'Параметры необходимые для парсинга'
+        title = 'Схема Параметров необходимые для парсинга'
         schema_extra = {
             'examples': {
                 'Полный `URL': {
@@ -102,7 +105,7 @@ class ParsingArgsSchema(BaseModel):
 
     @root_validator
     def url_for_spider(cls, values: dict) -> dict:
-        """Проверяет, что списокстихов с сооьветствующим пауком.
+        """Проверяет, соответствие списка стихов с пауком.
 
         #### Args:
         - values (dict): Параметры для пауков.
@@ -112,7 +115,7 @@ class ParsingArgsSchema(BaseModel):
         - ValueError: Передан список стихов с несоответствующим пауком.
         
         #### Returns:
-        - dict: Проверенные параметры для пауков.
+        - dict: Проверенные параметры для паука.
         """
         urls = values.get('urls')
         spider_name = values.get('spider')
@@ -131,6 +134,8 @@ class ParsingArgsSchema(BaseModel):
 
 
 class RespParsingArgsSchema(BaseModel):
+    """Схема ответа после парсинга.
+    """
     uri: Path = Field(
         title = 'Месторасположение файла',
         description='',

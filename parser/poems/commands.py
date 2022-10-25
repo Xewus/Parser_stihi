@@ -3,7 +3,6 @@
 import os
 from parser.helpers.utils import dir_manager
 from parser.settings import POEMS_STORE
-from pathlib import Path
 
 
 async def start_spider(
@@ -15,6 +14,10 @@ async def start_spider(
     - spider (str): Имя паука.
     - author (str):: Аргументы для запуска паука.
     - urls (str | None, optional): Список `url`ов, если необходим.
+        Note: `Scrapy` принимает только строковые аргументы.
+    
+    #### Raises:
+        FileNotFoundError: Отсутствует файл с результатами.
 
     #### Returns:
     - str: Расположение сохранённого файла.
@@ -25,6 +28,13 @@ async def start_spider(
     command = f'scrapy crawl {spider} -a author={author} -a result_file={result_file}'
     if urls:
         command += f' -a urls={urls}'
-    print(command)
+
     os.system(command=command)
+
+    if not result_file.exists():
+        raise FileNotFoundError(
+            'Ошибка при создании файла с результатами парсинга.'
+            f' Файл `{result_file}` не найден'
+        )
     return str(result_file)
+

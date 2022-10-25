@@ -2,9 +2,8 @@
 """
 import shutil
 from datetime import datetime, timedelta
+from parser.settings import DATE_FORMAT, RESULT_DIR
 from pathlib import Path
-
-from core.settings import DATE_FORMAT, RESULT_DIR
 
 
 def clean_poem_text(text: list[str]) -> str:
@@ -26,6 +25,13 @@ def clean_poem_text(text: list[str]) -> str:
 
 def dir_manager() -> Path:
     """Создаёт папку для сохранения результатов парсинга и удалет устаревшую.
+
+    Создаётся папка для текущей даты.
+    Вчерашняя папка остаётся из-за 'проблемы 23:59:59'.
+    Позавчерашняя папка удаляется.
+
+    Returns:
+        Path: `URI` папки.
     """
     today = datetime.today()
     two_days_ago = today - timedelta(days=2)

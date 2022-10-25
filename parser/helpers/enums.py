@@ -1,3 +1,5 @@
+"""Классы с константами.
+"""
 from enum import Enum
 
 
