@@ -76,6 +76,7 @@ DOWNLOADER_MIDDLEWARES = {
 # 2 = Put a custom proxy to use in the settings
 PROXY_MODE = 0
 
+##########################################################################
 AUTHOR = {
     'name': 'xewus',
     'email': 'xewuss@yandex.ru',

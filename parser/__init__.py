@@ -1,1 +1,1 @@
-from parser.web.api import app
+from parser.web.api import app  # noqa

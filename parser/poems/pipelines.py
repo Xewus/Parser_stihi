@@ -17,7 +17,6 @@ class JsonAllPoemsTitlePipeline:
         with open(spider.result_file, 'w', encoding='utf-8') as store:
             store.write(json.dumps(self.results, indent=2, ensure_ascii=False))
 
-
     def process_item(self, item: Item, spider: BasePoemsSpider):
         self.results.append(dict(item))
         return item

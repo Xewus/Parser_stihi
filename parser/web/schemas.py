@@ -58,7 +58,7 @@ class ParsingArgsSchema(BaseModel):
                     }
                 },
                 'С избранными стихами': {
-                    'summary':'Запрос с URL`ами стихов',
+                    'summary': 'Запрос с URL`ами стихов',
                     'value': {
                         'spider': 'choose-poems',
                         'author': 'oleg',
@@ -113,7 +113,7 @@ class ParsingArgsSchema(BaseModel):
         #### Raises:
         - ValueError: Отсутствует список стихов для паука.
         - ValueError: Передан список стихов с несоответствующим пауком.
-        
+
         #### Returns:
         - dict: Проверенные параметры для паука.
         """
@@ -124,7 +124,6 @@ class ParsingArgsSchema(BaseModel):
         if urls and spider_name != SpiderNames.CHOOSE_POEMS.value:
             raise ValueError('Паередан лишний параметр - `urls`')
         return values
-
 
     def dict(self) -> dict[str, str]:
         return {
@@ -137,12 +136,12 @@ class RespParsingArgsSchema(BaseModel):
     """Схема ответа после парсинга.
     """
     uri: Path = Field(
-        title = 'Месторасположение файла',
+        title='Месторасположение файла',
         description='',
-        example = f'{RESULT_DIR}/{POEMS_STORE}' % (
+        example=f'{RESULT_DIR}/{POEMS_STORE}' % (
             example_date, 'oleg', SpiderNames.ALL_POEMS.value
         )
     )
-    
+
     class Config:
         title = 'Схема ответа после парсинга'

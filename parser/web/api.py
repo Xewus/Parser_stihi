@@ -3,7 +3,8 @@
 from parser.helpers.enums import Tag
 from parser.helpers.exceptions import NotFileException, ScrapyException
 from parser.poems.commands import start_spider
-from parser.settings import DEBUG, APP_NAME, APP_DESCRIPTION, APP_VERSION, AUTHOR
+from parser.settings import (APP_DESCRIPTION, APP_NAME, APP_VERSION, AUTHOR,
+                             DEBUG)
 from parser.web.schemas import (ParsingArgsSchema, RespParsingArgsSchema,
                                 RespTestSchema)
 from parser.web.validators import app_key_validator
@@ -26,9 +27,9 @@ app = FastAPI(
     response_model=RespTestSchema
 )
 async def test_server(
-    app_key = Header(
+    app_key=Header(
         description='Ключ доступа',
-        example='SOME_KEY'        
+        example='SOME_KEY'
         )
 ) -> RespTestSchema:
     """Проверка доступности сервера.
@@ -51,14 +52,14 @@ async def test_server(
     response_model=RespParsingArgsSchema
 )
 async def parse(
-    app_key = Header(
+    app_key=Header(
         description='Ключ доступа',
         example='SOME_KEY'
     ),
     args: ParsingArgsSchema = Body(
         ..., examples=ParsingArgsSchema.Config.schema_extra['examples']
     )
-    
+
 ) -> RespParsingArgsSchema:
     app_key_validator(app_key)
     try:

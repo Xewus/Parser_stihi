@@ -15,26 +15,25 @@ async def start_spider(
     - author (str):: Аргументы для запуска паука.
     - urls (str | None, optional): Список `url`ов, если необходим.
         Note: `Scrapy` принимает только строковые аргументы.
-    
+
     #### Raises:
         FileNotFoundError: Отсутствует файл с результатами.
 
     #### Returns:
     - str: Расположение сохранённого файла.
     """
-    result_dir = dir_manager()
-    result_file = result_dir / (POEMS_STORE % (author, spider))
+    res_dir = dir_manager()
+    file = res_dir / (POEMS_STORE % (author, spider))
 
-    command = f'scrapy crawl {spider} -a author={author} -a result_file={result_file}'
+    command = f'scrapy crawl {spider} -a author={author} -a result_file={file}'
     if urls:
         command += f' -a urls={urls}'
 
     os.system(command=command)
 
-    if not result_file.exists():
+    if not file.exists():
         raise FileNotFoundError(
             'Ошибка при создании файла с результатами парсинга.'
-            f' Файл `{result_file}` не найден'
+            f' Файл `{file}` не найден'
         )
-    return str(result_file)
-
+    return str(file)

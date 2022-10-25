@@ -32,7 +32,8 @@ class ListPoemsSpider(BasePoemsSpider):
     name = enums.SpiderNames.LIST_POEMS
 
     def parse(self, response: HtmlResponse):
-        """Парсит страницу автора, переходит по страницам со списками его произведений.
+        """Парсит страницу автора, переходит по страницам
+        со списками его произведений.
         """
         page = response.xpath(xpaths.body_page)
         # name_author = page.xpath(xpaths.title_page).get()
@@ -85,9 +86,11 @@ class ChooseSpider(AllPoemsSpider):
     name = enums.SpiderNames.CHOOSE_POEMS
 
     def __init__(self, author: str, urls: str, result_file: str):
-        super(BasePoemsSpider, self).__init__(author=author, result_file=result_file)
+        super(BasePoemsSpider, self).__init__(
+            author=author, result_file=result_file
+        )
         self.start_urls: list[str] = urls.split(ARGS_SEPARATOR)
-    
+
     def start_requests(self):
         """Переопределено для исключения лишних промежуточных функций.
 
