@@ -43,6 +43,6 @@ def dir_manager() -> Path:
 
     if two_days_ago_dir.exists():
         shutil.rmtree(two_days_ago_dir)
-    if not today_dir.exists():
-        today_dir.mkdir()
+
+    today_dir.mkdir(parents=True, exist_ok=True)
     return today_dir

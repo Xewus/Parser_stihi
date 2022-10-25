@@ -12,12 +12,12 @@ BASE_DIR =         Path(__file__).resolve().parent
 PROXY_LIST =       BASE_DIR / 'helpers/proxy_list.txt'
 USER_AGENTS_LIST = BASE_DIR / 'helpers/user_agents_list.txt'
 
-# |_ */<project>/27_05_21_results/
+# |_ */<project>/results/27_05_21/
 #   |_oleg_choose-poems.json
 #   |_ivan_all-poems.json
 #   |_...
-# |_ */<project>/28_05_21_results/
-RESULT_DIR =  str(BASE_DIR) + '/%s_results'
+# |_ */<project>/results/28_05_21/
+RESULT_DIR =  str(BASE_DIR) + '/results/%s/'
 POEMS_STORE = '%s_%s.json'
 DATE_FORMAT = config('DATE_FORMAT')
 

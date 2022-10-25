@@ -24,7 +24,6 @@ async def start_spider(
     """
     res_dir = dir_manager()
     file = res_dir / (POEMS_STORE % (author, spider))
-
     command = f'scrapy crawl {spider} -a author={author} -a result_file={file}'
     if urls:
         command += f' -a urls={urls}'
