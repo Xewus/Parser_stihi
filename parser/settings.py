@@ -2,9 +2,9 @@
 """
 from pathlib import Path
 
-from decouple import config
+from decouple import Csv, config
 
-DEBUG = config('DEBUG', default=False)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 DATE_FORMAT = config('DATE_FORMAT', default='%y_%m_%d')
 
@@ -24,12 +24,13 @@ DATE_FORMAT = config('DATE_FORMAT')
 ARGS_SEPARATOR = '#'
 
 # Настройки для FastAPI
-APP_NAME =         config('APP_NAME')
-APP_DESCRIPTION =  'API для запуска парсера сайта ***Stihi.ru***'
-APP_VERSION =      '1.1.0'
-WEB_SCRAPY_HOST =  config('WEB_SCRAPY_HOST', default='127.0.0.1')  # Хост, на котором будет запущено приложение.
-WEB_SCRAPY_PORT =  config('WEB_SCRAPY_PORT', default=8765)         # Порт, на котором будет запущено приложение.
-APP_KEY =          config('APP_KEY')                               # Елюч досьупа к приложению.
+APP_NAME =          config('APP_NAME')
+APP_DESCRIPTION =   'API для запуска парсера сайта ***Stihi.ru***'
+APP_VERSION =       '1.1.0'
+
+WEB_ALLOWED_HOSTS = config('WEB_ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
+WEB_SCRAPY_PORT =   config('WEB_SCRAPY_PORT', default=8765, cast=int)
+APP_KEY =           config('APP_KEY')
 
 # Настройки `Scrapy'`
 BOT_NAME =            'poems'
@@ -42,7 +43,7 @@ ALLOWED_DOMAINS =     ['stihi.ru']
 SITE_URL =            'https://stihi.ru'
 START_URL_FOR_PARSE = SITE_URL + '/avtor'
 
-with open(USER_AGENTS_LIST) as f:
+with open(USER_AGENTS_LIST, 'r', encoding='utf-8') as f:
     USER_AGENTS = [line.rstrip() for line in f.readlines()]
 
 ITEM_PIPELINES = {
