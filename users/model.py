@@ -6,8 +6,8 @@ from pony.orm import (Database, PrimaryKey, Required, db_session, select,
                       sql_debug)
 from pony.orm.core import QueryResult
 
-from core.settings import MAX_USERNAME_LENGTH, SU_PASSWORD, Config
-from parser.helpers.utils import AllowTries
+from parser.settings import MAX_USERNAME_LENGTH, SU_PASSWORD, Config
+from parser.core.utils import AllowTries
 
 U = TypeVar('U', bound='User')
 

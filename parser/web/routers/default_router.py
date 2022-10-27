@@ -1,13 +1,9 @@
 """Сбор всех эндпоинтов в один.
 """
-from fastapi import APIRouter
-import json
+from parser.core.enums import Tag
+from parser.web.schemas import RespTestSchema
 
-from app.core.enums import Tag
-from app.core import constants as cnst
-from app.core.requests import SendRequest
-from app.core.settings import WEB_SCRAPY_URL, HEADERS
-from app.schemas import RespTestSchema
+from fastapi import APIRouter
 
 router = APIRouter()
 
@@ -24,25 +20,16 @@ async def index_view():
 
 
 @router.get(
-    path='/test',
-    tags=[Tag.DEFAULT],
-    summary='Проверяет доступность серверов.',
+    '/test',
+    tags=[Tag.TEST],
+    summary='Проверка доступности сервера',
     response_model=RespTestSchema
 )
-async def test() -> dict:
-    data = {
-        cnst.SERVER_WEB: cnst.OK,
-        cnst.SERVER_SCRAPY: cnst.NOT_OK
-        }
-    request = SendRequest(url=WEB_SCRAPY_URL + 'test', headers=HEADERS)
-    response = await request.GET
-    match response:
-        case None:
-            ...
-        case _:
-            data = data | json.loads(await response.text())
-
-    return data
+async def test_server(
+) -> RespTestSchema:
+    """Проверка доступности сервера.
+    """
+    return RespTestSchema(server='Ok')
 
 
 # @drouter.get('/wait')

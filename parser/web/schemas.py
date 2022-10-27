@@ -1,7 +1,7 @@
 """Схемы валидации данных.
 """
 from datetime import datetime as dt
-from parser.helpers.enums import SpiderNames
+from parser.core.enums import SpiderNames
 from parser.settings import (ARGS_SEPARATOR, DATE_FORMAT, POEMS_STORE,
                              RESULT_DIR)
 from pathlib import Path
@@ -25,18 +25,13 @@ class RespTestSchema(BaseModel):
         title = 'Схема ответа для теста сервера'
 
 
-class ParsingArgsSchema(BaseModel):
+class ChooseParsingSchema(BaseModel):
     """Схема запроса для старта парсинга.
     """
     spider: SpiderNames = Field(title='Имя паука')
     author: str = Field(
         title='Имя автора',
         description='Имя автора, как указано в `URL`'
-    )
-    urls: Optional[list[HttpUrl]] = Field(
-        title='Список URL`ов выбранных стихов',
-        description='Список стихов используется только для '
-                    f'паука `{SpiderNames.CHOOSE_POEMS}`'
     )
 
     class Config:
@@ -47,7 +42,7 @@ class ParsingArgsSchema(BaseModel):
                     'summary': 'Полный URL на страницу автора',
                     'value': {
                         'spider': 'all-poems',
-                        'author': 'oleg'
+                        'author': 'https://stihi.ru/avtor/oleg/'
                     }
                 },
                 'Список стихов': {
@@ -62,58 +57,38 @@ class ParsingArgsSchema(BaseModel):
                     'value': {
                         'spider': 'choose-poems',
                         'author': 'oleg',
-                        'urls': [
-                            'https://stihi.ru/2010/05/07/6867',
-                            'https://stihi.ru/2012/09/10/9439',
-                            'https://stihi.ru/2015/10/10/3770'
-                        ]
+
                     }
                 }
             }
         }
 
-    @validator('urls')
-    def urls_validator(cls, urls: list[HttpUrl]) -> str:
-        """Преобразует список в строку-аргумент для `Scrapy`.
-
-        #### Args:
-        - urls (list[HttpUrl]): Спсок URL стихов.
-
-        #### Returns:
-        - str: Строка с URL стихов.
-        """
-        return ARGS_SEPARATOR.join(url.strip() for url in urls)
-
-    @root_validator
-    def url_for_spider(cls, values: dict) -> dict:
-        """Проверяет, соответствие списка стихов с пауком.
-
-        #### Args:
-        - values (dict): Параметры для пауков.
-
-        #### Raises:
-        - ValueError: Отсутствует список стихов для паука.
-        - ValueError: Передан список стихов с несоответствующим пауком.
-
-        #### Returns:
-        - dict: Проверенные параметры для паука.
-        """
-        urls = values.get('urls')
-        spider_name = values.get('spider')
-        if not urls and spider_name == SpiderNames.CHOOSE_POEMS.value:
-            raise ValueError('Необходим список стихов')
-        if urls and spider_name != SpiderNames.CHOOSE_POEMS.value:
-            raise ValueError('Передан лишний параметр - `urls`')
-        return values
-
     def dict(self) -> dict[str, str]:
         return {
             'spider': self.spider.value,
             'author': self.author,
-        } | ({'urls': self.urls} if self.urls else {})
+        }
 
 
-class RespParsingArgsSchema(BaseModel):
+class ChoosePoemsSchema(BaseModel):
+    poems: list[dict[str, HttpUrl]] = Field(
+        title='Список ссылок на стихи',
+        description='Названия стихов с ссылками.',
+        example='''[
+            {
+                "title": "Английская колыбельная",
+                "link": "https://stihi.ru//2012/01/19/2059"
+            },
+            {
+                
+                "title": "Ах, если б знал ты, как легко..."
+                "link": "https://stihi.ru//2000/08/21-53"
+            }
+        ]'''
+    )
+
+
+class RespUriSchema(BaseModel):
     """Схема ответа после парсинга.
     """
     uri: Path = Field(

@@ -1,7 +1,7 @@
 """Сервер, принимающий запросы к `Scrapy`.
 """
-from parser.helpers.enums import Tag
-from parser.helpers.exceptions import NotFileException, ScrapyException
+from parser.core.enums import Tag
+from parser.core.exceptions import NotFileException, ScrapyException
 from parser.poems.commands import start_spider
 from parser.settings import (APP_DESCRIPTION, APP_NAME, APP_VERSION, AUTHOR,
                              DEBUG, WEB_ALLOWED_HOSTS)

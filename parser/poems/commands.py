@@ -1,8 +1,10 @@
 """Команды для запуска парсеров.
 """
 import os
-from parser.helpers.utils import dir_manager
+from parser.core.exceptions import ScrapyException
+from parser.core.utils import dir_manager
 from parser.settings import POEMS_STORE
+from parser.core.exceptions import NoFileException
 
 
 async def start_spider(
@@ -27,11 +29,13 @@ async def start_spider(
     command = f'scrapy crawl {spider} -a author={author} -a result_file={file}'
     if urls:
         command += f' -a urls={urls}'
-
-    os.system(command=command)
+    try:
+        os.system(command=command)
+    except Exception as exc:
+        raise ScrapyException(exc.args)
 
     if not file.exists():
-        raise FileNotFoundError(
+        raise NoFileException(
             'Ошибка при создании файла с результатами парсинга.'
             f' Файл `{file}` не найден.'
         )

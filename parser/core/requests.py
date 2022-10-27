@@ -17,8 +17,10 @@ class SendRequest:
 
     async def __request_get(self) -> ClientResponse:
         try:
-            async with ClientSession(headers=self.headers, conn_timeout=1.3) as session:
-                response = await session.get(url=self.url, allow_redirects=False)
+            async with ClientSession(
+                headers=self.headers, conn_timeout=1.3
+            ) as session:
+                response = await session.get(url=self.url)
                 print('_S_R', id(response), response.host)
                 return response
         except ClientError:
@@ -26,7 +28,9 @@ class SendRequest:
 
     async def __request_post(self) -> ClientResponse:
         try:
-            async with ClientSession(headers=self.headers, conn_timeout=1.3) as session:
+            async with ClientSession(
+                headers=self.headers, conn_timeout=1.3
+            ) as session:
                 return await session.post(url=self.url, data=self.data)
 
         except ClientError:
@@ -34,10 +38,10 @@ class SendRequest:
 
     @property
     async def GET(self) -> ClientResponse | None:
-        response =  await self.__request_get()
+        response = await self.__request_get()
         await response.text()
         return response
-    
+
     @property
     async def POST(self) -> ClientResponse | None:
         return await self.__request_post()

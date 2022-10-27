@@ -1,6 +1,6 @@
 """Парсеры с различными настройками для домена `stihi.ru`.
 """
-from parser.helpers import enums, utils, xpaths
+from parser.core import enums, utils, xpaths
 from parser.poems.items import ListPoemsItem, PoemItem
 from parser.settings import (ALLOWED_DOMAINS, ARGS_SEPARATOR, SITE_URL,
                              START_URL_FOR_PARSE)
@@ -14,13 +14,12 @@ class BasePoemsSpider(Spider):
     rotate_user_agent: bool = True
     allowed_domains: list[str] = ALLOWED_DOMAINS
     site_url: str = SITE_URL
-    author_url: str = START_URL_FOR_PARSE
 
     def __init__(self, author: str, result_file: str):
         super(BasePoemsSpider, self).__init__()
         self.author = author
         self.result_file = result_file
-        self.start_urls = [f'{self.author_url}/{author}']
+        self.start_urls = [START_URL_FOR_PARSE + author]
 
     def parse(self, response: HtmlResponse):
         raise Exception('Implement parse')

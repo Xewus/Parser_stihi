@@ -1,7 +1,7 @@
 """Организация обработки и сохранения результатов парсинга.
 """
 import json
-from parser.helpers.enums import StoreFields
+from parser.core.enums import StoreFields
 from parser.poems.spiders.author import BasePoemsSpider
 
 from scrapy import Item

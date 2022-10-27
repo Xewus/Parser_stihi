@@ -1,9 +1,13 @@
 """Вспомогательные функции.
 """
+import json
 import shutil
 from datetime import datetime, timedelta
 from parser.settings import DATE_FORMAT, RESULT_DIR
 from pathlib import Path
+from pydantic import HttpUrl
+from parser.core.exceptions import NoLinksException
+from parser.core.enums import StoreFields
 
 
 def clean_poem_text(text: list[str]) -> str:
@@ -47,3 +51,11 @@ def dir_manager() -> Path:
 
     today_dir.mkdir(parents=True, exist_ok=True)
     return today_dir
+
+
+async def extract_poem_links(file: str | Path) -> list[dict[str, str | HttpUrl]]:
+    with open(file=file) as poems_links:
+        poems_links = json.load(poems_links)
+        if not poems_links or not poems_links[0].get(StoreFields.value):
+            raise NoLinksException
+        return poems_links

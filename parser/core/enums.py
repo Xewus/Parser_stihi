@@ -1,7 +1,4 @@
-"""Классы с константами.
-"""
 from enum import Enum
-
 
 class SpiderNames(str, Enum):
     """Имена пауков.
@@ -36,5 +33,15 @@ class Tag(str, Enum):
     - USERS: Пользователи
     - PARSING: Парсинг
     """
-    TEST = 'TESTING'
-    SCRAPY = 'PARSING'
+    DEFAULT = ''
+    INDEX = 'Index'
+    PARSING = 'Parsing'
+    SCRAPY = 'Scrapy'
+    TEST = 'Test'
+    USERS = 'Users'
+
+
+class DocType(str, Enum):
+    MD = '.md'
+    JSON = '.json'
+    DOCX = '.docx'

@@ -1,6 +1,6 @@
 """Валидаторы данных.
 """
-from parser.helpers.exceptions import AppKeyException
+from parser.core.exceptions import AppKeyException
 from parser.settings import APP_KEY
 
 

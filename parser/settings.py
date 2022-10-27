@@ -2,15 +2,22 @@
 """
 from pathlib import Path
 
-from decouple import Csv, config
+from decouple import config
 
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)
+
+APP_NAME = config('APP_NAME')
+APP_DESCRIPTION = '''
+Сервер для формирваания запросов к `Scrapy` и выдачи файлов в нужном формате.
+'''
+APP_VERSION = '0.2.1'
 
 DATE_FORMAT = config('DATE_FORMAT', default='%y_%m_%d')
 
 BASE_DIR =         Path(__file__).resolve().parent
 PROXY_LIST =       BASE_DIR / 'helpers/proxy_list.txt'
 USER_AGENTS_LIST = BASE_DIR / 'helpers/user_agents_list.txt'
+DOCX_TEMPLATES =   BASE_DIR / 'helpers/docx_templates'
 
 # |_ */<project>/results/27_05_21/
 #   |_oleg_choose-poems.json
@@ -19,20 +26,15 @@ USER_AGENTS_LIST = BASE_DIR / 'helpers/user_agents_list.txt'
 # |_ */<project>/results/28_05_21/
 RESULT_DIR =  str(BASE_DIR) + '/results/%s/'
 POEMS_STORE = '%s_%s.json'
-DATE_FORMAT = config('DATE_FORMAT')
 
+OUT_FORMATS = ('.md', '.json', '.docx')
+
+# Строка разделяющая стихи
+POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
+# Разделитель для перевода списка в строку
 ARGS_SEPARATOR = '#'
 
-# Настройки для FastAPI
-APP_NAME =          config('APP_NAME')
-APP_DESCRIPTION =   'API для запуска парсера сайта ***Stihi.ru***'
-APP_VERSION =       '1.1.0'
-
-WEB_ALLOWED_HOSTS = config('WEB_ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
-WEB_SCRAPY_PORT =   config('WEB_SCRAPY_PORT', default=8765, cast=int)
-APP_KEY =           config('APP_KEY')
-
-# Настройки `Scrapy'`
+# ______Настройки `Scrapy'` ________ #
 BOT_NAME =            'poems'
 
 SPIDER_MODULES =      ['parser.poems.spiders']
@@ -40,8 +42,8 @@ SPIDER_MODULES =      ['parser.poems.spiders']
 LOG_LEVEL =           'ERROR' if not DEBUG else 'INFO'
 
 ALLOWED_DOMAINS =     ['stihi.ru']
-SITE_URL =            'https://stihi.ru'
-START_URL_FOR_PARSE = SITE_URL + '/avtor'
+SITE_URL =            'https://stihi.ru/'
+START_URL_FOR_PARSE = SITE_URL + 'avtor/'
 
 with open(USER_AGENTS_LIST, 'r', encoding='utf-8') as f:
     USER_AGENTS = [line.rstrip() for line in f.readlines()]
