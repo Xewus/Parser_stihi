@@ -33,6 +33,6 @@ async def start_spider(
     if not file.exists():
         raise FileNotFoundError(
             'Ошибка при создании файла с результатами парсинга.'
-            f' Файл `{file}` не найден'
+            f' Файл `{file}` не найден.'
         )
     return str(file)

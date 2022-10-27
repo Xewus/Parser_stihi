@@ -39,12 +39,6 @@ async def test_server(
         )
 ) -> RespTestSchema:
     """Проверка доступности сервера.
-
-    #### Args:
-    - app_key (str): 'Ключ доступа'.
-
-    #### Returns:
-    - dict: Ответ сервера.
     """
     app_key_validator(app_key)
     return RespTestSchema(server='Ok')

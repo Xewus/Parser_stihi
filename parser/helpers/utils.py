@@ -30,16 +30,17 @@ def dir_manager() -> Path:
     Вчерашняя папка остаётся из-за 'проблемы 23:59:59'.
     Позавчерашняя папка удаляется.
 
-    Returns:
-        Path: `URI` папки.
+    #### Returns:
+    - Path: `URI` папки.
+
+    #### Example:
+    - /parser/results/2022_10_15/
     """
     today = datetime.today()
-    two_days_ago = today - timedelta(days=2)
-    today = today.strftime(DATE_FORMAT)
-    two_days_ago = two_days_ago.strftime(DATE_FORMAT)
+    two_days_ago = (today - timedelta(days=2))
 
-    today_dir = Path(RESULT_DIR % today)
-    two_days_ago_dir = Path(RESULT_DIR % two_days_ago)
+    today_dir = Path(RESULT_DIR % today.strftime(DATE_FORMAT))
+    two_days_ago_dir = Path(RESULT_DIR % two_days_ago.strftime(DATE_FORMAT))
 
     if two_days_ago_dir.exists():
         shutil.rmtree(two_days_ago_dir)

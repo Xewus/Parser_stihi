@@ -1,5 +1,3 @@
-from urllib import response
-
 from aiohttp import ClientResponse, ClientSession
 from aiohttp.client_exceptions import ClientError
 
