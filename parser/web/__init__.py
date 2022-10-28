@@ -1,4 +1,4 @@
-"""API для запуска `Scrapy`.
+"""API для доступа к `Scrapy`.
 """
 from parser.settings import (APP_DESCRIPTION, APP_NAME, APP_VERSION, AUTHOR,
                              DEBUG)

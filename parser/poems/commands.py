@@ -1,15 +1,14 @@
 """Команды для запуска парсеров.
 """
 import os
-from parser.core.exceptions import ScrapyException
-from parser.core.utils import dir_manager
-from parser.settings import POEMS_STORE
-from parser.core.exceptions import NoFileException
+from parser.core.exceptions import NoFileException, ScrapyException
+from parser.core.utils import get_result_file
+from pathlib import Path
 
 
 async def start_spider(
     spider: str, author: str, urls: str | None = None
-) -> str:
+) -> Path:
     """Запускает паука.
 
     #### Args:
@@ -24,8 +23,7 @@ async def start_spider(
     #### Returns:
     - str: Расположение сохранённого файла.
     """
-    res_dir = dir_manager()
-    file = res_dir / (POEMS_STORE % (author, spider))
+    file = await get_result_file(author, spider)
     command = f'scrapy crawl {spider} -a author={author} -a result_file={file}'
     if urls:
         command += f' -a urls={urls}'
@@ -35,8 +33,5 @@ async def start_spider(
         raise ScrapyException(exc.args)
 
     if not file.exists():
-        raise NoFileException(
-            'Ошибка при создании файла с результатами парсинга.'
-            f' Файл `{file}` не найден.'
-        )
-    return str(file)
+        raise NoFileException(file=file)
+    return file

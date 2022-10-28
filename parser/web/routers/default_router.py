@@ -1,4 +1,4 @@
-"""Сбор всех эндпоинтов в один.
+"""Эндпоинты, не водшешие в другие роутеры.
 """
 from parser.core.enums import Tag
 from parser.web.schemas import RespTestSchema
@@ -30,22 +30,3 @@ async def test_server(
     """Проверка доступности сервера.
     """
     return RespTestSchema(server='Ok')
-
-
-# @drouter.get('/wait')
-# async def wait_view():
-#     return {"message": "wait"}
-
-# main_router.include_router(
-#     router=default_router
-# )
-# main_router.include_router(
-#     router=parsing.router,
-#     prefix='/parsing',
-#     tags=[Tag.PARSING]
-# )
-# main_router.include_router(
-#     router=users.router,
-#     prefix='/users',
-#     tags=[Tag.USERS]
-# )

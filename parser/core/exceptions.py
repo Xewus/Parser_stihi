@@ -19,9 +19,10 @@ class ScrapyException(HTTPException):
 
 
 class NoFileException(HTTPException):
-    def __init__(self, detail='Файл не найден') -> None:
+    def __init__(self, file='') -> None:
         super().__init__(
-            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=detail
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            detail='Ффйл `%s` не найден' % file
         )
 
 

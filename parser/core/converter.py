@@ -1,12 +1,12 @@
 """Конвертеры текстовых файлов.
 """
 import json
-from pydantic import BaseModel, Field
+from parser.core.enums import DocType, StoreFields
+from parser.settings import DOCX_TEMPLATES, POEMS_SEPARATOR
 from pathlib import Path
 
-from parser.settings import DOCX_TEMPLATES, POEMS_SEPARATOR
-from parser.core.enums import StoreFields, DocType
 from docxtpl import DocxTemplate, RichText
+from pydantic import BaseModel
 
 # Номера пробельных символов
 SPACE_CHARS = {160, 32}
@@ -22,16 +22,16 @@ class JsonConvereter(BaseModel):
     """
     json_file: Path
     doc_type: DocType
-    end_text: str | None = Field(default=POEMS_SEPARATOR)
+    end_text: str
+    data: list[dict] | None = None
 
     def __init__(
         self,
         json_file: Path,
         doc_type: DocType,
-        end_text: str | None = None
+        end_text: str = POEMS_SEPARATOR
     ) -> None:
         super().__init__(json_file=json_file, doc_type=doc_type, end_text=end_text)
-
 
     def __call__(self) -> Path:
         match self.doc_type:

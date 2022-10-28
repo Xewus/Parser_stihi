@@ -1,3 +1,5 @@
+"""Работа с внешними ресурсами.
+"""
 from aiohttp import ClientResponse, ClientSession
 from aiohttp.client_exceptions import ClientError
 
@@ -21,7 +23,6 @@ class SendRequest:
                 headers=self.headers, conn_timeout=1.3
             ) as session:
                 response = await session.get(url=self.url)
-                print('_S_R', id(response), response.host)
                 return response
         except ClientError:
             return
@@ -39,7 +40,9 @@ class SendRequest:
     @property
     async def GET(self) -> ClientResponse | None:
         response = await self.__request_get()
-        await response.text()
+        print(response)
+        if response is not None:
+            await response.text()
         return response
 
     @property
