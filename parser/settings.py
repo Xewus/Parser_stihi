@@ -8,9 +8,9 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 APP_NAME = config('APP_NAME')
 APP_DESCRIPTION = '''
-Сервер для формирваания запросов к `Scrapy` и выдачи файлов в нужном формате.
+Сервис для формирваания запросов к `Scrapy` и выдачи файлов в нужном формате.
 '''
-APP_VERSION = '0.2.1'
+APP_VERSION = '0.2.3'
 
 DATE_FORMAT = config('DATE_FORMAT', default='%y_%m_%d')
 
@@ -27,14 +27,12 @@ DOCX_TEMPLATES =   BASE_DIR / 'helpers/docx_templates'
 RESULT_DIR =  str(BASE_DIR) + '/results/%s/'
 POEMS_STORE = '%s_%s.json'
 
-OUT_FORMATS = ('.md', '.json', '.docx')
-
 # Строка разделяющая стихи
 POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
 # Разделитель для перевода списка в строку
 ARGS_SEPARATOR = '#'
 
-# ______Настройки `Scrapy'` ________ #
+# _______Настройки `Scrapy'` ________ #
 BOT_NAME =            'poems'
 
 SPIDER_MODULES =      ['parser.poems.spiders']

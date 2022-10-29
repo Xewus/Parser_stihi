@@ -2,22 +2,17 @@
 """
 from aiohttp import ClientResponse, ClientSession
 from aiohttp.client_exceptions import ClientError
+from pydantic import BaseModel, HttpUrl
 
 
-class SendRequest:
-    """Посылает запросы к сторонним серверам.
+class SendRequest(BaseModel):
+    """Посылает запросы к сторонним сервисам.
     """
-    def __init__(
-        self,
-        url: str,
-        data: dict | None = None,
-        headers: dict | None = None
-    ) -> None:
-        self.url = url
-        self.data = data
-        self.headers = headers
+    url: HttpUrl
+    data: dict | None
+    headers: dict[str, str] | None
 
-    async def __request_get(self) -> ClientResponse:
+    async def __request_get(self) -> ClientResponse | None:
         try:
             async with ClientSession(
                 headers=self.headers, conn_timeout=1.3
@@ -27,7 +22,7 @@ class SendRequest:
         except ClientError:
             return
 
-    async def __request_post(self) -> ClientResponse:
+    async def __request_post(self) -> ClientResponse | None:
         try:
             async with ClientSession(
                 headers=self.headers, conn_timeout=1.3
@@ -40,8 +35,9 @@ class SendRequest:
     @property
     async def GET(self) -> ClientResponse | None:
         response = await self.__request_get()
-        print(response)
         if response is not None:
+            # WTF: Без этого действия контекст теряет
+            # тело ответа при выходе из функции!!!
             await response.text()
         return response
 

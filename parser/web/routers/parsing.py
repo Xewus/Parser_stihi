@@ -11,6 +11,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Body, Query
 from fastapi.responses import FileResponse
+from fastapi.exceptions import HTTPException
 from pydantic import HttpUrl
 
 router = APIRouter(tags=[Tag.PARSING])
@@ -71,7 +72,7 @@ async def get_poems_view(
     if not file.exists():
         file = await start_spider(
         spider=SpiderNames.LIST_POEMS.value,
-        author=await validate_author(author)
+        author=author
     )
     return RespChoosePoemsSchema(author=author, poems = await extract_poem_links(file))
 
@@ -96,12 +97,12 @@ async def choosed_poems_view(
     return await download_file(file, args.doc_type)
 
 
-async def download_file(file: str | Path, doc_type: DocType):
+async def download_file(file: Path, doc_type: DocType):
     await valdate_file(file)
-    converter = JsonConvereter(file, doc_type)
-    out_file = converter()
+    converter = JsonConvereter(json_file=file, doc_type=doc_type)
+    file = converter()
     return FileResponse(
-        path=out_file,
+        path=file,
         media_type='application/octet-stream',
-        filename=str(out_file).split('/')[-1]
+        filename=str(file).split('/')[-1]
     )

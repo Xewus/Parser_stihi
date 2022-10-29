@@ -16,22 +16,15 @@ class JsonConvereter(BaseModel):
     """Конвертирует `.json` в форматы `.md`, `.docx`.
 
     #### Attrs
-    - doc_type (str): Желаемый формат выходного файла.
-    - json_file (str): Файл с исходными данными в формаье `json`.
+    - json_file (Path): Файл с исходными данными в формаье `json`.
+    - doc_type (Enum): Желаемый формат выходного файла.
     - end_text (str): Разделитель текстов.
+    - data (list[dict[str, str]] | None): Данные прочитанные из `json_file`.
     """
     json_file: Path
     doc_type: DocType
-    end_text: str
+    end_text: str | None = POEMS_SEPARATOR
     data: list[dict] | None = None
-
-    def __init__(
-        self,
-        json_file: Path,
-        doc_type: DocType,
-        end_text: str = POEMS_SEPARATOR
-    ) -> None:
-        super().__init__(json_file=json_file, doc_type=doc_type, end_text=end_text)
 
     def __call__(self) -> Path:
         match self.doc_type:
@@ -45,47 +38,39 @@ class JsonConvereter(BaseModel):
     def get_data_from_file(self) -> list[dict[str, str]]:
         """Получает данные из связанного JSON-файла.
 
-        Returns:
-            list[dict[str, str]]: Прочитанные данные
+        #### Returns:
+        - list[dict[str, str]]: Прочитанные данные.
         """
         with open(self.json_file) as json_file:
-            data = json.loads(json_file.read())
-        return data
+            return json.loads(json_file.read())
 
-    def set_file_extension(self, filename: str | Path, doc_type: str) -> Path:
-        """Проверяет расширение файла.
+    def set_file_extension(self, file: Path, doc_type: str) -> Path:
+        """Устанавливает расширение файла.
 
-        Args:
-            filename (str): Проверяемое название файла.
-            doc_type (str): Необходимое расширение.
+        #### Args:
+        - file (Path): Проверяемое название файла.
+        - doc_type (str): Необходимое расширение.
 
-        Returns:
-            str: Название файла с расширением.
+        #### Returns:
+        - str: Название файла с расширением.
         """
         if not doc_type.startswith('.'):
             doc_type = '.' + doc_type
-        return Path(filename).with_suffix('').with_suffix(doc_type)
+        return file.with_suffix('').with_suffix(doc_type)
 
     def _to_json(self) -> Path:
         """Возвращает файл `.json`.
 
-        #### Args:
-            out_file (str): Название выходного файла.
-
         #### Returns:
-            str: Название выходного файла.
+        - Path: Месторасположение выходного файла в формате `.json`.
         """
-        out_file = self.set_file_extension(self.json_file, DocType.JSON.value)
-        return out_file
+        return self.set_file_extension(self.json_file, DocType.JSON.value)
 
     def _to_md(self) -> Path:
-        """Конвертирует из `.json` в `.md` .
-
-        #### Args:
-            out_file (str): Название выходного файла.
+        """Конвертирует из `.json` в `.md`.
 
         #### Returns:
-            str: Название выходного файла.
+        - Path: Месторасположение выходного файла в формате `.md`.
         """
         out_file = self.set_file_extension(self.json_file, DocType.MD.value)
         res = []
@@ -95,7 +80,7 @@ class JsonConvereter(BaseModel):
             link = poem.get(StoreFields.LINK.value)
             author = poem.get(StoreFields.AUTHOR.value)
             poem_text = poem.get(StoreFields.TEXT.value)
-
+            # TODO: Decrease complexity with switch-case
             if title:
                 if link:
                     text = f'### [{title}]({link})\n\n'
@@ -127,15 +112,15 @@ class JsonConvereter(BaseModel):
 
         return out_file
 
-    def __title_link_to_docx(self, out_file: str | Path) -> str | Path:
-        """Конвертирует из `.json` в `.docx` .
+    def __title_link_to_docx(self, file: Path) -> Path:
+        """Конвертирует из `.json` в `.docx`.
         В исходном файле должны быть поля `title` и `link`.
 
         #### Args:
-            out_file (str): Название выходного файла.
+        - file (Path): Название выходного файла.
 
         #### Returns:
-            str: Название выходного файла.
+        - Path: Месторасположение выходного файла в формате `.docx`.
         """
         doc = DocxTemplate(DOCX_TEMPLATES / 'title_link.docx')
         title_links = RichText()
@@ -148,58 +133,58 @@ class JsonConvereter(BaseModel):
             )
 
         doc.render(context={'title_links': title_links})
-        doc.save(out_file)
-        return out_file
+        doc.save(file)
+        return file
 
-    def __poems_to_docx(self, out_file: str | Path) -> str | Path:
-        """Конвертирует из `.json` в `.docx` .
+    def __poems_to_docx(self, file: Path) -> Path:
+        """Конвертирует из `.json` в `.docx`.
         В исходном файле должны быть поля `title`, `author` и `text`.
 
         #### Args:
-            out_file (str): Название выходного файла.
+        - file (Path): Название выходного файла.
 
         #### Returns:
-            str: Название выходного файла.
+        - Path: Месторасположение выходного файла в формате `.docx`.
         """
         doc = DocxTemplate(DOCX_TEMPLATES / 'poems.docx')
         poems = RichText()
 
         for poem in self.data:
-            poems.add(f'{poem[StoreFields.TITLE.value]}\n\n')
-            poems.add(f'{poem[StoreFields.AUTHOR.value]}\n', color='#FF00FF')
+            poems.add(poem[StoreFields.TITLE.value] + '\n\n')
+            poems.add(poem[StoreFields.AUTHOR.value] + '\n', color='#FF00FF')
             if isinstance(poem[StoreFields.TEXT.value], str):
                 poems.add(poem[StoreFields.TEXT.value] + self.end_text, italic=True)
             else:
                 poems.add(''.join(poem[StoreFields.TEXT.value]) + self.end_text, italic=True)
 
         doc.render(context={'poems': poems})
-        doc.save(out_file)
-        return out_file
+        doc.save(file)
+        return file
 
     def _to_docx(self) -> Path:
-        """Вызывает нужную функцию для конвертации из `.json` в `.docx` .
-
-        #### Args:
-            out_file (str): Название выходного файла.
+        """Вызывает нужную функцию для конвертации из `.json` в `.docx`.
 
         #### Returns:
-            str: Название выходного файла.
+        - Path: Месторасположение выходного файла в формате `.docx`.
+
         #### Raises:
-            ValueError: Для переданного файла нет подходящего шаблона `docx`.
+        - ValueError: Для переданного файла нет подходящего шаблона `docx`.
         """
-        out_file = self.set_file_extension(self.json_file, DocType.DOCX.value)
+        file = self.set_file_extension(self.json_file, DocType.DOCX.value)
         self.data = self.get_data_from_file()
         if len(self.data) == 0:
-            return self.__title_link_to_docx(out_file)
+            return self.__title_link_to_docx(file)
 
         keys_set = set(self.data[0].keys())
 
         if {StoreFields.TITLE.value, StoreFields.LINK.value} == keys_set:
-            return self.__title_link_to_docx(out_file)
+            return self.__title_link_to_docx(file)
+
         if {
             StoreFields.TITLE.value, StoreFields.AUTHOR.value, StoreFields.TEXT.value
         } == keys_set:
-            return self.__poems_to_docx(out_file)
+            return self.__poems_to_docx(file)
+
         raise ValueError(
             'Для переданного файла нет подходящего шаблона `docx`'
         )
