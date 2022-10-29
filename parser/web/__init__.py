@@ -7,6 +7,7 @@ from fastapi import FastAPI
 
 from .routers.default_router import router as default_router
 from .routers.parsing import router as parsing_router
+from .routers.users import router as users_router
 
 app = FastAPI(
     debug=DEBUG,
@@ -18,3 +19,4 @@ app = FastAPI(
 
 app.include_router(default_router)
 app.include_router(parsing_router)
+app.include_router(users_router)
