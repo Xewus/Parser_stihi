@@ -6,6 +6,7 @@ from parser.core.requests import SendRequest
 from parser.settings import START_URL_FOR_PARSE
 from pathlib import Path
 
+
 async def validate_author(author: str) -> str:
     """Проверяет доступность сервера и наличие автора.
 

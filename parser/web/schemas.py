@@ -25,9 +25,10 @@ class RespTestSchema(BaseModel):
 class AuthorSchema(BaseModel):
     """Общая схема с автором.
     """
-    author: str | HttpUrl= Field(
+    author: str | HttpUrl = Field(
         title='Имя автора',
-        description='Имя автора, как указано в `URL` или `URL` на страницу автора',
+        description='Имя автора, как указано в `URL` или '
+        '`URL` на страницу автора',
         example='oleg'
     )
 
@@ -35,7 +36,7 @@ class AuthorSchema(BaseModel):
         schema_extra = {
             'examples': {
                 'Ссылка на страницу автора': {
-                    'value':'https://stihi.ru/avtor/oleg/'
+                    'value': 'https://stihi.ru/avtor/oleg/'
                 },
                 'Имя автора как в ссылке': {
                     'value': 'oleg'
@@ -130,7 +131,6 @@ class RespChoosePoemsSchema(AuthorSchema):
                         "link": "https://stihi.ru//2012/01/19/2059"
                     },
                     {
-                        
                         "title": "Ах, если б знал ты, как легко...",
                         "link": "https://stihi.ru//2000/08/21-53"
                     }

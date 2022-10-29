@@ -18,12 +18,12 @@ class JsonConvereter(BaseModel):
     #### Attrs
     - json_file (Path): Файл с исходными данными в формаье `json`.
     - doc_type (Enum): Желаемый формат выходного файла.
-    - end_text (str): Разделитель текстов.
+    - sep_text (str): Разделитель текстов.
     - data (list[dict[str, str]] | None): Данные прочитанные из `json_file`.
     """
     json_file: Path
     doc_type: DocType
-    end_text: str | None = POEMS_SEPARATOR
+    sep_text: str | None = POEMS_SEPARATOR
     data: list[dict] | None = None
 
     def __call__(self) -> Path:
@@ -66,6 +66,30 @@ class JsonConvereter(BaseModel):
         """
         return self.set_file_extension(self.json_file, DocType.JSON.value)
 
+    def __writer_poem_to_md(self, poem_text: str) -> str:
+        """Переписывает текст в фармт `.md`.
+
+        #### Args:
+        - poem_text (str): Простая строка из `.json`.
+
+        #### Returns:
+        - str: Строка для формата `.md`.
+        """
+        md_text = poem_text.split('\n')
+        indent = True
+        for index, line in enumerate(md_text):
+            space = 0
+            for char in line:
+                if ord(char) not in SPACE_CHARS:
+                    break
+                space += 1
+            if space:
+                md_text[index] = '> ' * (space // 2) + line[space:]
+            elif not space and indent:
+                md_text[index] = '\n' + line
+            indent = space
+        return '  \n'.join(md_text)
+
     def _to_md(self) -> Path:
         """Конвертирует из `.json` в `.md`.
 
@@ -80,30 +104,18 @@ class JsonConvereter(BaseModel):
             link = poem.get(StoreFields.LINK.value)
             author = poem.get(StoreFields.AUTHOR.value)
             poem_text = poem.get(StoreFields.TEXT.value)
-            # TODO: Decrease complexity with switch-case
-            if title:
-                if link:
-                    text = f'### [{title}]({link})\n\n'
-                else:
-                    text = f'### {title}\n\n'
+
+            text = ''
+            if title and link:
+                text = f'### [{title}]({link})\n\n'
+            elif title:
+                text = f'### {title}\n\n'
+
             if author:
                 text += f'*{author}*\n'
 
             if poem_text:
-                md_text = poem_text.split('\n')
-                indent = True
-                for index, line in enumerate(md_text):
-                    space = 0
-                    for char in line:
-                        if ord(char) not in SPACE_CHARS:
-                            break
-                        space += 1
-                    if space:
-                        md_text[index] = '> ' * (space // 2) + line[space:]
-                    elif not space and indent:
-                        md_text[index] = '\n' + line
-                    indent = space
-                text += '  \n'.join(md_text) + self.end_text
+                text += self.__writer_poem_to_md(poem_text) + self.sep_text
 
             res.append(text)
 
@@ -153,9 +165,15 @@ class JsonConvereter(BaseModel):
             poems.add(poem[StoreFields.TITLE.value] + '\n\n')
             poems.add(poem[StoreFields.AUTHOR.value] + '\n', color='#FF00FF')
             if isinstance(poem[StoreFields.TEXT.value], str):
-                poems.add(poem[StoreFields.TEXT.value] + self.end_text, italic=True)
+                poems.add(
+                    poem[StoreFields.TEXT.value] + self.sep_text,
+                    italic=True
+                )
             else:
-                poems.add(''.join(poem[StoreFields.TEXT.value]) + self.end_text, italic=True)
+                poems.add(
+                    ''.join(poem[StoreFields.TEXT.value]) + self.sep_text,
+                    italic=True
+                )
 
         doc.render(context={'poems': poems})
         doc.save(file)
@@ -177,11 +195,16 @@ class JsonConvereter(BaseModel):
 
         keys_set = set(self.data[0].keys())
 
-        if {StoreFields.TITLE.value, StoreFields.LINK.value} == keys_set:
+        if {
+            StoreFields.TITLE.value,
+            StoreFields.LINK.value
+        } == keys_set:
             return self.__title_link_to_docx(file)
 
         if {
-            StoreFields.TITLE.value, StoreFields.AUTHOR.value, StoreFields.TEXT.value
+            StoreFields.TITLE.value,
+            StoreFields.AUTHOR.value,
+            StoreFields.TEXT.value
         } == keys_set:
             return self.__poems_to_docx(file)
 

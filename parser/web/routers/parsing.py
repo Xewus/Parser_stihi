@@ -11,7 +11,6 @@ from pathlib import Path
 
 from fastapi import APIRouter, Body, Query
 from fastapi.responses import FileResponse
-from fastapi.exceptions import HTTPException
 from pydantic import HttpUrl
 
 router = APIRouter(tags=[Tag.PARSING])
@@ -71,10 +70,12 @@ async def get_poems_view(
     file = await get_result_file(author, SpiderNames.LIST_POEMS.value)
     if not file.exists():
         file = await start_spider(
-        spider=SpiderNames.LIST_POEMS.value,
-        author=author
+            spider=SpiderNames.LIST_POEMS.value,
+            author=author
+        )
+    return RespChoosePoemsSchema(
+        author=author, poems=await extract_poem_links(file)
     )
-    return RespChoosePoemsSchema(author=author, poems = await extract_poem_links(file))
 
 
 @router.post(
