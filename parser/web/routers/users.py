@@ -1,12 +1,13 @@
 """Эндпоинты для управления пользователями.
 """
-from fastapi import APIRouter, Depends, Body
-from fastapi.security import OAuth2PasswordRequestForm
 from parser.core.enums import Tag
-from parser.web.schemas.users_schemas import Token
-from parser.db.user_models import User, BaseUser
 from parser.core.exceptions import BadRequestException
+from parser.db.user_models import BaseUser, User
+from parser.web.schemas.users_schemas import Token
 from parser.web.secrets import create_access_token, get_current_user
+
+from fastapi import APIRouter, Body, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(tags=[Tag.USERS])
 
@@ -17,7 +18,9 @@ router = APIRouter(tags=[Tag.USERS])
     response_model=Token
 )
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user: User = await User.authenticate_user(form_data.username, form_data.password)
+    user: User = await User.authenticate_user(
+        form_data.username, form_data.password
+    )
     if not user:
         raise BadRequestException(detail='Неправильный юзернейм или паролль.')
     if not user.active:
@@ -28,7 +31,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 @router.get("/users/me")
 async def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user   
+    return current_user
 
 
 @router.post('/create_user')

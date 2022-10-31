@@ -1,12 +1,12 @@
-from pprint import pprint
-from pydantic import BaseModel, Field, EmailStr, SecretStr
-from passlib.context import CryptContext
-from parser.settings import USERS_DB, FIRST_USER
 import json
-from aiofile import LineReader, AIOFile, Writer, async_open
-from parser.core.validators import valdate_file
-from typing import TypeVar, Generic
 from parser.core.exceptions import BadRequestException
+from parser.core.validators import valdate_file
+from parser.settings import FIRST_USER, USERS_DB
+from typing import Generic, TypeVar
+
+from aiofile import AIOFile, LineReader, Writer
+from passlib.context import CryptContext
+from pydantic import BaseModel, EmailStr, Field, SecretStr
 
 U = TypeVar('U')
 
@@ -20,7 +20,7 @@ class BaseUser(BaseModel, Generic[U]):
         min_length=3,
         max_length=9
     )
-    password: str = Field(
+    password: SecretStr = Field(
         title='Пароль пользователя',
         min_length=8,
         max_length=20
@@ -33,7 +33,7 @@ class BaseUser(BaseModel, Generic[U]):
     def verify_password(self, password: str, hashed_password: str) -> bool:
         raise
 
-    def  hashing_password(self, password: str) -> str:
+    def hashing_password(self, password: str) -> str:
         """Хэширует пароль.
 
         Args:
@@ -46,7 +46,7 @@ class BaseUser(BaseModel, Generic[U]):
 
     def get_user(username: str) -> U | None:
         raise
-    
+
     def authenticate_user(username: str, password: str) -> U | None:
         raise
 
@@ -56,7 +56,7 @@ class BaseUser(BaseModel, Generic[U]):
 
 class User(BaseUser):
     hash_password = str
-    password: str | None = None
+    password: SecretStr | None = None
 
     def verify_password(self, password: str, hashed_password: str) -> bool:
         """Проверяет соответсвие пароля и хэша.
@@ -88,7 +88,9 @@ class User(BaseUser):
                     return user
 
     @staticmethod
-    async def authenticate_user(username: str, password: str) -> BaseUser | None:
+    async def authenticate_user(
+        username: str, password: str
+    ) -> BaseUser | None:
         """Проверяет соответствие пользователя и пароля.
 
         Args:
@@ -114,14 +116,13 @@ class User(BaseUser):
             raise BadRequestException('Юзернейм занят')
         new_user.hash_password = new_user.hashing_password(new_user.password)
         user = User(**new_user.dict())
-        print(user)
         user.password = None
         async with AIOFile(USERS_DB, 'a') as db:
             writer = Writer(db)
             await writer(user.json() + '\n')
             await db.fsync()
         return user
-        
+
 
 def create_first_user():
     with open(USERS_DB, 'r+') as db:
