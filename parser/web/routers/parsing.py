@@ -5,7 +5,7 @@ from parser.core.enums import DocType, SpiderNames, Tag
 from parser.core.utils import extract_poem_links, get_result_file
 from parser.core.validators import valdate_file, validate_author
 from parser.poems.commands import start_spider
-from parser.web.schemas import (AuthorDocTypeSchema, AuthorSchema,
+from parser.web.schemas.parser_schemas import (AuthorDocTypeSchema, AuthorSchema,
                                 ChoosedPoemsSchema, RespChoosePoemsSchema)
 from pathlib import Path
 
@@ -66,7 +66,7 @@ async def get_poems_view(
         examples=AuthorSchema.Config.schema_extra['examples']
     )
 ):
-    author = await validate_author(author)
+    author = await validate_author(AuthorSchema(author=author).author)
     file = await get_result_file(author, SpiderNames.LIST_POEMS.value)
     if not file.exists():
         file = await start_spider(

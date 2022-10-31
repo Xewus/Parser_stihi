@@ -1,7 +1,7 @@
 """Эндпоинты, не водшешие в другие роутеры.
 """
 from parser.core.enums import Tag
-from parser.web.schemas import RespTestSchema
+from parser.web.schemas.parser_schemas import RespTestSchema
 
 from fastapi import APIRouter
 

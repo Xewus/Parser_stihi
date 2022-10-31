@@ -24,7 +24,7 @@ BASE_DIR =            Path(__file__).resolve().parent
 PROXY_LIST =          BASE_DIR / 'helpers/proxy_list.txt'
 USER_AGENTS_LIST =    BASE_DIR / 'helpers/user_agents_list.txt'
 DOCX_TEMPLATES =      BASE_DIR / 'helpers/docx_templates'
-USERS_DB =            BASE_DIR / 'helpers/users.db'
+USERS_DB =            BASE_DIR / 'helpers/users.json'
 
 if not USERS_DB.exists():
     USERS_DB.touch()
@@ -32,7 +32,9 @@ if not USERS_DB.exists():
 FIRST_USER =          {
     'username': config('USERNAME', default='User'),
     'email': config('EMAIL', default='q@q.qq'),
-    'password': config('FIRST_USER_PASSWORD', default='12345678')
+    'password': config('FIRST_USER_PASSWORD', default='12345678'),
+    'active': True,
+    'admin': True
 }
 
 # |_ */<project>/results/27_05_21/
