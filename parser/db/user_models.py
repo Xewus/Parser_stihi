@@ -22,6 +22,14 @@ U = TypeVar('U')
 
 pass_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
+class UpdateUser(BaseModel):
+    """Модель данных для обновления.
+    """
+    password: SecretStr | None = None
+    email: EmailStr | None = None
+    active: bool | None = None
+    admin: bool | None = None
+
 
 class BaseUser(BaseModel, Generic[U]):
     """Интерфейс модели пользователя.
@@ -108,7 +116,36 @@ class BaseUser(BaseModel, Generic[U]):
         - User | None: Объект пользователя если создан.
         """
         raise NotImplementedError('Метод нужно реализовать в наследнике')
+    
+    async def update(user: U, data: UpdateUser) -> U | None:
+        """Обновляет данные пользователя.
 
+        #### Args:
+        - user (U): Обновляемый пользователь.
+        - data (UpdateUser): Новые данные.
+
+        #### Raises:
+        - NotImplementedError: Метод нужно реализовать в наследнике.
+
+        #### Returns:
+        - BaseUser | None: Обновлённые пользователь.
+        """
+        raise NotImplementedError('Метод нужно реализовать в наследнике')
+
+    async def deactivate(user: U) -> U:
+        """Деактивирует пользователя.
+
+        #### Args:
+        - user (U): Обновляемый пользователь.
+
+        #### Raises:
+        - NotImplementedError: Метод нужно реализовать в наследнике.
+
+        #### Returns:
+        - BaseUser | None: ОбДеактивированный пользователь.
+        """
+        raise NotImplementedError('Метод нужно реализовать в наследнике')
+    
 
 class User(BaseUser):
     hash_password = str
