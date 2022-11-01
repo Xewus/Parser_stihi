@@ -41,6 +41,8 @@ async def create_user_view(
 ):
     """Создать нового пользователя.
     """
-    new_user: User = await user_admin.create_user(new_user)
+    new_user: User = await user_admin.create(new_user)
+    if new_user is None:
+        raise BadRequestException('Юзернейм занят')
 
     return new_user

@@ -1,5 +1,14 @@
+"""Модель пользователя.
+
+На данный момент реализовано хранение в обычном файле.
+При подключении БД, необходимо в модель, подключаемую к БД вписать в качестве
+последнего родителя класс `BaseUser`, так сигнатуры методов прописанные в нём
+используются в других местах приложения.
+Так как эти методы вызываются через `await`, необходимо использовать
+**асинхронные ORM**, например `SQLAlchemy 1.4+` / `Tortoise` либо
+обернуть эти методы в асинхронные декораторы.
+"""
 import json
-from parser.core.exceptions import BadRequestException
 from parser.core.validators import valdate_file
 from parser.settings import FIRST_USER, USERS_DB
 from typing import Generic, TypeVar
@@ -15,6 +24,8 @@ pass_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
 class BaseUser(BaseModel, Generic[U]):
+    """Интерфейс модели пользователя.
+    """
     username: str = Field(
         title='Юзернейм пользователя',
         min_length=3,
@@ -30,55 +41,108 @@ class BaseUser(BaseModel, Generic[U]):
     active: bool = True
     admin: bool = False
 
-    def verify_password(self, password: str, hashed_password: str) -> bool:
-        raise
+    def verify_password(
+        self, password: SecretStr, hashed_password: str
+    ) -> bool:
+        """Проверяет соответсвие пароля и хэша.
 
-    def hashing_password(self, password: str) -> str:
-        """Хэширует пароль.
-
-        Args:
-            password (str): _description_
+        #### Args:
+        - password (SecretStr): Пароль пьзователя.
+        - hashed_password (str): Хэш от пароля пользователя.
 
         Returns:
-            str: _description_
+            bool: Соответствуют ли пароль и хэш.
+        """
+        return pass_context.verify(secret=password, hash=hashed_password)
+
+    def hashing_password(self, password: SecretStr) -> str:
+        """Хэширует пароль.
+
+        #### Args:
+        - password (SecretStr): Пароль пользователя.
+
+        #### Returns:
+            str: Хэш от пароля.
         """
         return pass_context.hash(str(password))
 
-    def get_user(username: str) -> U | None:
-        raise
+    async def authenticate_user(username: str, password: str) -> U | None:
+        """Проверяет, правильность введённого пароля.
 
-    def authenticate_user(username: str, password: str) -> U | None:
-        raise
+        #### Args:
+        - username (str): Юзернейм пользователя.
+        - password (str): Пароль.
 
-    def create_user(data: U):
-        raise
+        #### Raises:
+        - NotImplementedError: Метод нужно реализовать в наследнике.
+
+        #### Returns:
+        - BaseUser | None: Объект пользователя если пароль верный.
+        """
+        raise NotImplementedError('Метод нужно реализовать в наследнике')
+
+    async def get(username: str) -> U | None:
+        """Получает пользователя из БД.
+
+        #### Args:
+        - username (str): Юзернейм пользователя.
+
+        #### Raises:
+        - NotImplementedError: Метод нужно реализовать в наследнике.
+
+        #### Returns:
+        - U | None: Объект пользователя если найден.
+        """
+        raise NotImplementedError('Метод нужно реализовать в наследнике')
+
+    async def create(data: U) -> U | None:
+        """Создать нового пользователя.
+
+        #### Args:
+        - data (BaseUser): Данные нового пользователя.
+
+        #### Raises:
+        - NotImplementedError: Метод нужно реализовать в наследнике.
+
+        #### Returns:
+        - User | None: Объект пользователя если создан.
+        """
+        raise NotImplementedError('Метод нужно реализовать в наследнике')
 
 
 class User(BaseUser):
     hash_password = str
     password: SecretStr | None = None
 
-    def verify_password(self, password: str, hashed_password: str) -> bool:
-        """Проверяет соответсвие пароля и хэша.
+    @staticmethod
+    async def authenticate_user(
+        username: str, password: str
+    ) -> BaseUser | None:
+        """Проверяет, правильность введённого пароля.
 
-        Args:
-            password (str): _description_
-            hashed_password (str): _description_
+        #### Args:
+        - username (str): Юзернейм пользователя.
+        - password (str): Пароль.
 
-        Returns:
-            bool: _description_
+        #### Returns:
+        - User | None: Объект пользователя, если пароль верный.
         """
-        return pass_context.verify(secret=password, hash=hashed_password)
+        user: User = await User.get(username)
+        if not user:
+            return False
+        if not user.verify_password(password, user.hash_password):
+            return False
+        return user
 
     @staticmethod
-    async def get_user(username: str) -> BaseUser | None:
-        """Находит польхователя в БД по уникальному юзернейму.
+    async def get(username: str) -> BaseUser | None:
+        """Получить пользователя из БД.
 
-        Args:
-            username (str): _description_
+        #### Args:
+        - username (str): Юзернейм пользователя.
 
-        Returns:
-            U | None: _description_
+        #### Returns:
+        - User | None: Объект пользователя если найден.
         """
         await valdate_file(USERS_DB)
         async with AIOFile(USERS_DB) as db:
@@ -87,36 +151,24 @@ class User(BaseUser):
                 if user.username == username:
                     return user
 
-    @staticmethod
-    async def authenticate_user(
-        username: str, password: str
-    ) -> BaseUser | None:
-        """Проверяет соответствие пользователя и пароля.
+    async def create(self, new_user: BaseUser) -> BaseUser:
+        """Создать нового пользователя.
 
-        Args:
-            username (str): _description_
-            password (str): _description_
+        #### Args:
+        - data (BaseUser): Данные нового пользователя.
 
-        Returns:
-            U | None: _description_
+        #### Returns:
+        - User | None: Объект пользователя если создан.
         """
-        user: User = await User.get_user(username)
-        if not user:
-            return False
-        if not user.verify_password(password, user.hash_password):
-            return False
-        return user
-
-    async def create_user(self, new_user: BaseUser) -> BaseUser:
-        if not self.admin:
-            raise BadRequestException('Недостаточно прав для создания')
         await valdate_file(USERS_DB)
-        user = await User.get_user(username=new_user.username)
+        user = await User.get(username=new_user.username)
         if user is not None:
-            raise BadRequestException('Юзернейм занят')
+            return None
+
         new_user.hash_password = new_user.hashing_password(new_user.password)
         user = User(**new_user.dict())
         user.password = None
+
         async with AIOFile(USERS_DB, 'a') as db:
             writer = Writer(db)
             await writer(user.json() + '\n')
@@ -125,6 +177,8 @@ class User(BaseUser):
 
 
 def create_first_user():
+    """Создаёт первого пользователя, если БД пустая.
+    """
     with open(USERS_DB, 'r+') as db:
         line = db.readline()
         if not line:
