@@ -4,7 +4,7 @@ from parser.core.enums import Tag
 from parser.core.exceptions import BadRequestException
 from parser.db.user_models import BaseUser, User
 from parser.web.schemas.users_schemas import Token
-from parser.web.secrets import create_access_token, get_current_user
+from parser.web.secrets import create_access_token, get_current_user, only_for_admin
 
 from fastapi import APIRouter, Body, Depends
 from fastapi.security import OAuth2PasswordRequestForm
@@ -21,7 +21,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user: User = await User.authenticate_user(
         form_data.username, form_data.password
     )
-    if not user:
+    if user is None:
         raise BadRequestException(detail='Неправильный юзернейм или паролль.')
     if not user.active:
         raise BadRequestException(detail='Неактивный пользователь')
@@ -36,11 +36,9 @@ async def read_users_me(current_user: User = Depends(get_current_user)):
 
 @router.post('/create_user')
 async def create_user_view(
-    user_admin: User = Depends(get_current_user),
+    user_admin: User = Depends(only_for_admin),
     new_user: BaseUser = Body()
 ):
-    """Создать нового пользователя.
-    """
     new_user: User = await user_admin.create(new_user)
     if new_user is None:
         raise BadRequestException('Юзернейм занят')

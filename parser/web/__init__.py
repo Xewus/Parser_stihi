@@ -25,4 +25,4 @@ app.include_router(users_router)
 
 @app.on_event('startup')
 async def startup():
-    create_first_user()
+    await create_first_user()
