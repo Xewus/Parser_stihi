@@ -18,9 +18,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 BASE_DIR = Path(__file__).resolve().parent
 
-USERS_DB = BASE_DIR / 'db/users.json'
-if not USERS_DB.exists():
-    USERS_DB.touch()
+USERS_DB = 'sqlite://db.sqlite3'
+# if not USERS_DB.exists():
+#     USERS_DB.touch()
 
 FIRST_USER = {
     'username': config('USERNAME', default='User'),

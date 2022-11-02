@@ -5,10 +5,10 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
-from simple_users.api.schemas import TokenData
-from simple_users.core.exceptions import TokenException
-from simple_users.db.models import User
-from simple_users.settings import (ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM,
+from users.api.schemas import TokenData
+from users.core.exceptions import TokenException, AuthException
+from users.db.models import User
+from users.settings import (ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM,
                                    SECRET_KEY)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/users/token')
@@ -39,4 +39,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     user: User = await User.get(attr='username', value=token_data.username)
     if user is None:
         raise TokenException
+    return user
+
+
+def only_admin(user: User = Depends(get_current_user)) -> User:
+    if not user.admin:
+        raise AuthException
     return user

@@ -9,8 +9,8 @@ from aiofile import AIOFile, LineReader, Writer
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr, Field, SecretStr
 
-from simple_users.core.exceptions import BadRequestException
-from simple_users.settings import FIRST_USER, USERS_DB
+from users.core.exceptions import BadRequestException
+from users.settings import FIRST_USER, USERS_DB
 
 U = TypeVar('U', bound='BaseUser')
 
@@ -43,6 +43,21 @@ class BaseUser(BaseModel, Generic[U]):
         return pass_context.hash(password)
  
 
+class UpdateUser(BaseUser):
+    username: str | None = Field(
+        title='Юзернейм пользователя',
+        min_length=3,
+        max_length=9
+    )
+    password: str | None = Field(
+        title='Пароль пользователя',
+        min_length=8,
+        max_length=20
+    )
+    active: bool | None
+    admin: bool | None
+
+
 class ABCUser(BaseUser, ABC):
     password: str | None = Field(
         default=None,
@@ -52,18 +67,27 @@ class ABCUser(BaseUser, ABC):
     )
     hash: str
 
+    @staticmethod
     @abstractstaticmethod
     async def authenticate_user(username: str, password: str) -> U | None:
         """Аутефентицировать пользователя"""
 
+    @staticmethod
     @abstractstaticmethod
     async def get(attr: str, value: Any) -> U | None:
         """Получить пользователя из БД по атрибуту.
         """
 
+    @staticmethod
     @abstractstaticmethod
     async def create(data: U):
-        """Созать пользователя.
+        """Создать пользователя.
+        """
+
+    @staticmethod
+    @abstractstaticmethod
+    async def update(attr: Any, data: UpdateUser) -> U:
+        """Обновить данные пользователя.
         """
 
 
@@ -114,26 +138,20 @@ class User(ABCUser):
         user.active = True
 
         async with AIOFile(USERS_DB, 'a') as db:
-            writer = Writer(db)
-            await writer(user.json() + '\n')
+            await db.write(user.json() + '\n')
             await db.fsync()
         return user
 
+    @staticmethod
+    async def update(username: str, data: UpdateUser):
+        async with AIOFile(USERS_DB) as db:
+            ...
+        user: User = User.get(attr='username', value=username)
+        if user is None:
+            raise BadRequestException('Пользователь `%s` не найден' % username)
+        user.__dict__.update(data.dict(exclude_none=True))
+        
 
-    #     if not self.admin:
-    #         raise BadRequestException('Недостаточно прав для создания')
-    #     user = await User.get_user(username=new_user.username)
-    #     if user is not None:
-    #         raise BadRequestException('Юзернейм занят')
-    #     new_user.hash_password = new_user.hashing_password(new_user.password)
-    #     user = User(**new_user.dict())
-    #     print(user)
-    #     user.password = None
-    #     async with AIOFile(USERS_DB, 'a') as db:
-    #         writer = Writer(db)
-    #         await writer(user.json() + '\n')
-    #         await db.fsync()
-    #     return user
 
 
 def create_first_user():

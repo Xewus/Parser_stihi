@@ -21,3 +21,11 @@ class TokenException(HTTPException):
             detail='Неверный токен',
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+class AuthException(HTTPException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Нет прав для доступа'
+        )
