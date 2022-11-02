@@ -1,13 +1,14 @@
 """Обработчики ошибок.
 """
 from fastapi import status
-
 from fastapi.exceptions import HTTPException
 
 
 class ScrapyException(HTTPException):
     def __init__(self, detail: str = 'Ошибка при запуске `Scrapy`') -> None:
-        super().__init__(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail)
+        super().__init__(
+            status_code=status.HTTP_502_BAD_GATEWAY, detail=detail
+        )
 
 
 class NoFileException(HTTPException):
@@ -43,12 +44,3 @@ class RemoteServerException(HTTPException):
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=detail
         )
-
-
-class TokenException(HTTPException):
-    def __init__(self) -> None:
-        super().__init__(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Неверный токен',
-            headers={"WWW-Authenticate": "Bearer"},
-    )

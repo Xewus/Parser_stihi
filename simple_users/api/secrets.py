@@ -1,11 +1,15 @@
-from datetime import datetime as dt, timedelta
-from parser.settings import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
-from jose import JWTError, jwt
-from parser.core.exceptions import TokenException
-from fastapi.security import   OAuth2PasswordBearer
+from datetime import datetime as dt
+from datetime import timedelta
+
 from fastapi import Depends
-from parser.web.schemas.users_schemas import TokenData
-from parser.db.user_models import User
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+
+from simple_users.api.schemas import TokenData
+from simple_users.core.exceptions import TokenException
+from simple_users.db.models import User
+from simple_users.settings import (ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM,
+                                   SECRET_KEY)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
@@ -26,11 +30,12 @@ def create_access_token(data: dict) -> str:
         claims=to_encode, key=SECRET_KEY, algorithm=ALGORITHM
     )
 
+
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     """Расшифровывает токен и возвращает пользователя.
 
     Args:
-        token (str, optional): _description_. Defaults to Depends(oauth2_scheme).
+        token (str, optional): _desc_. Defaults to Depends(oauth2_scheme).
 
     Raises:
         TokenException: _description_

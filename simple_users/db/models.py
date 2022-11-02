@@ -1,12 +1,15 @@
-from pprint import pprint
-from pydantic import BaseModel, Field, EmailStr, SecretStr
-from passlib.context import CryptContext
-from parser.settings import USERS_DB, FIRST_USER
+"""Модели хранения данных.
+"""
 import json
-from aiofile import LineReader, AIOFile, Writer
-from parser.core.validators import valdate_file
-from typing import TypeVar, Generic
-from parser.core.exceptions import BadRequestException
+from pprint import pprint
+from typing import Generic, TypeVar
+
+from aiofile import AIOFile, LineReader, Writer
+from passlib.context import CryptContext
+from pydantic import BaseModel, EmailStr, Field, SecretStr
+
+from simple_users.core.exceptions import BadRequestException
+from simple_users.settings import FIRST_USER, USERS_DB
 
 U = TypeVar('U')
 
@@ -32,7 +35,7 @@ class BaseUser(BaseModel, Generic[U]):
     def verify_password(self, password: str, hashed_password: str) -> bool:
         raise
 
-    def  hashing_password(self, password: str) -> str:
+    def hashing_password(self, password: str) -> str:
         """Хэширует пароль.
 
         Args:
@@ -45,7 +48,7 @@ class BaseUser(BaseModel, Generic[U]):
 
     def get_user(username: str) -> U | None:
         raise
-    
+
     def authenticate_user(username: str, password: str) -> U | None:
         raise
 
@@ -79,7 +82,6 @@ class User(BaseUser):
         Returns:
             U | None: _description_
         """
-        await valdate_file(USERS_DB)
         async with AIOFile(USERS_DB) as db:
             async for line in LineReader(db):
                 user = User(**json.loads(line))
@@ -87,7 +89,9 @@ class User(BaseUser):
                     return user
 
     @staticmethod
-    async def authenticate_user(username: str, password: str) -> BaseUser | None:
+    async def authenticate_user(
+        username: str, password: str
+    ) -> BaseUser | None:
         """Проверяет соответствие пользователя и пароля.
 
         Args:
@@ -107,7 +111,6 @@ class User(BaseUser):
     async def create_user(self, new_user: BaseUser) -> BaseUser:
         if not self.admin:
             raise BadRequestException('Недостаточно прав для создания')
-        await valdate_file(USERS_DB)
         user = await User.get_user(username=new_user.username)
         if user is not None:
             raise BadRequestException('Юзернейм занят')
@@ -120,7 +123,7 @@ class User(BaseUser):
             await writer(user.json() + '\n')
             await db.fsync()
         return user
-        
+
 
 def create_first_user():
     with open(USERS_DB, 'r+') as db:

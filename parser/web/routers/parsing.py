@@ -5,8 +5,10 @@ from parser.core.enums import DocType, SpiderNames, Tag
 from parser.core.utils import extract_poem_links, get_result_file
 from parser.core.validators import valdate_file, validate_author
 from parser.poems.commands import start_spider
-from parser.web.schemas.parser_schemas import (AuthorDocTypeSchema, AuthorSchema,
-                                ChoosedPoemsSchema, RespChoosePoemsSchema)
+from parser.web.schemas.parser_schemas import (AuthorDocTypeSchema,
+                                               AuthorSchema,
+                                               ChoosedPoemsSchema,
+                                               RespChoosePoemsSchema)
 from pathlib import Path
 
 from fastapi import APIRouter, Body, Query

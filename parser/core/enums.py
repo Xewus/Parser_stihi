@@ -26,7 +26,6 @@ class Tag(str, Enum):
     INDEX = 'Index'
     PARSING = 'Parsing'
     TEST = 'Test'
-    USERS = 'Users'
 
 
 class DocType(str, Enum):

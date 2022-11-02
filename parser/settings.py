@@ -14,28 +14,12 @@ APP_VERSION =         '0.4.0'
 
 ################################################################################
 
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
 DATE_FORMAT =         config('DATE_FORMAT', default='%y_%m_%d')
 
 BASE_DIR =            Path(__file__).resolve().parent
 PROXY_LIST =          BASE_DIR / 'helpers/proxy_list.txt'
 USER_AGENTS_LIST =    BASE_DIR / 'helpers/user_agents_list.txt'
 DOCX_TEMPLATES =      BASE_DIR / 'helpers/docx_templates'
-USERS_DB =            BASE_DIR / 'helpers/users.json'
-
-if not USERS_DB.exists():
-    USERS_DB.touch()
-
-FIRST_USER =          {
-    'username': config('USERNAME', default='User'),
-    'email': config('EMAIL', default='q@q.qq'),
-    'password': config('FIRST_USER_PASSWORD', default='12345678'),
-    'active': True,
-    'admin': True
-}
 
 # |_ */<project>/results/27_05_21/
 #   |_oleg_choose-poems.json
