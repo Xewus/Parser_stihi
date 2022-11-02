@@ -3,13 +3,12 @@ from pydantic import BaseModel, Field, EmailStr, SecretStr
 from passlib.context import CryptContext
 from parser.settings import USERS_DB, FIRST_USER
 import json
-from aiofile import LineReader, AIOFile, Writer, async_open
+from aiofile import LineReader, AIOFile, Writer
 from parser.core.validators import valdate_file
 from typing import TypeVar, Generic
 from parser.core.exceptions import BadRequestException
 
 U = TypeVar('U')
-
 
 pass_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
@@ -42,7 +41,7 @@ class BaseUser(BaseModel, Generic[U]):
         Returns:
             str: _description_
         """
-        return pass_context.hash(str(password))
+        return pass_context.hash(password)
 
     def get_user(username: str) -> U | None:
         raise

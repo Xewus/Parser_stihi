@@ -2,3 +2,4 @@
 {"username": "string2", "password": null, "hash_password": "$2b$12$xiuzPI/hMeW0J1r54cSyLeFPS8xSo7TB.Zuk4HB1t/sITo8fHteLe", "email": "user@example.com", "active": true, "admin": false}
 {"username": "string", "password": null, "hash_password": "$2b$12$/ijayBpsm9QazhWxFORID.1GLSFYm5Y0y.EUIRiMMxUurnbNLaw16", "email": "user@example.com", "active": true, "admin": false}
 {"username": "string3", "password": null, "hash_password": "$2b$12$kKm37iN1jfZ0SDmjjby0i.WysxQd/0F8HGOGcRg2enR1rLaXXwP.a", "email": "user@example.com", "active": true, "admin": false}
+{"username": "user", "password": null, "hash_password": "$2b$12$3KI34.L8thk0Jn9HvmJ28O57PLrPuSTFmJEqNuMS1tarcuabhWHg2", "email": "user@example.com", "active": true, "admin": false}
