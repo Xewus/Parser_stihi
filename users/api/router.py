@@ -1,11 +1,10 @@
 """Эндпоинты для управления пользователями.
 """
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, status
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from tortoise.contrib.fastapi import HTTPNotFoundError, register_tortoise
-from tortoise.contrib.pydantic import pydantic_model_creator
 
-from users.api.schemas import Token, UserSchema, UserUpdateSchema
+from users.api.schemas import Token, UserSchema, UserUpdateSchema, UserNotFound
 from users.api.secrets import create_access_token, get_current_user, only_admin
 from users.db.models import User
 
@@ -54,25 +53,45 @@ async def create_user_view(
 
 @router.put(
     path='/update_user/{username}',
-    response_model=UserSchema
+    responses={
+        200: {'model': UserSchema},
+        202: {'model': UserSchema},
+        404: {'model': UserNotFound}
+    }
 )
 async def update_user_view(
     username: str,
     update_data: UserUpdateSchema
 ):
-    user: User = await User.get_or_none(username=username)
-    if user is None:
-        raise HTTPException(404)
-    user.update_from_dict(update_data.dict(exclude_none=True))
+    user: User = await User.get(username=username)
+    changes = 0
+    for key, value in update_data.dict().items():
+        if value is None or getattr(user, key) == value:
+            continue
+        setattr(user, key, value)
+        changes += 1
+    if not changes:
+        return JSONResponse(
+            content=UserSchema.from_orm(user).dict(),
+            status_code=status.HTTP_200_OK
+        )
+
     await user.save()
-    return user
+    return JSONResponse(
+        content=UserSchema.from_orm(user).dict(),
+        status_code=status.HTTP_202_ACCEPTED
+    )
 
 
 @router.put(
     path='/activate/{username}',
-    response_model=UserSchema
+    responses={
+        200: {'model': UserSchema},
+        202: {'model': UserSchema},
+        404: {'model': UserNotFound}
+    }
 )
-async def deactivate_user_view(username: str):
+async def activate_user_view(username: str):
     return await update_user_view(
         username=username,
         update_data=UserUpdateSchema(active=True)
@@ -81,7 +100,11 @@ async def deactivate_user_view(username: str):
 
 @router.put(
     path='/deactivate/{username}',
-    response_model=UserSchema
+    responses={
+        200: {'model': UserSchema},
+        202: {'model': UserSchema},
+        404: {'model': UserNotFound}
+    }
 )
 async def deactivate_user_view(username: str):
     return await update_user_view(
