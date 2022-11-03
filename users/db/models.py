@@ -4,7 +4,7 @@ from tortoise import fields
 
 class User(Model):
     user_id = fields.IntField(pk=True)
-    username = fields.CharField(max_length=10)
+    username = fields.CharField(max_length=10, unique=True, description=None)
     # hash = fields.CharField
     admin = fields.BooleanField(default=False)
     active = fields.BooleanField(default=False)
