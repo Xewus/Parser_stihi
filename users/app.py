@@ -1,11 +1,9 @@
-from users.db.connect_to_db import connect_to_db
+from fastapi import FastAPI
 from tortoise import run_async
 from tortoise.contrib.fastapi import register_tortoise
 
-from fastapi import FastAPI
-
-
 from users.api.router import router as users_router
+from users.db.connect_to_db import connect_to_db
 
 app = FastAPI(
     debug=1,

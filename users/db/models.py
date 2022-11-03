@@ -1,8 +1,8 @@
-from tortoise.models import Model
-from tortoise import fields
 from passlib.context import CryptContext
-from users.core.exceptions import BadRequestException
+from tortoise import fields
+from tortoise.models import Model
 
+from users.core.exceptions import BadRequestException
 
 pass_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
@@ -17,18 +17,23 @@ class User(Model):
     admin = fields.BooleanField(default=False)
     active = fields.BooleanField(default=False)
 
+    def __init__(self, password: str | None, **kwargs) -> None:
+        super().__init__(**kwargs)
+        if password is not None:
+            self.set_hash(password)
+
     def __str__(self) -> str:
         return self.username
 
-    def __set_hash(self, password: str):
+    def set_hash(self, password: str):
         self.hash = pass_context.hash(password)
     
-    @classmethod
-    async def create(cls, password: str | None,  **kwargs):
-        if password is not None:
-            hash = pass_context.hash(password)
-            return await super().create(hash=hash, **kwargs)
-        return await super().create(**kwargs)
+    # @classmethod
+    # async def create(cls, password: str | None,  **kwargs):
+    #     if password is not None:
+    #         hash = pass_context.hash(password)
+    #         return await super().create(hash=hash, **kwargs)
+    #     return await super().create(**kwargs)
 
     def verify_password(self, password: str) -> bool:
         """Проверить соответсвие пароля и хэша.

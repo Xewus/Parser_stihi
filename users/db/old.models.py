@@ -1,7 +1,7 @@
 """Модели хранения данных.
 """
-from abc import ABC, abstractmethod, abstractstaticmethod
 import json
+from abc import ABC, abstractmethod, abstractstaticmethod
 from pprint import pprint
 from typing import Any, Generic, TypeVar
 

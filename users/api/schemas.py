@@ -1,29 +1,39 @@
 """Схемы для эндпоинтов.
 """
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Extra, Field, validator
+
+
+class ErrorSchema(BaseModel):
+    detail: str
+
+
+class PasswordSchema(BaseModel):
+    password: str
+
+    @validator('password')
+    def len_password(cls, password: str | None):
+        if password is not None and len(password) < 8:
+            raise ValueError('Пароль должен быть более 8 символов.')
+        return password
+
 
 class UserResponseSchema(BaseModel):
-    username: str
-    active: bool
-    admin: bool
+    username: str = Field(max_length=10)
+    active: bool = False
+    admin: bool = False
 
     class Config:
         orm_mode = True
 
 
-class UserCreateSchema(UserResponseSchema):
-    password: str = Field(min_length=8)
-    active: bool = False
-    admin: bool = False
+class UserCreateSchema(UserResponseSchema, PasswordSchema):
+    pass
 
 
-class UserUpdateSchema(BaseModel):
-    password: str | None = Field(max_length=8)
+class UserUpdateSchema(PasswordSchema):
+    password: str | None = None
     active: bool | None = None
     admin: bool | None = None
-
-class UserNotFound(BaseModel):
-    detail: str
 
 
 class Token(BaseModel):

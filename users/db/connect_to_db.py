@@ -1,4 +1,5 @@
 from tortoise import Tortoise, run_async
+
 from users.settings import USERS_DB
 
 
