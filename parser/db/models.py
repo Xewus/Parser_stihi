@@ -1,10 +1,11 @@
+from parser.core.exceptions import BadRequestException
+
 from passlib.context import CryptContext
 from tortoise import fields
 from tortoise.models import Model
 
-from users.core.exceptions import BadRequestException
-
 pass_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+
 
 class User(Model):
     user_id = fields.IntField(pk=True)
@@ -27,19 +28,11 @@ class User(Model):
 
     def set_hash(self, password: str):
         self.hash = pass_context.hash(password)
-    
-    # @classmethod
-    # async def create(cls, password: str | None,  **kwargs):
-    #     if password is not None:
-    #         hash = pass_context.hash(password)
-    #         return await super().create(hash=hash, **kwargs)
-    #     return await super().create(**kwargs)
 
     def verify_password(self, password: str) -> bool:
         """Проверить соответсвие пароля и хэша.
         """
         return pass_context.verify(password, self.hash)
-
 
     @staticmethod
     async def authenticate_user(
@@ -56,3 +49,13 @@ class User(Model):
             raise BadRequestException(detail='Неактивный пользователь')
 
         return user
+
+
+async def create_first_user():
+    user = await User.first()
+    if user:
+        print(user)
+        return
+    from parser.settings import FIRST_USER
+    user = await User.create(**FIRST_USER)
+    await user.save()

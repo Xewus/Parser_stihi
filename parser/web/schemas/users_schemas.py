@@ -1,10 +1,6 @@
 """Схемы для эндпоинтов.
 """
-from pydantic import BaseModel, Extra, Field, validator
-
-
-class ErrorSchema(BaseModel):
-    detail: str
+from pydantic import BaseModel, Field, validator
 
 
 class PasswordSchema(BaseModel):

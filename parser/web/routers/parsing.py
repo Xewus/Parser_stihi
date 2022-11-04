@@ -9,13 +9,17 @@ from parser.web.schemas.parser_schemas import (AuthorDocTypeSchema,
                                                AuthorSchema,
                                                ChoosedPoemsSchema,
                                                RespChoosePoemsSchema)
+from parser.web.secrets import get_current_user
 from pathlib import Path
 
-from fastapi import APIRouter, Body, Query
+from fastapi import APIRouter, Body, Depends, Query
 from fastapi.responses import FileResponse
 from pydantic import HttpUrl
 
-router = APIRouter(tags=[Tag.PARSING])
+router = APIRouter(
+    tags=[Tag.PARSING],
+    dependencies=[Depends(get_current_user)]
+)
 
 
 @router.post(

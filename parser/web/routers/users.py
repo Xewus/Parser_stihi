@@ -1,16 +1,18 @@
 """Эндпоинты для управления пользователями.
 """
+from parser.core.enums import Tag
+from parser.db.models import User
+from parser.web.schemas.users_schemas import (PasswordSchema, Token,
+                                              UserCreateSchema,
+                                              UserResponseSchema,
+                                              UserUpdateSchema)
+from parser.web.secrets import (create_access_token, get_current_user,
+                                only_admin)
+
 from fastapi import APIRouter, Body, Depends, status
-from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from users.api.schemas import (ErrorSchema, PasswordSchema, Token,
-                               UserCreateSchema, UserResponseSchema,
-                               UserUpdateSchema)
-from users.api.secrets import create_access_token, get_current_user, only_admin
-from users.db.models import User
-
-router = APIRouter(tags=['Users'])
+router = APIRouter(tags=[Tag.USERS])
 
 
 @router.get(
@@ -63,12 +65,13 @@ async def update_user_view(
     user: User = Depends(get_current_user),
 ):
     update_data = update_data.dict(exclude_none=True)
-    password =update_data.pop('password')
+    password = update_data.pop('password')
     if password is not None:
         user.set_hash(password)
     user.update_from_dict(update_data)
     await user.save()
     return user
+
 
 @router.patch(
     path='/activate/{username}',
@@ -77,7 +80,7 @@ async def update_user_view(
 )
 async def activate_user_view(username: str):
     return await update_user_view(
-        user = await User.get(username=username),
+        user=await User.get(username=username),
         update_data=UserUpdateSchema(active=True)
     )
 
@@ -89,7 +92,7 @@ async def activate_user_view(username: str):
 )
 async def deactivate_user_view(username: str):
     return await update_user_view(
-        user = await User.get(username=username),
+        user=await User.get(username=username),
         update_data=UserUpdateSchema(active=False)
     )
 
@@ -115,6 +118,6 @@ async def change_password_view(
     user: User = Depends(get_current_user)
 ):
     return await update_user_view(
-        user = user,
+        user=user,
         update_data=UserUpdateSchema(password=password.password)
     )

@@ -1,14 +1,13 @@
 from datetime import datetime as dt
 from datetime import timedelta
+from parser.core.exceptions import AuthException, TokenException
+from parser.db.models import User
+from parser.settings import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
+from parser.web.schemas.users_schemas import TokenData
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-
-from users.api.schemas import TokenData
-from users.core.exceptions import AuthException, TokenException
-from users.db.models import User
-from users.settings import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/users/token')
 
@@ -35,7 +34,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
         token_data = TokenData(username=username)
     except JWTError:
         raise TokenException
-    user = await User.get_or_none(username=username)
+    user = await User.get_or_none(username=token_data.username)
     if user is None:
         raise TokenException
     return user

@@ -3,21 +3,29 @@
 from enum import Enum
 
 
+class DocType(str, Enum):
+    """Доступные типы текстовых файлов.
+    """
+    DOCX = '.docx'
+    JSON = '.json'
+    MD = '.md'
+
+
 class SpiderNames(str, Enum):
     """Имена пауков.
     """
     ALL_POEMS = 'all-poems'
-    LIST_POEMS = 'list-poems'
     CHOOSE_POEMS = 'choose-poems'
+    LIST_POEMS = 'list-poems'
 
 
 class StoreFields(str, Enum):
     """Список сохраняемых полей.
     """
-    TITLE = 'title',
-    AUTHOR = 'author',
-    TEXT = 'text',
+    AUTHOR = 'author'
     LINK = 'link'
+    TEXT = 'text'
+    TITLE = 'title'
 
 
 class Tag(str, Enum):
@@ -26,11 +34,4 @@ class Tag(str, Enum):
     INDEX = 'Index'
     PARSING = 'Parsing'
     TEST = 'Test'
-
-
-class DocType(str, Enum):
-    """Доступные типы текстовых файлов.
-    """
-    MD = '.md'
-    JSON = '.json'
-    DOCX = '.docx'
+    USERS = 'Users'
