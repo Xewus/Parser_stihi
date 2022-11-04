@@ -4,10 +4,28 @@ from fastapi import status
 from fastapi.exceptions import HTTPException
 
 
+<<<<<<< HEAD
 class ScrapyException(HTTPException):
     def __init__(self, detail: str = 'Ошибка при запуске `Scrapy`') -> None:
         super().__init__(
             status_code=status.HTTP_502_BAD_GATEWAY, detail=detail
+=======
+class AuthException(HTTPException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Нет прав для доступа'
+        )
+
+
+class BadRequestException(HTTPException):
+    """Обработчик ошибки со статус-кодом `400`'
+    """
+    def __init__(self, detail: str) -> None:
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=detail
+>>>>>>> users
         )
 
 
@@ -26,16 +44,6 @@ class NoLinksException(HTTPException):
         )
 
 
-class BadRequestException(HTTPException):
-    """Обработчик ошибки со статус-кодом `400`'
-    """
-    def __init__(self, detail: str) -> None:
-        super().__init__(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=detail
-        )
-
-
 class RemoteServerException(HTTPException):
     """Ошибки удалённого сервера.
     """
@@ -46,6 +54,13 @@ class RemoteServerException(HTTPException):
         )
 
 
+class ScrapyException(HTTPException):
+    def __init__(self, detail: str = 'Ошибка при запуске `Scrapy`') -> None:
+        super().__init__(
+            status_code=status.HTTP_502_BAD_GATEWAY, detail=detail
+        )
+
+
 class TokenException(HTTPException):
     def __init__(self) -> None:
         super().__init__(
@@ -53,6 +68,7 @@ class TokenException(HTTPException):
             detail='Неверный токен',
             headers={"WWW-Authenticate": "Bearer"},
         )
+<<<<<<< HEAD
 
 
 class AuthException(HTTPException):
@@ -61,3 +77,5 @@ class AuthException(HTTPException):
             status_code=status.HTTP_403_FORBIDDEN,
             detail='Нет прав для доступа'
         )
+=======
+>>>>>>> users

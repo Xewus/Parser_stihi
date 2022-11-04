@@ -28,6 +28,31 @@ def clean_poem_text(text: list[str]) -> str:
     return ''.join(text)
 
 
+async def extract_poem_links(json_file: Path) -> list[dict[str, HttpUrl]]:
+    """Читает из файла ссылки. Ссылка должна иметь ключ 'link'.
+
+    #### Args:
+    - json_file (Path): Месторасположения файла.
+
+    #### Raises:
+    - NoLinksException: В файле нет ссылок с ключом `link'.
+
+    #### Returns:
+    - list[dict[str, HttpUrl]]: Словарь с ссылками.
+
+    #### Example;
+    - {
+        "title": "Ах, если б знал ты, как легко...",
+        "link": "https://stihi.ru//2000/08/21-53"
+      }
+    """
+    with open(file=json_file) as poems_links:
+        poems_links = json.load(poems_links)
+        if not poems_links or not poems_links[0].get(StoreFields.LINK.value):
+            raise NoLinksException
+        return poems_links
+
+
 async def get_result_file(author: str, spider_name: str) -> Path:
     """Создаёт имя файла и необходимые папки для результатов парсинга.
 
@@ -52,28 +77,3 @@ async def get_result_file(author: str, spider_name: str) -> Path:
 
     today_dir.mkdir(parents=True, exist_ok=True)
     return today_dir / (POEMS_STORE % (author, spider_name))
-
-
-async def extract_poem_links(json_file: Path) -> list[dict[str, HttpUrl]]:
-    """Читает из файла ссылки. Ссылка должна иметь ключ 'link'.
-
-    #### Args:
-    - json_file (Path): Месторасположения файла.
-
-    #### Raises:
-    - NoLinksException: В файле нет ссылок с ключом `link'.
-
-    #### Returns:
-    - list[dict[str, HttpUrl]]: Словарь с ссылками.
-
-    #### Example;
-    - {
-        "title": "Ах, если б знал ты, как легко...",
-        "link": "https://stihi.ru//2000/08/21-53"
-      }
-    """
-    with open(file=json_file) as poems_links:
-        poems_links = json.load(poems_links)
-        if not poems_links or not poems_links[0].get(StoreFields.LINK.value):
-            raise NoLinksException
-        return poems_links
