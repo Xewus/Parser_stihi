@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, validator, SecretStr, validator
 from string import digits, ascii_lowercase, ascii_uppercase
 from parser.core.exceptions import NoValidPasswordException
 
+MIN_LENGT_PASSWORD = 8
 DIGITS = set(digits)
 LOWERS = set(ascii_lowercase)
 UPPERS = set(ascii_uppercase)
@@ -14,7 +15,6 @@ class PasswordSchema(BaseModel):
     password: SecretStr = Field(
         title='Пароль пользователя',
         description='Необходимы цифры, большие и маленькие буквы',
-        min_length=8,
         example='j1E7jh8vg6'
     )
 
@@ -22,19 +22,20 @@ class PasswordSchema(BaseModel):
         title = 'Пароль пользователя',
     
     @validator('password')
-    def validate_password(cls, password:str) -> SecretStr:
-        pass_set = set(password)
-        if len(pass_set & DIGITS | pass_set & LOWERS | pass_set & UPPERS) < 3:
+    def validate_password(
+        cls, password: SecretStr | None
+    ) -> SecretStr | None:
+        if password is None:
+            return
+        if len(password) < MIN_LENGT_PASSWORD:
+            raise NoValidPasswordException(
+                detail='Пароль должен быть длиннее %s символов' % MIN_LENGT_PASSWORD
+            )
+        pass_set = set(str(password.get_secret_value()))
+        if not (
+            (pass_set & DIGITS) and (pass_set & LOWERS) and (pass_set & UPPERS)
+        ):
             raise NoValidPasswordException
-        return password
-            
-    
-
-
-    @validator('password')
-    def len_password(cls, password: str | SecretStr| None):
-        if password is not None and len(password) < 8:
-            raise ValueError('Пароль должен быть более 8 символов.')
         return password
 
 

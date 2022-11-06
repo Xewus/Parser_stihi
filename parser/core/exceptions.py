@@ -17,9 +17,11 @@ class BadRequestException(HTTPException):
         detail: str | None = None,
         headers: dict[str, Any] | None = None
     ) -> None:
-        self.status_code = status_code or self.status_code
-        self.detail = detail or self.detail
-        super().__init__(status_code, detail, headers)
+        super().__init__(
+            status_code=status_code or self.status_code,
+            detail=detail or self.detail,
+            headers=headers or self.headers
+        )
 
 
 class AuthException(BadRequestException):

@@ -35,9 +35,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     #### Args:
     - token (str): Токен из формы.
 
-    #### Raises:
-    - TokenException: Неверный токен.
-
     #### Returns:
     - User: Пользователь, владелец токена.
     """
