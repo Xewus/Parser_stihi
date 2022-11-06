@@ -42,7 +42,6 @@ class NoLinksException(BadRequestException):
 
 
 class NoValidPasswordException(BadRequestException):
-    status_code = status.HTTP_401_UNAUTHORIZED
     detail = 'Пароль не безопасен'
 
 

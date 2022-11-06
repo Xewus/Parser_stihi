@@ -20,7 +20,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 ################################################################################
 
 FIRST_USER = {
-    'username': config('USERNAME', default='User'),
+    'username': config('USERNAME', default='User').capitalize(),
     'email': config('EMAIL', default='q@q.qq'),
     'password': config('FIRST_USER_PASSWORD', default='12345678'),
     'active': True,

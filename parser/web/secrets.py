@@ -3,7 +3,7 @@ from datetime import timedelta
 from parser.core.exceptions import AuthException, TokenException
 from parser.db.models import User
 from parser.settings import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
-from parser.web.schemas.users_schemas import TokenData
+from parser.web.schemas.users_schemas import UsernameSchema
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -41,9 +41,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
+        print(username)
         if username is None:
             raise TokenException
-        token_data = TokenData(username=username)
+        token_data = UsernameSchema(username=username)
     except JWTError:
         raise TokenException
     user = await User.get_or_none(username=token_data.username)

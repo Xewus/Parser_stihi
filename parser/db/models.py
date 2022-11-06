@@ -7,7 +7,6 @@ from parser.core.exceptions import BadRequestException
 from passlib.context import CryptContext
 from tortoise import fields
 from tortoise.models import Model
-from pydantic import SecretStr
 
 pass_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
@@ -26,10 +25,10 @@ class User(Model):
     admin = fields.BooleanField(default=False)
     active = fields.BooleanField(default=False)
 
-    def __init__(self, password: str | SecretStr | None, **kwargs) -> None:
+    def __init__(self, password: str | None, **kwargs) -> None:
         super().__init__(**kwargs)
         if password is not None:
-            self.set_hash(str(password))
+            self.set_hash(password)
 
     def __str__(self) -> str:
         return f'{self.username}, active: {self.active}, admin: {self.admin}'

@@ -3,14 +3,13 @@
 from parser.core.enums import Tag
 from parser.db.models import User
 from parser.web.schemas.users_schemas import (PasswordSchema, Token,
-                                              UserCreateSchema,
-                                              UserResponseSchema,
+                                              UserSchema, UserCreateSchema,
                                               UserUpdateSchema)
 from parser.web.secrets import (create_access_token, get_current_user,
                                 only_admin)
-
 from fastapi import APIRouter, Body, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
+
 
 router = APIRouter(tags=[Tag.USERS])
 
@@ -18,7 +17,7 @@ router = APIRouter(tags=[Tag.USERS])
 @router.get(
     path='/me',
     summary='Вернуть пользователю его данные',
-    response_model=UserResponseSchema
+    response_model=UserSchema
 )
 async def users_me_view(current_user: User = Depends(get_current_user)):
     return current_user
@@ -28,7 +27,7 @@ async def users_me_view(current_user: User = Depends(get_current_user)):
     path='/get_user/{username}',
     summary='Получить данные указанного пользователя',
     description='Доступно только админам',
-    response_model=UserResponseSchema,
+    response_model=UserSchema,
     dependencies=[Depends(only_admin)]
 )
 async def get_user_view(username: str):
@@ -39,7 +38,7 @@ async def get_user_view(username: str):
     path='/all_users',
     summary='Получить данные всех пользователей',
     description='Доступно только админам',
-    response_model=list[UserResponseSchema],
+    response_model=list[UserSchema],
     dependencies=[Depends(only_admin)]
 )
 async def all_users_view():
@@ -50,7 +49,7 @@ async def all_users_view():
     path='/create_user',
     summary='Создать нового пользователя',
     description='Доступно только админам',
-    response_model=UserResponseSchema,
+    response_model=UserSchema,
     status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(only_admin)]
 )
@@ -63,18 +62,19 @@ async def create_user_view(
 
 
 @router.patch(
-    path='/update_user',
+    path='/update_user/{username}',
     summary='Изменить данные указанного пользователя',
     description='Доступно только админам',
-    response_model=UserResponseSchema,
-    dependencies=[Depends(only_admin)]
+    dependencies=[Depends(only_admin)],
+    response_model=UserSchema
 )
 async def update_user_view(
     update_data: UserUpdateSchema,
-    user: User = Depends(get_current_user),
+    username: str
 ):
+    user = await User.get(username=username)    
     update_data = update_data.dict(exclude_none=True)
-    password = update_data.pop('password')
+    password = update_data.pop('password', None)
     if password is not None:
         user.set_hash(password)
     user.update_from_dict(update_data)
@@ -83,16 +83,34 @@ async def update_user_view(
 
 
 @router.patch(
+    path='/update_user',
+    summary='Изменить свои пользовательские данные',
+    response_model=UserSchema,
+    response_model_exclude={'admin'}
+)
+async def self_update_view(
+    update_data: UserUpdateSchema,
+    user: User = Depends(get_current_user)
+):
+    update_data.admin = None
+    return await update_user_view(
+        update_data=update_data,
+        username=user.username
+    )
+
+
+
+@router.patch(
     path='/activate/{username}',
     summary='Активироапть указанного пользователя',
     description='Доступно только админам',
-    response_model=UserResponseSchema,
+    response_model=UserSchema,
     dependencies=[Depends(only_admin)]
 )
 async def activate_user_view(username: str):
     return await update_user_view(
-        user=await User.get(username=username),
-        update_data=UserUpdateSchema(active=True)
+        update_data=UserUpdateSchema(active=True),
+        username=username
     )
 
 
@@ -100,13 +118,13 @@ async def activate_user_view(username: str):
     path='/deactivate/{username}',
     summary='Деактивировать указанного пользователя',
     description='Доступно только админам',
-    response_model=UserResponseSchema,
+    response_model=UserSchema,
     dependencies=[Depends(only_admin)]
 )
 async def deactivate_user_view(username: str):
     return await update_user_view(
-        user=await User.get(username=username),
-        update_data=UserUpdateSchema(active=False)
+        update_data=UserUpdateSchema(active=False),
+        username=username
     )
 
 
@@ -125,7 +143,7 @@ async def login_view(form_data: OAuth2PasswordRequestForm = Depends()):
 @router.patch(
     path='/change_password',
     summary='Изменить пароль пользователя',
-    response_model=UserResponseSchema
+    response_model=UserSchema
 )
 async def change_password_view(
     password: PasswordSchema,
