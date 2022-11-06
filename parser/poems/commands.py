@@ -17,10 +17,6 @@ async def start_spider(
     - urls (str | None, optional): Список `url`ов, если необходим.
         Note: `Scrapy` принимает только строковые аргументы.
 
-    #### Raises:
-    - FileNotFoundError: Отсутствует файл с результатами.
-    - ScrapyException: Ошибка при попытке выполнить команду.
-
     #### Returns:
     - str: Расположение сохранённого файла.
     """

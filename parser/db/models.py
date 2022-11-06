@@ -1,3 +1,7 @@
+"""Модель пользователя и верификации пользователя.
+"""
+from __future__ import annotations
+
 from parser.core.exceptions import BadRequestException
 
 from passlib.context import CryptContext
@@ -14,7 +18,10 @@ class User(Model):
         unique=True,
         description='Юзернейм пользователя'
     )
-    hash = fields.CharField(max_length=64)
+    hash = fields.CharField(
+        max_length=64,
+        description='Хэш для аутенфитикации'
+    )
     admin = fields.BooleanField(default=False)
     active = fields.BooleanField(default=False)
 
@@ -24,21 +31,39 @@ class User(Model):
             self.set_hash(password)
 
     def __str__(self) -> str:
-        return self.username
+        return f'{self.username}, active: {self.active}, admin: {self.admin}'
 
-    def set_hash(self, password: str):
+    def set_hash(self, password: str) -> None:
+        """Вычислить и установить атрибут `hash` объекта.
+
+        #### Args:
+        - password (str): Пароль.
+        """
         self.hash = pass_context.hash(password)
 
     def verify_password(self, password: str) -> bool:
         """Проверить соответсвие пароля и хэша.
+
+        #### Args:
+        - password (str): Проверяемый пароль.
+
+        #### Returns:
+        - bool: Правильный ли пароль.
         """
         return pass_context.verify(password, self.hash)
 
     @staticmethod
     async def authenticate_user(
         username: str, password: str
-    ):
-        """Проверяет соответствие пользователя и пароля.
+    ) -> User:
+        """Проверить наличие пользователя и соответствие пароля.
+
+        #### Args:
+        - username (str): Юзернейм пользователя.
+        - password (str): Пароль введённый пользователем.
+
+        #### Returns:
+        - User: Проверенный пользователь.
         """
         user = await User.get_or_none(username=username)
         if not user:
@@ -51,11 +76,17 @@ class User(Model):
         return user
 
 
-async def create_first_user():
+async def create_first_user() -> None:
+    """Создаёт первого пользователя-админа, если БД пуста.
+    """
     user = await User.first()
     if user:
         print(user)
-        return
-    from parser.settings import FIRST_USER
-    user = await User.create(**FIRST_USER)
-    await user.save()
+        return None
+    try:
+        from parser.settings import FIRST_USER
+        user = await User.create(**FIRST_USER)
+        await user.save()
+    except ImportError:
+        print('В настройках нет данных для первого пользователя')
+        return None

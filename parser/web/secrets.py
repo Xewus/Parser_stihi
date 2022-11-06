@@ -1,24 +1,9 @@
-<<<<<<< HEAD
-"""Организия доступов и разрешений.
-"""
-from datetime import datetime as dt
-from datetime import timedelta
-from parser.core.exceptions import TokenException, AuthException
-from parser.db.user_models import User
-from parser.settings import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
-from parser.web.schemas.users_schemas import TokenData
-
-from fastapi import Depends
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-=======
 from datetime import datetime as dt
 from datetime import timedelta
 from parser.core.exceptions import AuthException, TokenException
 from parser.db.models import User
 from parser.settings import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from parser.web.schemas.users_schemas import TokenData
->>>>>>> users
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
@@ -28,7 +13,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/users/token')
 
 
 def create_access_token(data: dict) -> str:
-<<<<<<< HEAD
     """Создаёт зашифрованный `JWT-токен`.
 
     #### Args:
@@ -36,9 +20,6 @@ def create_access_token(data: dict) -> str:
 
     #### Returns:
     - str: Зашифрованный `JWT-токен`.
-=======
-    """Создаёт зашифрованный JWT-токен.
->>>>>>> users
     """
     to_encode = data.copy()
     expire = dt.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -49,8 +30,7 @@ def create_access_token(data: dict) -> str:
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    """Расшифровывает токен и возвращает пользователя.
-<<<<<<< HEAD
+    """Расшифровывает токен и возвращает пользоват
 
     #### Args:
     - token (str): Токен из формы.
@@ -60,8 +40,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 
     #### Returns:
     - User: Пользователь, владелец токена.
-=======
->>>>>>> users
     """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -71,21 +49,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
         token_data = TokenData(username=username)
     except JWTError:
         raise TokenException
-<<<<<<< HEAD
-    user: User = await User.get(username=token_data.username)
-=======
     user = await User.get_or_none(username=token_data.username)
->>>>>>> users
     if user is None:
         raise TokenException
     return user
 
 
-<<<<<<< HEAD
-def only_for_admin(user: User = Depends(get_current_user)) -> User:
-=======
 def only_admin(user: User = Depends(get_current_user)) -> User:
->>>>>>> users
     if not user.admin:
         raise AuthException
     return user

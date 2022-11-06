@@ -20,7 +20,7 @@ class SpiderNames(str, Enum):
 
 
 class StoreFields(str, Enum):
-    """Список сохраняемых полей.
+    """Список сохраняемых при парсинге полей.
     """
     AUTHOR = 'author'
     LINK = 'link'

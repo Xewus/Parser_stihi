@@ -1,4 +1,4 @@
-"""Схемы валидации данных.
+"""Схемы валидации эндпоинтов парсинга.
 """
 from datetime import datetime as dt
 from parser.core.enums import DocType

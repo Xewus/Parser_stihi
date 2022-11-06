@@ -8,20 +8,21 @@ from pathlib import Path
 
 
 async def validate_author(author: str) -> str:
-    """Проверяет доступность сервера и наличие автора.
+    """Проверяет доступность удалённого сервера и наличие автора.
 
     #### Args:
     - author (str): Автор.
 
     #### Returns:
     - author(str):  Автор.
-
     """
     request = SendRequest(url=START_URL_FOR_PARSE + author)
     response = await request.GET
 
     if response is None or not response.ok:
-        raise RemoteServerException('Сервер `Stihi` вернул неожиданный ответ')
+        raise RemoteServerException(
+            'Сервер вернул неожиданный ответ на запрос: %s' % request.url
+        )
     text = await response.text()
     if 'Автор не найден' in text:
         raise BadRequestException('Автор не найден')
@@ -33,9 +34,6 @@ async def valdate_file(file: Path) -> None:
 
     #### Args:
     - file (Path): Искомый файл.
-
-    #### Raises:
-    - NoFileException: Файл не существует.
     """
     if not file.exists():
         raise NoFileException(file=file)

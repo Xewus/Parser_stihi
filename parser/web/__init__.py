@@ -1,12 +1,8 @@
 """API для доступа к `Scrapy`.
 """
-<<<<<<< HEAD
-from parser.db.user_models import create_first_user
-=======
 from parser.db.models import create_first_user
->>>>>>> users
 from parser.settings import (APP_DESCRIPTION, APP_NAME, APP_VERSION, AUTHOR,
-                             DEBUG)
+                             DEBUG, TORTOISE_CONFIG)
 
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
@@ -35,13 +31,9 @@ app.include_router(
 )
 
 register_tortoise(
-    app,
-    db_url='sqlite://db.sqlite3',
-    modules={'models': ['parser.db.models']},
-    generate_schemas=True,
-    add_exception_handlers=True,
+    app=app,
+    **TORTOISE_CONFIG
 )
-
 
 
 @app.on_event('startup')

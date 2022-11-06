@@ -34,9 +34,6 @@ async def extract_poem_links(json_file: Path) -> list[dict[str, HttpUrl]]:
     #### Args:
     - json_file (Path): Месторасположения файла.
 
-    #### Raises:
-    - NoLinksException: В файле нет ссылок с ключом `link'.
-
     #### Returns:
     - list[dict[str, HttpUrl]]: Словарь с ссылками.
 

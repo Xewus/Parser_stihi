@@ -184,9 +184,6 @@ class JsonConvereter(BaseModel):
 
         #### Returns:
         - Path: Месторасположение выходного файла в формате `.docx`.
-
-        #### Raises:
-        - ValueError: Для переданного файла нет подходящего шаблона `docx`.
         """
         file = self.set_file_extension(self.json_file, DocType.DOCX.value)
         self.data = self.get_data_from_file()

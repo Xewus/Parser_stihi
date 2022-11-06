@@ -19,14 +19,28 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 ################################################################################
 
-USERS_DB = 'sqlite://db.sqlite3'
-
 FIRST_USER = {
     'username': config('USERNAME', default='User'),
     'email': config('EMAIL', default='q@q.qq'),
     'password': config('FIRST_USER_PASSWORD', default='12345678'),
     'active': True,
     'admin': True
+}
+
+TORTOISE_CONFIG = {
+    'db_url': 'sqlite://db.sqlite3',
+    'modules': {'models': ['parser.db.models']},
+    'generate_schemas': True,
+    'add_exception_handlers': True
+}
+
+TORTOISE_ORM = {
+    "connections": {
+        "default": TORTOISE_CONFIG['db_url'],
+    },
+    "apps": {
+        "models": {"models": ['parser.db.models'], "default_connection": "default"},
+    },
 }
 
 ################################################################################
@@ -48,6 +62,7 @@ POEMS_STORE = '%s_%s.json'
 
 # Строка разделяющая стихи
 POEMS_SEPARATOR = '\n' + '-' * 50 + '\n\n'
+
 # Разделитель для перевода списка в строку
 ARGS_SEPARATOR = '#'
 
